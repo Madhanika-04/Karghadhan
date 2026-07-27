@@ -27,6 +27,7 @@ export const govtSchemes: GovtScheme[] = [
     category: 'Subsidies',
     ministry: 'Ministry of Textiles',
     isActive: true,
+    imageSrc: '/illustrations/business_loan_hero.png',
   },
   {
     id: 'yarn-subsidy',
@@ -49,6 +50,7 @@ export const govtSchemes: GovtScheme[] = [
     category: 'Subsidies',
     ministry: 'Ministry of Textiles',
     isActive: true,
+    imageSrc: '/illustrations/micro_credit_hero.png',
   },
   {
     id: 'solar-loom',
@@ -76,6 +78,7 @@ export const govtSchemes: GovtScheme[] = [
     category: 'Subsidies',
     ministry: 'Ministry of New and Renewable Energy',
     isActive: true,
+    imageSrc: '/illustrations/asset_insurance_hero.png',
   },
   {
     id: 'nhdp',
@@ -103,6 +106,7 @@ export const govtSchemes: GovtScheme[] = [
     category: 'Training',
     ministry: 'Ministry of Textiles',
     isActive: true,
+    imageSrc: '/illustrations/women_weaver_hero.png',
   },
   {
     id: 'skill-development',
@@ -131,5 +135,6 @@ export const govtSchemes: GovtScheme[] = [
     category: 'Training',
     ministry: 'Ministry of Textiles / NSDC',
     isActive: true,
+    imageSrc: '/illustrations/working_capital_hero.png',
   },
 ];

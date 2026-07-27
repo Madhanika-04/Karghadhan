@@ -20,6 +20,8 @@ import OnboardingProfilePage from './pages/OnboardingProfilePage';
 
 // Pages — Dashboard
 import DashboardPage from './pages/DashboardPage';
+import SavingsPage from './pages/SavingsPage';
+import PaymentsPage from './pages/PaymentsPage';
 import LoansPage from './pages/LoansPage';
 import InsurancePage from './pages/InsurancePage';
 import SchemesPage from './pages/SchemesPage';
@@ -58,6 +60,8 @@ export default function App() {
             {/* Dashboard */}
             <Route element={<DashboardLayout />}>
               <Route path="/dashboard" element={<DashboardPage />} />
+              <Route path="/savings" element={<SavingsPage />} />
+              <Route path="/payments" element={<PaymentsPage />} />
               <Route path="/loans" element={<LoansPage />} />
               <Route path="/insurance" element={<InsurancePage />} />
               <Route path="/schemes" element={<SchemesPage />} />

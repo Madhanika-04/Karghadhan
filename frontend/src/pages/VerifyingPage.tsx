@@ -161,7 +161,7 @@ export default function VerifyingPage() {
                   <div className="flex-shrink-0">
                     {isCompleted && (
                       <span className="text-xs font-bold text-success-600 bg-success-50 px-2 py-0.5 rounded-full border border-success-100">
-                        Done
+                        {t('common.done', 'Done')}
                       </span>
                     )}
                     {isCurrent && (
@@ -170,12 +170,12 @@ export default function VerifyingPage() {
                         transition={{ duration: 1.2, repeat: Infinity }}
                         className="text-xs font-bold text-amber-600 bg-amber-50 px-2 py-0.5 rounded-full border border-amber-100"
                       >
-                        Processing
+                        {t('common.processing', 'Processing')}
                       </motion.span>
                     )}
                     {isPending && (
                       <span className="text-xs font-medium text-slate-400 bg-slate-50 px-2 py-0.5 rounded-full border border-slate-100">
-                        Pending
+                        {t('common.pending', 'Pending')}
                       </span>
                     )}
                   </div>

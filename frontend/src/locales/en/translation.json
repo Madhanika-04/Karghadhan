@@ -41,7 +41,8 @@
     "saveContinue": "Save & Continue",
     "apply": "Apply",
     "understoodApply": "Understood, I'll Apply",
-    "skipDemo": "Skip for demo"
+    "skipDemo": "Skip for demo",
+    "savings": "Savings"
   },
   "landing": {
     "heroTitle1": "AI Financial",
@@ -395,5 +396,49 @@
     "feature3": "Insurance tailored for you",
     "feature4": "Government schemes you qualify for",
     "secureData": "Your data is encrypted and secure. We follow DPDP Act guidelines."
+  },
+  "savings": {
+    "title": "Savings & Deposits",
+    "subtitle": "Track your wealth and secure your future",
+    "totalBalance": "Total Balance",
+    "interestEarned": "Interest Earned",
+    "recentTransactions": "Recent Transactions",
+    "viewAll": "View All",
+    "recommendedProducts": "Recommended Savings Products",
+    "interestRate": "Interest Rate",
+    "minBalance": "Min Balance",
+    "benefits": "Key Benefits",
+    "openAccount": "Open Account",
+    "enroll": "Enroll Now",
+    "depositNow": "Deposit Now",
+    "govBacked": "Government Backed"
+  },
+  "hero": {
+    "instantApproval": "Instant Approval",
+    "loansTitle": "Expand Your Business",
+    "loansSubtitle": "Get up to ₹5,00,000 for purchasing new handlooms, raw materials, and working capital at subsidised interest rates.",
+    "comprehensiveCover": "Comprehensive Cover",
+    "insuranceTitle": "Secure Your Family & Loom",
+    "insuranceSubtitle": "Protect your livelihood with health, life, and handloom insurance schemes tailored for weavers.",
+    "explorePlans": "Explore Plans",
+    "zeroFees": "Zero Fees",
+    "paymentsTitle": "Instant Digital Payments",
+    "paymentsSubtitle": "Send money to suppliers, receive payments from buyers, and pay bills instantly. Fast, secure, and made for weavers.",
+    "scanAndPay": "Scan & Pay",
+    "highReturns": "12% Returns",
+    "savingsTitle": "Grow Your Wealth",
+    "savingsSubtitle": "High-yield savings accounts, mutual funds, and fixed deposits tailored for weaving cooperatives.",
+    "startSaving": "Start Saving",
+    "govtSubsidy": "Govt. Subsidy",
+    "schemesTitle": "PMEGP & Weaver Schemes",
+    "schemesSubtitle": "Avail up to 35% margin money subsidy on new machinery. Let Karghadhan guide you through the registration and approval process seamlessly.",
+    "checkEligibility": "Check Eligibility",
+    "freeCourses": "Free Courses",
+    "literacyTitle": "Master Your Finances",
+    "literacySubtitle": "Learn how to manage business capital, save for the future, and use digital tools through easy mobile lessons.",
+    "assistantBadge": "Kargha AI v2.0",
+    "assistantTitle": "Your Smart Financial Assistant",
+    "assistantSubtitle": "Ask questions, get scheme recommendations, and manage your weaving business using just your voice.",
+    "talkToAi": "Talk to AI"
   }
 }

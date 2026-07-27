@@ -63,14 +63,8 @@ export default function VerifyPage() {
             <span className="text-secondary-600 text-xs font-bold">!</span>
           </div>
           <p className="text-xs text-slate-600 mt-0.5 leading-relaxed">
-            {t('verify.keepReady', 'Please keep your <1>Aadhaar Card</1> and <3>Weaver ID</3> ready for the next step.', {
-              components: { 1: <strong className="text-slate-800" />, 3: <strong className="text-slate-800" /> }
-            }) || (
-              <>
-                Please keep your <strong className="text-slate-800">Aadhaar Card</strong> and{' '}
-                <strong className="text-slate-800">Weaver ID</strong> ready for the next step.
-              </>
-            )}
+            {t('verify.keepReadyPt1', 'Please keep your')} <strong className="text-slate-800">{t('verify.aadhaarCard', 'Aadhaar Card')}</strong> {t('verify.and', 'and')}{' '}
+            <strong className="text-slate-800">{t('verify.weaverId', 'Weaver ID')}</strong> {t('verify.keepReadyPt2', 'ready for the next step.')}
           </p>
         </div>
       </div>

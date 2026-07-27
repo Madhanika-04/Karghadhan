@@ -4,6 +4,7 @@ import { Button } from '../ui/Button';
 import { Badge } from '../ui/Badge';
 import { useTranslation } from 'react-i18next';
 import { motion, AnimatePresence } from 'framer-motion';
+import { tData } from '../../utils/i18nData';
 
 interface Props {
   isOpen: boolean;
@@ -42,17 +43,17 @@ export function DetailedInsuranceModal({ isOpen, onClose, policy, onEnroll }: Pr
                   <div className="text-white">
                     <div className="flex flex-wrap gap-2 mb-3">
                       <Badge variant="success" dot className="bg-white/20 text-white border-transparent">
-                        {policy.officialStatus}
+                        {tData(policy.officialStatus)}
                       </Badge>
                       <Badge variant="indigo" className="bg-white/20 text-white border-transparent">
-                        {policy.category}
+                        {tData(policy.category)}
                       </Badge>
                     </div>
                     <h2 className="text-2xl font-bold font-display leading-tight mb-2">
-                      {policy.name}
+                      {tData(policy.name)}
                     </h2>
                     <p className="text-indigo-100 font-medium">
-                      {policy.provider}
+                      {tData(policy.provider)}
                     </p>
                   </div>
                   <button
@@ -71,7 +72,7 @@ export function DetailedInsuranceModal({ isOpen, onClose, policy, onEnroll }: Pr
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
                   <div className="bg-slate-50 rounded-2xl p-4 border border-slate-100">
                     <p className="text-[10px] text-slate-500 font-bold uppercase tracking-wider mb-1">{t('insurance.coverage', 'Coverage')}</p>
-                    <p className="text-sm font-bold text-slate-900 leading-tight">{policy.coverage}</p>
+                    <p className="text-sm font-bold text-slate-900 leading-tight">{tData(policy.coverage)}</p>
                   </div>
                   <div className="bg-indigo-50 rounded-2xl p-4 border border-indigo-100">
                     <p className="text-[10px] text-indigo-500 font-bold uppercase tracking-wider mb-1">{t('insurance.premium', 'Premium')}</p>
@@ -81,11 +82,11 @@ export function DetailedInsuranceModal({ isOpen, onClose, policy, onEnroll }: Pr
                   </div>
                   <div className="bg-slate-50 rounded-2xl p-4 border border-slate-100">
                     <p className="text-[10px] text-slate-500 font-bold uppercase tracking-wider mb-1">{t('insurance.policyPeriod', 'Period')}</p>
-                    <p className="text-sm font-bold text-slate-900 leading-tight">{policy.policyPeriod}</p>
+                    <p className="text-sm font-bold text-slate-900 leading-tight">{tData(policy.policyPeriod)}</p>
                   </div>
                   <div className="bg-slate-50 rounded-2xl p-4 border border-slate-100">
                     <p className="text-[10px] text-slate-500 font-bold uppercase tracking-wider mb-1">{t('insurance.renewal', 'Renewal')}</p>
-                    <p className="text-sm font-bold text-slate-900 leading-tight">{policy.renewal}</p>
+                    <p className="text-sm font-bold text-slate-900 leading-tight">{tData(policy.renewal)}</p>
                   </div>
                 </div>
 
@@ -96,7 +97,7 @@ export function DetailedInsuranceModal({ isOpen, onClose, policy, onEnroll }: Pr
                     {t('insurance.overview', 'Overview')}
                   </h3>
                   <p className="text-sm text-slate-600 leading-relaxed bg-slate-50 p-4 rounded-xl">
-                    {policy.shortDescription}
+                    {tData(policy.shortDescription)}
                   </p>
                 </div>
 
@@ -111,7 +112,7 @@ export function DetailedInsuranceModal({ isOpen, onClose, policy, onEnroll }: Pr
                       {policy.eligibility.map((item, i) => (
                         <li key={i} className="flex items-start gap-2 text-sm text-slate-600">
                           <CheckCircle2 size={14} className="text-indigo-500 mt-0.5 flex-shrink-0" />
-                          <span className="leading-relaxed">{item}</span>
+                          <span className="leading-relaxed">{tData(item)}</span>
                         </li>
                       ))}
                     </ul>
@@ -127,7 +128,7 @@ export function DetailedInsuranceModal({ isOpen, onClose, policy, onEnroll }: Pr
                       {policy.benefits.map((item, i) => (
                         <li key={i} className="flex items-start gap-2 text-sm text-slate-600">
                           <CheckCircle2 size={14} className="text-success-500 mt-0.5 flex-shrink-0" />
-                          <span className="leading-relaxed">{item}</span>
+                          <span className="leading-relaxed">{tData(item)}</span>
                         </li>
                       ))}
                     </ul>
@@ -147,7 +148,7 @@ export function DetailedInsuranceModal({ isOpen, onClose, policy, onEnroll }: Pr
                           <span className="absolute -left-[11px] top-0.5 w-5 h-5 rounded-full bg-white border-2 border-slate-200 text-[10px] font-bold text-slate-500 flex items-center justify-center">
                             {i + 1}
                           </span>
-                          <span className="text-sm text-slate-600 block leading-relaxed">{step}</span>
+                          <span className="text-sm text-slate-600 block leading-relaxed">{tData(step)}</span>
                         </li>
                       ))}
                     </ol>
@@ -162,7 +163,7 @@ export function DetailedInsuranceModal({ isOpen, onClose, policy, onEnroll }: Pr
                     <div className="flex flex-wrap gap-2">
                       {policy.requiredDocuments.map((doc, i) => (
                         <span key={i} className="bg-slate-50 border border-slate-200 text-slate-700 text-xs px-3 py-1.5 rounded-lg font-medium">
-                          {doc}
+                          {tData(doc)}
                         </span>
                       ))}
                     </div>
@@ -172,7 +173,7 @@ export function DetailedInsuranceModal({ isOpen, onClose, policy, onEnroll }: Pr
                         <ArrowRight size={16} className="text-slate-400" />
                         {t('insurance.enrollmentChannel', 'Enrollment Channel')}
                       </h3>
-                      <p className="text-sm text-slate-600">{policy.enrollmentChannel}</p>
+                      <p className="text-sm text-slate-600">{tData(policy.enrollmentChannel)}</p>
                     </div>
                   </div>
                 </div>
@@ -187,7 +188,7 @@ export function DetailedInsuranceModal({ isOpen, onClose, policy, onEnroll }: Pr
                     <div>
                       <h4 className="text-sm font-bold text-slate-900 mb-1">{t('insurance.whyRecommend', 'Why Karghadhan Recommends This')}</h4>
                       <p className="text-sm text-indigo-900/80 leading-relaxed font-medium">
-                        "{policy.aiRecommendation}"
+                        "{tData(policy.aiRecommendation)}"
                       </p>
                     </div>
                   </div>

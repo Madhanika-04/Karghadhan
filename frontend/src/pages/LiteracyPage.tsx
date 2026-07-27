@@ -1,23 +1,22 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { BookOpen, Clock, Play, CheckCircle, Trophy } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
+import { PlayCircle, CheckCircle2, Trophy, Clock, BookOpen, Play, CheckCircle } from 'lucide-react';
 import { learningModules } from '../data/literacy';
+import { LiteracyHero } from '../components/hero/LiteracyHero';
 import { ProgressBar, Badge } from '../components/ui/Badge';
 import { Button } from '../components/ui/Button';
 import { Modal } from '../components/ui/Modal';
 import { Card, CardContent } from '../components/ui/Card';
 import { staggerContainer, staggerItem } from '../utils/animations';
 import type { LearningModule } from '../types';
-import { useTranslation } from 'react-i18next';
+import { tData } from '../utils/i18nData';
 
 const difficultyColor: Record<string, 'success' | 'amber' | 'danger'> = {
   Beginner: 'success',
   Intermediate: 'amber',
   Advanced: 'danger',
 };
-
-// Map original gradient strings to our new theme if needed, or keep them for variety.
-// We will replace violet/indigo with primary/secondary.
 
 export default function LiteracyPage() {
   const { t } = useTranslation();
@@ -31,19 +30,8 @@ export default function LiteracyPage() {
   const overallProgress = Math.round((completedCount / learningModules.length) * 100);
 
   return (
-    <div className="space-y-6">
-      {/* Header */}
-      <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }}>
-        <div className="flex items-center gap-3">
-          <div className="w-12 h-12 bg-primary-100 rounded-2xl flex items-center justify-center shadow-sm">
-            <BookOpen size={24} className="text-primary-600" />
-          </div>
-          <div>
-            <h1 className="text-2xl font-bold text-slate-900 font-display tracking-tight">{t('literacy.title', 'Financial Literacy')}</h1>
-            <p className="text-sm text-slate-500">{t('literacy.subtitle', 'Learn, grow, and protect your finances')}</p>
-          </div>
-        </div>
-      </motion.div>
+    <div className="space-y-6 pb-8">
+      <LiteracyHero />
 
       {/* Progress Overview */}
       <motion.div
@@ -94,7 +82,7 @@ export default function LiteracyPage() {
                 <p className="text-[10px] text-white/80 font-medium uppercase tracking-wider mt-0.5">{t('literacy.inProgress', 'In Progress')}</p>
               </div>
               <div className="bg-white/10 backdrop-blur-sm rounded-2xl px-5 py-3 text-center border border-white/10">
-                <p className="font-bold text-xl">{learningModules.reduce((sum, m) => sum + m.estimatedMinutes, 0)}m</p>
+                <p className="font-bold text-xl">{learningModules.reduce((sum, m) => sum + m.estimatedMinutes, 0)}{t('literacy.m', 'm')}</p>
                 <p className="text-[10px] text-white/80 font-medium uppercase tracking-wider mt-0.5">{t('literacy.totalTime', 'Total Time')}</p>
               </div>
             </div>
@@ -115,7 +103,7 @@ export default function LiteracyPage() {
                 : 'bg-white text-slate-600 border border-slate-200 hover:border-primary-300 hover:bg-primary-50',
             ].join(' ')}
           >
-            {cat === 'All' ? t('literacy.filterAll', 'All') : cat}
+            {cat === 'All' ? t('literacy.filterAll', 'All') : tData(cat)}
           </button>
         ))}
       </div>
@@ -149,7 +137,7 @@ export default function LiteracyPage() {
                       </div>
                     </div>
                   )}
-                  <h3 className="text-white font-bold text-base leading-tight relative z-10 pr-4">{module.title}</h3>
+                  <h3 className="text-white font-bold text-base leading-tight relative z-10 pr-4">{tData(module.title)}</h3>
                 </div>
 
                 <div className="p-5 flex flex-col flex-1">
@@ -161,7 +149,7 @@ export default function LiteracyPage() {
                     </div>
                   </div>
 
-                  <p className="text-sm text-slate-600 line-clamp-2 leading-relaxed mb-6 flex-1">{module.description}</p>
+                  <p className="text-sm text-slate-600 line-clamp-2 leading-relaxed mb-6 flex-1">{tData(module.description)}</p>
 
                   {/* Progress */}
                   <div className="mt-auto space-y-3">
@@ -206,7 +194,7 @@ export default function LiteracyPage() {
               <div className="flex items-start gap-4 relative z-10">
                 <div className="text-5xl bg-white/20 p-3 rounded-2xl backdrop-blur-sm border border-white/20">{selectedModule.icon}</div>
                 <div>
-                  <p className="font-bold text-xl mb-2">{selectedModule.title}</p>
+                  <p className="font-bold text-xl mb-2">{tData(selectedModule.title)}</p>
                   <div className="flex flex-wrap items-center gap-3 text-white/90">
                     <div className="flex items-center gap-1.5 bg-white/10 px-2.5 py-1 rounded-lg text-sm font-medium">
                       <Clock size={14} />
@@ -221,7 +209,7 @@ export default function LiteracyPage() {
             </div>
 
             <div className="bg-slate-50 p-4 rounded-2xl border border-slate-100">
-              <p className="text-sm text-slate-700 leading-relaxed font-medium">{selectedModule.description}</p>
+              <p className="text-sm text-slate-700 leading-relaxed font-medium">{tData(selectedModule.description)}</p>
             </div>
 
             <div>
@@ -230,7 +218,7 @@ export default function LiteracyPage() {
                 {selectedModule.topics.map((topic) => (
                   <div key={topic} className="flex items-start gap-2.5 text-sm text-slate-700 bg-white border border-slate-200 rounded-xl px-4 py-3 shadow-sm">
                     <CheckCircle size={16} className="text-success-500 flex-shrink-0 mt-0.5" />
-                    <span className="font-medium">{topic}</span>
+                    <span className="font-medium">{tData(topic)}</span>
                   </div>
                 ))}
               </div>

@@ -56,34 +56,34 @@ export function CompareInsuranceModal({ isOpen, onClose, policy1, policy2 }: Pro
               <div className="flex-1 overflow-y-auto p-6 scrollbar-hide">
                 {!policy1 || !policy2 ? (
                   <div className="text-center py-10">
-                    <p className="text-slate-500">Please select two policies to compare.</p>
+                    <p className="text-slate-500">{t('insurance.selectTwoPolicies', 'Please select two policies to compare.')}</p>
                   </div>
                 ) : (
                   <div className="space-y-8">
                     {/* Headers */}
                     <div className="grid grid-cols-2 gap-4">
                       <div className="bg-indigo-50 rounded-2xl p-5 border border-indigo-100">
-                        <Badge variant="indigo" className="mb-3">{policy1.category}</Badge>
-                        <h3 className="font-bold text-lg text-slate-900 leading-tight mb-2">{policy1.name}</h3>
-                        <p className="text-sm text-slate-600 font-medium">{policy1.provider}</p>
+                        <Badge variant="indigo" className="mb-3">{tData(policy1.category)}</Badge>
+                        <h3 className="font-bold text-lg text-slate-900 leading-tight mb-2">{tData(policy1.name)}</h3>
+                        <p className="text-sm text-slate-600 font-medium">{tData(policy1.provider)}</p>
                       </div>
                       <div className="bg-orange-50 rounded-2xl p-5 border border-orange-100">
-                        <Badge variant="orange" className="mb-3">{policy2.category}</Badge>
-                        <h3 className="font-bold text-lg text-slate-900 leading-tight mb-2">{policy2.name}</h3>
-                        <p className="text-sm text-slate-600 font-medium">{policy2.provider}</p>
+                        <Badge variant="orange" className="mb-3">{tData(policy2.category)}</Badge>
+                        <h3 className="font-bold text-lg text-slate-900 leading-tight mb-2">{tData(policy2.name)}</h3>
+                        <p className="text-sm text-slate-600 font-medium">{tData(policy2.provider)}</p>
                       </div>
                     </div>
 
                     {/* Comparison Fields */}
                     <div className="space-y-6">
-                      <ComparisonRow title={t('insurance.coverage', 'Coverage')} val1={policy1.coverage} val2={policy2.coverage} />
+                      <ComparisonRow title={t('insurance.coverage', 'Coverage')} val1={tData(policy1.coverage)} val2={tData(policy2.coverage)} />
                       <ComparisonRow 
                         title={t('insurance.premium', 'Annual Premium')} 
-                        val1={policy1.annualPremium === 0 ? 'FREE' : `₹${policy1.annualPremium.toLocaleString()}`} 
-                        val2={policy2.annualPremium === 0 ? 'FREE' : `₹${policy2.annualPremium.toLocaleString()}`} 
+                        val1={policy1.annualPremium === 0 ? t('common.free', 'FREE') : `₹${policy1.annualPremium.toLocaleString()}`} 
+                        val2={policy2.annualPremium === 0 ? t('common.free', 'FREE') : `₹${policy2.annualPremium.toLocaleString()}`} 
                       />
-                      <ComparisonRow title={t('insurance.suitableFor', 'Suitable For')} val1={policy1.suitableFor} val2={policy2.suitableFor} />
-                      <ComparisonRow title={t('insurance.policyPeriod', 'Policy Period')} val1={policy1.policyPeriod} val2={policy2.policyPeriod} />
+                      <ComparisonRow title={t('insurance.suitableFor', 'Suitable For')} val1={tData(policy1.suitableFor)} val2={tData(policy2.suitableFor)} />
+                      <ComparisonRow title={t('insurance.policyPeriod', 'Policy Period')} val1={tData(policy1.policyPeriod)} val2={tData(policy2.policyPeriod)} />
                       <ComparisonList title={t('insurance.benefits', 'Key Benefits')} list1={policy1.benefits} list2={policy2.benefits} />
                       <ComparisonList title={t('insurance.eligibility', 'Eligibility')} list1={policy1.eligibility} list2={policy2.eligibility} />
                       <ComparisonList title={t('insurance.requiredDocs', 'Required Documents')} list1={policy1.requiredDocuments} list2={policy2.requiredDocuments} />
@@ -109,6 +109,7 @@ export function CompareInsuranceModal({ isOpen, onClose, policy1, policy2 }: Pro
 
 // Helper Components
 import { Badge } from '../ui/Badge';
+import { tData } from '../../utils/i18nData';
 
 const ComparisonRow = ({ title, val1, val2 }: { title: string, val1: string, val2: string }) => (
   <div>
@@ -133,7 +134,7 @@ const ComparisonList = ({ title, list1, list2 }: { title: string, list1: string[
           {list1.map((item, i) => (
             <li key={i} className="flex items-start gap-2 text-sm text-slate-600">
               <CheckCircle2 size={14} className="text-indigo-400 mt-0.5 flex-shrink-0" />
-              <span className="leading-relaxed">{item}</span>
+              <span className="leading-relaxed">{tData(item)}</span>
             </li>
           ))}
         </ul>
@@ -143,7 +144,7 @@ const ComparisonList = ({ title, list1, list2 }: { title: string, list1: string[
           {list2.map((item, i) => (
             <li key={i} className="flex items-start gap-2 text-sm text-slate-600">
               <CheckCircle2 size={14} className="text-orange-400 mt-0.5 flex-shrink-0" />
-              <span className="leading-relaxed">{item}</span>
+              <span className="leading-relaxed">{tData(item)}</span>
             </li>
           ))}
         </ul>

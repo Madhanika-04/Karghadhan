@@ -1,6 +1,7 @@
 import { Outlet } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import logoKargha from '../assets/logokargha.png';
+import { useTranslation } from 'react-i18next';
 
 // Step labels for onboarding progress
 const steps = [
@@ -17,6 +18,8 @@ interface OnboardingLayoutProps {
 }
 
 export function OnboardingLayout({ step }: OnboardingLayoutProps) {
+  const { t } = useTranslation();
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-white to-indigo-50 flex flex-col">
       {/* Top Bar */}
@@ -27,7 +30,7 @@ export function OnboardingLayout({ step }: OnboardingLayoutProps) {
         </div>
         {step !== undefined && (
           <span className="text-xs text-slate-400 font-semibold">
-            Step {step + 1} of {steps.length}
+            {t('common.step', 'Step')} {step + 1} {t('common.of', 'of')} {steps.length}
           </span>
         )}
       </div>
@@ -47,7 +50,7 @@ export function OnboardingLayout({ step }: OnboardingLayoutProps) {
               />
             ))}
           </div>
-          <p className="text-xs text-slate-400 font-medium">{steps[step]}</p>
+          <p className="text-xs text-slate-400 font-medium">{t(`onboarding.steps.${steps[step].toLowerCase()}`, steps[step])}</p>
         </div>
       )}
 

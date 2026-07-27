@@ -1,10 +1,12 @@
 import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Bot, Send, User } from 'lucide-react';
+import { Bot, Send, User, Mic, Volume2, Keyboard, Sparkles } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import { AssistantHero } from '../components/hero/AssistantHero';
 import logoKargha from '../assets/logokargha.png';
 import { aiResponses, suggestedQuestions } from '../data/mockUser';
 import type { ChatMessage } from '../types';
+import { tData } from '../utils/i18nData';
 
 function getAIResponse(question: string): string {
   const q = question.toLowerCase();
@@ -18,6 +20,9 @@ function getAIResponse(question: string): string {
 
 export default function AssistantPage() {
   const { t } = useTranslation();
+  const [mode, setMode] = useState<'chat' | 'voice'>('chat');
+  const [voiceState, setVoiceState] = useState<'idle' | 'listening' | 'processing' | 'speaking'>('idle');
+  const [transcript, setTranscript] = useState('');
   const [messages, setMessages] = useState<ChatMessage[]>([
     {
       id: '0',
@@ -31,8 +36,10 @@ export default function AssistantPage() {
   const bottomRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [messages, isTyping]);
+    if (mode === 'chat') {
+      bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
+    }
+  }, [messages, isTyping, mode]);
 
   const sendMessage = async (text: string) => {
     if (!text.trim()) return;
@@ -40,6 +47,8 @@ export default function AssistantPage() {
     setMessages((prev) => [...prev, userMsg]);
     setInput('');
     setIsTyping(true);
+
+    if (mode === 'voice') setMode('chat'); // Switch back to chat to see response
 
     await new Promise((r) => setTimeout(r, 1200 + Math.random() * 800));
 
@@ -63,136 +72,366 @@ export default function AssistantPage() {
     }
   };
 
+  const toggleRecording = () => {
+    if (voiceState === 'idle' || voiceState === 'speaking') {
+      setVoiceState('listening');
+      setTranscript('');
+      
+      // Simulate listening progress
+      let text = "Which loan ";
+      let i = 0;
+      const interval = setInterval(() => {
+        if (i < text.length) {
+          setTranscript(prev => prev + text.charAt(i));
+          i++;
+        } else {
+          clearInterval(interval);
+        }
+      }, 100);
+
+      setTimeout(() => {
+        clearInterval(interval);
+        setTranscript("Which loan is best for me?");
+        setVoiceState('processing');
+        
+        setTimeout(() => {
+          setVoiceState('speaking');
+          sendMessage("Which loan is best for me?");
+          
+          setTimeout(() => {
+            setVoiceState('idle');
+          }, 3000); // Speaking duration
+        }, 1500); // Processing duration
+      }, 2500); // Listening duration
+    } else {
+      // Manual stop
+      setVoiceState('processing');
+      setTimeout(() => {
+        setVoiceState('idle');
+      }, 1000);
+    }
+  };
+
   const formatMessage = (text: string) => {
-    // Bold text
     return text.replace(/\*\*(.*?)\*\*/g, '<strong class="font-bold text-slate-800">$1</strong>');
   };
 
   return (
-    <div className="h-[calc(100vh-8rem)] flex flex-col">
+    <div className="space-y-6 pb-8">
+      <AssistantHero />
+      
+      <div className="h-[600px] flex flex-col bg-slate-50/50 rounded-3xl overflow-hidden shadow-inner relative">
+      
+      {/* Mode Switcher */}
+      <div className="absolute top-4 right-4 z-10 flex bg-white rounded-full p-1 shadow-sm border border-slate-200">
+        <button 
+          onClick={() => setMode('chat')}
+          className={`flex items-center gap-2 px-4 py-2 rounded-full text-xs font-bold transition-all ${mode === 'chat' ? 'bg-indigo-600 text-white shadow-md' : 'text-slate-500 hover:text-slate-700'}`}
+        >
+          <Keyboard size={14} /> {t('assistant.chat', 'Chat')}
+        </button>
+        <button 
+          onClick={() => setMode('voice')}
+          className={`flex items-center gap-2 px-4 py-2 rounded-full text-xs font-bold transition-all ${mode === 'voice' ? 'bg-indigo-600 text-white shadow-md' : 'text-slate-500 hover:text-slate-700'}`}
+        >
+          <Mic size={14} /> {t('assistant.voice', 'Voice')}
+        </button>
+      </div>
+
       {/* Header */}
       <motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="flex items-center gap-3 mb-4 flex-shrink-0"
+        className="flex items-center gap-3 p-6 pb-2 flex-shrink-0 bg-white/50 backdrop-blur-sm border-b border-slate-100"
       >
         <img src={logoKargha} alt="Logo" className="w-12 h-12 object-contain drop-shadow-md shrink-0" />
         <div>
-          <h1 className="text-2xl font-bold text-slate-900 font-display tracking-tight">{t('assistant.title', 'Kargha AI Assistant')}</h1>
+          <h1 className="text-xl font-black text-slate-900 font-display tracking-tight flex items-center gap-2">
+            Kargha AI <Sparkles size={16} className="text-indigo-500"/>
+          </h1>
           <div className="flex items-center gap-1.5 mt-0.5">
             <span className="w-2 h-2 bg-success-500 rounded-full animate-pulse" />
-            <span className="text-xs text-success-700 font-medium tracking-wide uppercase">{t('assistant.status', 'Online • Ready to help')}</span>
+            <span className="text-xs text-success-700 font-bold tracking-wide uppercase">{t('assistant.online', 'Online')}</span>
           </div>
         </div>
       </motion.div>
 
-      {/* Suggested Questions */}
-      <div className="flex gap-2 overflow-x-auto pb-3 pt-2 flex-shrink-0 scrollbar-hide">
-        {suggestedQuestions.map((q) => (
-          <motion.button
-            key={q.id}
-            whileHover={{ scale: 1.03 }}
-            whileTap={{ scale: 0.97 }}
-            onClick={() => sendMessage(q.text)}
-            className="flex-shrink-0 px-4 py-2 bg-white rounded-xl text-xs font-bold text-slate-600 border border-slate-200 hover:border-primary-300 hover:bg-primary-50 hover:text-primary-700 transition-all shadow-sm"
-          >
-            {q.text}
-          </motion.button>
-        ))}
-      </div>
+      {mode === 'chat' ? (
+        <>
+          {/* Chat Area */}
+          <div className="flex-1 overflow-y-auto space-y-6 p-6 scrollbar-hide">
+            <AnimatePresence>
+              {messages.map((msg) => (
+                <motion.div
+                  key={msg.id}
+                  initial={{ opacity: 0, y: 16, scale: 0.96 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  transition={{ duration: 0.3 }}
+                  className={`flex gap-3 ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
+                >
+                  {msg.role === 'assistant' && (
+                    <div className="w-10 h-10 bg-gradient-to-br from-indigo-500 to-indigo-700 rounded-2xl flex items-center justify-center flex-shrink-0 shadow-md mt-1">
+                      <Bot size={20} className="text-white" />
+                    </div>
+                  )}
 
-      {/* Chat Area */}
-      <div className="flex-1 overflow-y-auto space-y-5 pb-4 pr-1">
-        <AnimatePresence>
-          {messages.map((msg) => (
-            <motion.div
-              key={msg.id}
-              initial={{ opacity: 0, y: 16, scale: 0.96 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              transition={{ duration: 0.3 }}
-              className={`flex gap-3 ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
-            >
-              {msg.role === 'assistant' && (
-                <div className="w-9 h-9 bg-gradient-to-br from-primary-500 to-indigo-600 rounded-xl flex items-center justify-center flex-shrink-0 shadow-sm mt-1">
-                  <Bot size={18} className="text-white" />
-                </div>
+                  <div
+                    className={`max-w-[85%] rounded-3xl px-5 py-4 text-sm leading-relaxed shadow-sm relative group ${
+                      msg.role === 'user'
+                        ? 'bg-gradient-to-r from-indigo-600 to-indigo-800 text-white rounded-tr-sm'
+                        : 'bg-white border border-slate-200 text-slate-700 rounded-tl-sm'
+                    }`}
+                  >
+                    <p
+                      dangerouslySetInnerHTML={{ __html: formatMessage(msg.content).replace(/\n/g, '<br>') }}
+                      className={msg.role === 'user' ? 'text-white' : 'text-slate-700'}
+                    />
+                    <div className={`flex items-center justify-between mt-3 ${msg.role === 'user' ? 'text-indigo-200' : 'text-slate-400'}`}>
+                      <p className="text-[10px] font-bold">
+                        {msg.timestamp.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' })}
+                      </p>
+                      {msg.role === 'assistant' && (
+                        <button className="opacity-0 group-hover:opacity-100 transition-opacity p-1 hover:bg-slate-100 rounded-full text-indigo-500">
+                          <Volume2 size={14} />
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                </motion.div>
+              ))}
+            </AnimatePresence>
+
+            {/* Typing Indicator */}
+            <AnimatePresence>
+              {isTyping && (
+                <motion.div
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: 10 }}
+                  className="flex items-center gap-3"
+                >
+                  <div className="w-10 h-10 bg-gradient-to-br from-indigo-500 to-indigo-700 rounded-2xl flex items-center justify-center shadow-md">
+                    <Bot size={20} className="text-white" />
+                  </div>
+                  <div className="bg-white border border-slate-200 rounded-3xl rounded-tl-sm px-5 py-4 shadow-sm flex items-center gap-2">
+                    {[0, 1, 2].map((i) => (
+                      <motion.div
+                        key={i}
+                        animate={{ y: [0, -6, 0], opacity: [0.4, 1, 0.4] }}
+                        transition={{ duration: 0.6, repeat: Infinity, delay: i * 0.15 }}
+                        className="w-2 h-2 bg-indigo-500 rounded-full"
+                      />
+                    ))}
+                  </div>
+                </motion.div>
               )}
+            </AnimatePresence>
+            <div ref={bottomRef} />
+          </div>
 
-              <div
-                className={[
-                  'max-w-[80%] rounded-3xl px-5 py-3.5 text-sm leading-relaxed shadow-sm',
-                  msg.role === 'user'
-                    ? 'bg-gradient-to-r from-primary-600 to-primary-700 text-white rounded-tr-sm'
-                    : 'bg-white border border-slate-100 text-slate-700 rounded-tl-sm',
-                ].join(' ')}
+          {/* Input Area */}
+          <div className="p-4 bg-white border-t border-slate-100 flex flex-col gap-3">
+            {/* Suggested Questions */}
+            <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
+              {suggestedQuestions.map((q) => (
+                <motion.button
+                  key={q.id}
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  onClick={() => sendMessage(tData(q.text))}
+                  className="flex-shrink-0 px-4 py-2 bg-indigo-50/50 rounded-xl text-[11px] font-bold text-indigo-700 border border-indigo-100 hover:bg-indigo-100 transition-colors"
+                >
+                  {tData(q.text)}
+                </motion.button>
+              ))}
+            </div>
+            
+            <div className="flex items-end gap-3 bg-slate-50 p-2 rounded-3xl border border-slate-200 focus-within:border-indigo-400 focus-within:bg-white transition-all shadow-inner">
+              <textarea
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+                onKeyDown={handleKeyDown}
+                placeholder={t('assistant.askPlaceholder', 'Ask Kargha AI...')}
+                rows={1}
+                className="flex-1 bg-transparent resize-none text-sm font-medium text-slate-700 placeholder:text-slate-400 focus:outline-none max-h-32 py-3 px-4"
+                style={{ minHeight: '44px' }}
+              />
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={handleSend}
+                disabled={!input.trim() || isTyping}
+                className="w-12 h-12 bg-indigo-600 rounded-full flex items-center justify-center shadow-md disabled:opacity-50 disabled:cursor-not-allowed flex-shrink-0 text-white"
               >
-                <p
-                  dangerouslySetInnerHTML={{ __html: formatMessage(msg.content).replace(/\n/g, '<br>') }}
-                  className={msg.role === 'user' ? 'text-white' : 'text-slate-700'}
-                />
-                <p className={`text-[10px] mt-2 font-medium ${msg.role === 'user' ? 'text-white/70' : 'text-slate-400'}`}>
-                  {msg.timestamp.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' })}
-                </p>
-              </div>
+                <Send size={18} />
+              </motion.button>
+            </div>
+          </div>
+        </>
+      ) : (
+        /* Voice Mode UI */
+        <div className="flex-1 flex flex-col items-center justify-between p-8 relative overflow-hidden bg-slate-900 rounded-b-3xl">
+          
+          {/* Ambient Background Glow based on state */}
+          <motion.div 
+            animate={{ 
+              opacity: voiceState === 'idle' ? 0.2 : 0.6,
+              scale: voiceState === 'listening' ? [1, 1.2, 1] : 1,
+            }}
+            transition={{ duration: 2, repeat: Infinity }}
+            className={`absolute top-1/4 left-1/2 -translate-x-1/2 w-96 h-96 rounded-full blur-[100px] pointer-events-none transition-colors duration-700 ${
+              voiceState === 'listening' ? 'bg-cyan-500' :
+              voiceState === 'processing' ? 'bg-purple-500' :
+              voiceState === 'speaking' ? 'bg-indigo-500' : 'bg-indigo-900'
+            }`}
+          />
 
-              {msg.role === 'user' && (
-                <div className="w-9 h-9 bg-gradient-to-br from-secondary-400 to-orange-500 rounded-xl flex items-center justify-center flex-shrink-0 shadow-sm mt-1">
-                  <User size={18} className="text-white" />
-                </div>
+          <div className="w-full flex justify-between items-center z-10 text-slate-300 px-4">
+            <span className="text-sm font-bold uppercase tracking-widest text-slate-500">
+              {voiceState === 'idle' && t('assistant.tapToSpeak', 'Tap to Speak')}
+              {voiceState === 'listening' && <span className="text-cyan-400">{t('assistant.listening', 'Listening...')}</span>}
+              {voiceState === 'processing' && <span className="text-purple-400">{t('assistant.processing', 'Processing...')}</span>}
+              {voiceState === 'speaking' && <span className="text-indigo-400">{t('assistant.speaking', 'Speaking...')}</span>}
+            </span>
+            {voiceState !== 'idle' && (
+              <motion.div animate={{ opacity: [0, 1, 0] }} transition={{ repeat: Infinity, duration: 1.5 }}>
+                <div className="w-2 h-2 rounded-full bg-cyan-400" />
+              </motion.div>
+            )}
+          </div>
+
+          {/* Transcript Area */}
+          <div className="flex-1 flex flex-col justify-center items-center w-full max-w-lg z-10 text-center space-y-4 my-8">
+            <AnimatePresence mode="wait">
+              {voiceState === 'idle' ? (
+                <motion.p
+                  key="idle"
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -10 }}
+                  className="text-2xl font-medium text-slate-400"
+                >
+                  "{t('assistant.howCanIHelp', 'How can I help you today?')}"
+                </motion.p>
+              ) : voiceState === 'speaking' ? (
+                <motion.div
+                  key="speaking"
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0 }}
+                  className="flex flex-col items-center gap-4"
+                >
+                  <div className="w-16 h-16 bg-gradient-to-br from-indigo-500 to-cyan-400 rounded-full flex items-center justify-center shadow-[0_0_30px_rgba(99,102,241,0.5)]">
+                    <Bot size={32} className="text-white" />
+                  </div>
+                  <p className="text-xl font-medium text-indigo-100 max-w-sm line-clamp-3">
+                    {messages[messages.length - 1]?.content.replace(/\*\*/g, '') || t('assistant.foundOptions', "I found some great options for you.")}
+                  </p>
+                </motion.div>
+              ) : (
+                <motion.p
+                  key="active"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  className="text-3xl font-bold text-white tracking-tight leading-tight"
+                >
+                  {transcript || <span className="text-slate-600">...</span>}
+                </motion.p>
               )}
-            </motion.div>
-          ))}
-        </AnimatePresence>
+            </AnimatePresence>
+          </div>
 
-        {/* Typing Indicator */}
-        <AnimatePresence>
-          {isTyping && (
-            <motion.div
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: 10 }}
-              className="flex items-center gap-3"
-            >
-              <div className="w-9 h-9 bg-gradient-to-br from-primary-500 to-indigo-600 rounded-xl flex items-center justify-center shadow-sm">
-                <Bot size={18} className="text-white" />
-              </div>
-              <div className="bg-white border border-slate-100 rounded-3xl rounded-tl-sm px-5 py-4 shadow-sm flex items-center gap-1.5">
-                {[0, 1, 2].map((i) => (
+          {/* Controls */}
+          <div className="flex flex-col items-center gap-8 z-10 w-full max-w-sm">
+            {/* Sound Wave Indicator */}
+            <div className="h-16 flex items-center justify-center gap-1.5 w-full">
+              {(voiceState === 'listening' || voiceState === 'speaking') ? (
+                [...Array(12)].map((_, i) => (
                   <motion.div
                     key={i}
-                    animate={{ scale: [1, 1.4, 1], opacity: [0.4, 1, 0.4] }}
-                    transition={{ duration: 0.8, repeat: Infinity, delay: i * 0.2 }}
-                    className="w-2 h-2 bg-primary-500 rounded-full"
+                    animate={{ height: [12, 30 + Math.random() * 40, 12] }}
+                    transition={{ duration: 0.4 + Math.random() * 0.2, repeat: Infinity, ease: "easeInOut", delay: i * 0.05 }}
+                    className={`w-2 rounded-full ${voiceState === 'speaking' ? 'bg-indigo-400' : 'bg-cyan-400'}`}
                   />
-                ))}
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
-        <div ref={bottomRef} />
-      </div>
+                ))
+              ) : (
+                <div className="w-32 h-1 bg-slate-800 rounded-full" />
+              )}
+            </div>
 
-      {/* Input Area */}
-      <div className="flex-shrink-0 bg-white rounded-3xl shadow-sm border border-slate-100 p-3 flex items-end gap-3 transition-all focus-within:border-primary-300 focus-within:shadow-md">
-        <textarea
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          onKeyDown={handleKeyDown}
-          placeholder={t('assistant.placeholder', 'Ask Kargha AI anything about loans, insurance, schemes...')}
-          rows={1}
-          className="flex-1 resize-none text-sm text-slate-700 placeholder:text-slate-400 focus:outline-none leading-relaxed max-h-32 py-2 px-1"
-          style={{ minHeight: '40px' }}
-        />
-        <motion.button
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-          onClick={handleSend}
-          disabled={!input.trim() || isTyping}
-          className="w-12 h-12 bg-gradient-to-r from-primary-600 to-primary-700 rounded-2xl flex items-center justify-center shadow-md disabled:opacity-50 disabled:cursor-not-allowed flex-shrink-0 text-white"
-          aria-label="Send message"
-        >
-          <Send size={20} className="text-white" />
-        </motion.button>
+            {/* Main Mic Button */}
+            <div className="relative">
+              <AnimatePresence>
+                {voiceState === 'listening' && (
+                  <>
+                    <motion.div
+                      initial={{ scale: 1, opacity: 0.5 }}
+                      animate={{ scale: 1.8, opacity: 0 }}
+                      transition={{ duration: 1.5, repeat: Infinity, ease: "easeOut" }}
+                      className="absolute inset-0 bg-cyan-500 rounded-full"
+                    />
+                    <motion.div
+                      initial={{ scale: 1, opacity: 0.5 }}
+                      animate={{ scale: 2.5, opacity: 0 }}
+                      transition={{ duration: 1.5, repeat: Infinity, ease: "easeOut", delay: 0.4 }}
+                      className="absolute inset-0 bg-cyan-400 rounded-full"
+                    />
+                  </>
+                )}
+              </AnimatePresence>
+
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={toggleRecording}
+                className={`relative z-10 w-24 h-24 rounded-full flex items-center justify-center shadow-2xl transition-all duration-500 ${
+                  voiceState === 'listening' 
+                    ? 'bg-red-500 shadow-[0_0_40px_rgba(239,68,68,0.5)]' 
+                    : voiceState === 'processing'
+                    ? 'bg-purple-600 shadow-[0_0_40px_rgba(147,51,234,0.5)]'
+                    : 'bg-gradient-to-br from-indigo-500 to-cyan-500 shadow-[0_0_30px_rgba(99,102,241,0.3)]'
+                }`}
+              >
+                {voiceState === 'listening' ? (
+                  <div className="w-8 h-8 bg-white rounded-sm" />
+                ) : voiceState === 'processing' ? (
+                  <motion.div animate={{ rotate: 360 }} transition={{ duration: 2, repeat: Infinity, ease: "linear" }}>
+                    <Sparkles size={36} className="text-white" />
+                  </motion.div>
+                ) : (
+                  <Mic size={40} className="text-white" />
+                )}
+              </motion.button>
+            </div>
+            
+            {/* Suggestions in Voice Mode */}
+            {voiceState === 'idle' && (
+              <div className="flex flex-col items-center gap-3 w-full">
+                <p className="text-xs text-slate-500 font-bold uppercase tracking-widest">{t('assistant.tryAsking', 'Try asking')}</p>
+                <div className="flex gap-2 overflow-x-auto w-full pb-2 scrollbar-hide justify-center">
+                  {suggestedQuestions.slice(0, 2).map((q) => (
+                    <button
+                      key={q.id}
+                      onClick={() => {
+                        setTranscript(tData(q.text));
+                        setVoiceState('processing');
+                        setTimeout(() => {
+                          setVoiceState('speaking');
+                          sendMessage(tData(q.text));
+                          setTimeout(() => setVoiceState('idle'), 3000);
+                        }, 1500);
+                      }}
+                      className="flex-shrink-0 px-4 py-2 bg-slate-800 rounded-xl text-xs font-medium text-slate-300 border border-slate-700 hover:bg-slate-700 transition-colors"
+                    >
+                      "{tData(q.text)}"
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
       </div>
     </div>
   );

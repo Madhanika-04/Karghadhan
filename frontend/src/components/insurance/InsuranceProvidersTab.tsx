@@ -6,6 +6,7 @@ import { Button } from '../ui/Button';
 import { Card, CardContent } from '../ui/Card';
 import { useTranslation } from 'react-i18next';
 import { staggerContainer, staggerItem } from '../../utils/animations';
+import { tData } from '../../utils/i18nData';
 
 interface Props {
   providers: InsuranceProvider[];
@@ -37,14 +38,14 @@ export function InsuranceProvidersTab({ providers }: Props) {
                   <div className="flex items-center gap-4">
                     <div className="w-14 h-14 bg-slate-50 rounded-2xl flex items-center justify-center border border-slate-100 shadow-sm">
                       {provider.logo ? (
-                        <img src={provider.logo} alt={provider.name} className="w-8 h-8 object-contain" />
+                        <img src={provider.logo} alt={tData(provider.name)} className="w-8 h-8 object-contain" />
                       ) : (
                         <Building2 size={24} className="text-slate-400" />
                       )}
                     </div>
                     <div>
-                      <h4 className="font-bold text-slate-900 text-lg leading-tight">{provider.name}</h4>
-                      <Badge variant={badgeVariant} className="mt-1">{provider.category}</Badge>
+                      <h4 className="font-bold text-slate-900 text-lg leading-tight">{tData(provider.name)}</h4>
+                      <Badge variant={badgeVariant} className="mt-1">{tData(provider.category)}</Badge>
                     </div>
                   </div>
                 </div>
@@ -55,7 +56,7 @@ export function InsuranceProvidersTab({ providers }: Props) {
                     <div className="flex flex-wrap gap-2">
                       {provider.productsOffered.map(product => (
                         <span key={product} className="bg-slate-50 border border-slate-200 text-slate-700 text-xs px-2.5 py-1 rounded-lg font-medium">
-                          {product}
+                          {tData(product)}
                         </span>
                       ))}
                     </div>
@@ -63,7 +64,7 @@ export function InsuranceProvidersTab({ providers }: Props) {
 
                   <div>
                     <p className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">{t('insurance.suitableFor', 'Suitable For')}</p>
-                    <p className="text-sm text-slate-700 font-medium">{provider.suitableFor}</p>
+                    <p className="text-sm text-slate-700 font-medium">{tData(provider.suitableFor)}</p>
                   </div>
 
                   <div>
@@ -72,7 +73,7 @@ export function InsuranceProvidersTab({ providers }: Props) {
                       {provider.applyThrough.map(channel => (
                         <li key={channel} className="flex items-center gap-2 text-sm text-slate-600">
                           <CheckCircle2 size={14} className="text-success-500" />
-                          {channel}
+                          {tData(channel)}
                         </li>
                       ))}
                     </ul>

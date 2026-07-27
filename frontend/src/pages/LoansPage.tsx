@@ -2,20 +2,21 @@ import { useState } from 'react';
 import { motion } from 'framer-motion';
 import {
   HandCoins,
-  Clock,
-  ChevronDown,
-  ChevronUp,
   ExternalLink,
   CheckCircle,
   Filter,
+  CheckCircle2, 
+  ChevronRight, 
+  AlertCircle, 
+  Sparkles
 } from 'lucide-react';
-import { loans } from '../data/loans';
+import { getLoans } from '../data/loans';
 import type { Loan } from '../types';
-import { Badge } from '../components/ui/Badge';
 import { Button } from '../components/ui/Button';
+import { LoansHero } from '../components/hero/LoansHero';
 import { Modal } from '../components/ui/Modal';
-import { Card, CardContent } from '../components/ui/Card';
-import { staggerContainer, staggerItem, hoverScale } from '../utils/animations';
+import { HeroProductCard } from '../components/ui/HeroProductCard';
+import { staggerContainer, staggerItem } from '../utils/animations';
 import { Toast } from '../components/ui/Modal';
 import { useTranslation } from 'react-i18next';
 
@@ -34,10 +35,10 @@ export default function LoansPage() {
   const { t } = useTranslation();
   const [selectedLoan, setSelectedLoan] = useState<Loan | null>(null);
   const [activeFilter, setActiveFilter] = useState('All');
-  const [expandedId, setExpandedId] = useState<string | null>(null);
   const [toast, setToast] = useState(false);
 
-  const filtered = loans.filter(
+  const loansData = getLoans(t);
+  const filtered = loansData.filter(
     (l) => activeFilter === 'All' || l.category === activeFilter
   );
 
@@ -46,20 +47,28 @@ export default function LoansPage() {
     setTimeout(() => setToast(false), 3000);
   };
 
+  const fadeIn = {
+    hidden: { opacity: 0, y: 10 },
+    visible: { opacity: 1, y: 0 }
+  };
+
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 pb-8">
       {/* Header */}
       <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }}>
         <div className="flex items-center gap-3 mb-1">
           <div className="w-12 h-12 bg-primary-100 rounded-2xl flex items-center justify-center shadow-sm">
             <HandCoins size={24} className="text-primary-600" />
           </div>
-          <div>
-            <h1 className="text-2xl font-bold text-slate-900 font-display tracking-tight">{t('loans.title', 'Loan Schemes')}</h1>
-            <p className="text-sm text-slate-500">{t('loans.subtitle', 'AI-matched loans based on your profile')}</p>
+          <div className="flex flex-col gap-2">
+            <motion.h1 variants={fadeIn} className="text-2xl sm:text-3xl font-black text-slate-800 tracking-tight">
+              {t('loans.title', 'Loans & Micro-Credit')}
+            </motion.h1>
           </div>
         </div>
       </motion.div>
+      
+      <LoansHero />
 
       {/* Summary Banner */}
       <motion.div
@@ -71,7 +80,7 @@ export default function LoansPage() {
         <div className="relative z-10 w-full flex flex-col sm:flex-row items-center justify-between gap-6">
           <div>
             <p className="text-white/80 text-sm font-medium uppercase tracking-wider mb-1">{t('loans.eligibleFound', 'Eligible Loans Found')}</p>
-            <p className="text-4xl font-bold">{loans.filter((l) => l.isEligible).length} <span className="text-2xl font-medium">{t('loans.loansCount', 'Loans')}</span></p>
+            <p className="text-4xl font-bold">{loansData.filter((l) => l.isEligible).length} <span className="text-2xl font-medium">{t('loans.loansCount', 'Loans')}</span></p>
             <p className="text-white/80 text-sm mt-2 font-medium">{t('loans.bannerSub', 'Up to ₹1 Crore available across schemes')}</p>
           </div>
           <div className="flex gap-4 w-full sm:w-auto">
@@ -111,144 +120,26 @@ export default function LoansPage() {
         variants={staggerContainer}
         initial="hidden"
         animate="visible"
-        className="grid grid-cols-1 lg:grid-cols-2 gap-5"
+        className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"
       >
-        {filtered.map((loan) => {
-          const isExpanded = expandedId === loan.id;
-          return (
-            <motion.div
-              key={loan.id}
-              variants={staggerItem}
-              className={[
-                'transition-all duration-300',
-                !loan.isEligible && 'opacity-70',
-              ].join(' ')}
-            >
-              <Card className={`h-full border-2 ${loan.isEligible ? 'border-primary-100 hover:border-primary-300' : 'border-slate-100'}`}>
-                <CardContent className="p-0">
-                  {/* Card Header */}
-                  <div className="p-6">
-                    <div className="flex items-start justify-between gap-3 mb-5">
-                      <div className="flex items-start gap-4 flex-1 min-w-0">
-                        <div className="w-12 h-12 bg-gradient-to-br from-primary-50 to-primary-100 rounded-2xl flex items-center justify-center flex-shrink-0 border border-primary-100/50">
-                          <HandCoins size={22} className="text-primary-600" />
-                        </div>
-                        <div className="min-w-0">
-                          <h3 className="font-bold text-slate-900 text-base leading-tight mb-1">{loan.name}</h3>
-                          <p className="text-xs text-slate-500 font-medium">{loan.provider}</p>
-                        </div>
-                      </div>
-                      {loan.isEligible ? (
-                        <Badge variant="success" dot className="bg-success-50 text-success-700 border-success-200">{t('loans.eligible', 'Eligible')}</Badge>
-                      ) : (
-                        <Badge variant="slate">{t('loans.notEligible', 'Not Eligible')}</Badge>
-                      )}
-                    </div>
-
-                    {/* Key Metrics */}
-                    <div className="grid grid-cols-3 gap-3 mb-5">
-                      <div className="bg-primary-50 rounded-xl p-3 text-center border border-primary-100/50">
-                        <p className="text-base font-bold text-primary-700">
-                          ₹{loan.maxAmount >= 100000
-                            ? `${(loan.maxAmount / 100000).toFixed(1)}L`
-                            : `${(loan.maxAmount / 1000).toFixed(0)}K`}
-                        </p>
-                        <p className="text-[10px] text-slate-500 font-medium mt-0.5">{t('loans.maxAmount', 'Max Amount')}</p>
-                      </div>
-                      <div className="bg-indigo-50 rounded-xl p-3 text-center border border-indigo-100/50">
-                        <p className="text-base font-bold text-indigo-700">{loan.interestRate.split(' ')[0]}</p>
-                        <p className="text-[10px] text-slate-500 font-medium mt-0.5">{t('loans.interestRate', 'Interest Rate')}</p>
-                      </div>
-                      <div className="bg-secondary-50 rounded-xl p-3 text-center border border-secondary-100/50">
-                        <p className="text-base font-bold text-secondary-700">{loan.processingTime.split('–')[0]}d</p>
-                        <p className="text-[10px] text-slate-500 font-medium mt-0.5">{t('loans.processing', 'Processing')}</p>
-                      </div>
-                    </div>
-
-                    {/* Tags */}
-                    <div className="flex flex-wrap gap-2 mb-5">
-                      {loan.tags.map((tag) => (
-                        <span key={tag} className="text-[10px] font-bold bg-slate-100 text-slate-600 px-2.5 py-1 rounded-md">
-                          {tag}
-                        </span>
-                      ))}
-                    </div>
-
-                    {/* Actions */}
-                    <div className="flex gap-3">
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        className="flex-1 border-slate-200 hover:bg-slate-50 text-slate-700"
-                        onClick={() => setExpandedId(isExpanded ? null : loan.id)}
-                        rightIcon={isExpanded ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
-                      >
-                        {isExpanded ? t('common.hideDetails', 'Hide Details') : t('common.viewDetails', 'View Details')}
-                      </Button>
-                      {loan.isEligible && (
-                        <Button
-                          size="sm"
-                          className="flex-1 shadow-sm shadow-primary-200"
-                          onClick={() => { setSelectedLoan(loan); showToast(); }}
-                          rightIcon={<ExternalLink size={14} />}
-                        >
-                          {t('common.applyNow', 'Apply Now')}
-                        </Button>
-                      )}
-                    </div>
-                  </div>
-
-                  {/* Expanded Details */}
-                  {isExpanded && (
-                    <motion.div
-                      initial={{ opacity: 0, height: 0 }}
-                      animate={{ opacity: 1, height: 'auto' }}
-                      exit={{ opacity: 0, height: 0 }}
-                      className="border-t border-slate-100 bg-slate-50/50 px-6 pb-6 pt-5 space-y-5 rounded-b-3xl"
-                    >
-                      <div>
-                        <p className="text-xs font-bold text-slate-800 tracking-wide mb-3 flex items-center gap-2">
-                          <CheckCircle size={14} className="text-success-500" /> {t('loans.eligibility', 'Eligibility')}
-                        </p>
-                        <ul className="space-y-2">
-                          {loan.eligibility.map((e) => (
-                            <li key={e} className="flex items-start gap-2 text-sm text-slate-600 leading-relaxed">
-                              <span className="w-1.5 h-1.5 rounded-full bg-slate-300 mt-1.5 flex-shrink-0" />
-                              {e}
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-                      <div>
-                        <p className="text-xs font-bold text-slate-800 tracking-wide mb-3 flex items-center gap-2">
-                          <span className="text-secondary-500">✦</span> {t('loans.benefits', 'Benefits')}
-                        </p>
-                        <ul className="space-y-2">
-                          {loan.benefits.map((b) => (
-                            <li key={b} className="flex items-start gap-2 text-sm text-slate-600 leading-relaxed">
-                              <span className="w-1.5 h-1.5 rounded-full bg-slate-300 mt-1.5 flex-shrink-0" />
-                              {b}
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-                      <div>
-                        <p className="text-xs font-bold text-slate-800 tracking-wide mb-3">{t('loans.requiredDocs', 'Required Documents')}</p>
-                        <div className="flex flex-wrap gap-2">
-                          {loan.requiredDocuments.map((doc) => (
-                            <span key={doc} className="text-xs font-semibold bg-white border border-slate-200 text-slate-700 px-3 py-1.5 rounded-lg shadow-sm">
-                              {doc}
-                            </span>
-                          ))}
-                        </div>
-                      </div>
-                    </motion.div>
-                  )}
-                </CardContent>
-              </Card>
-            </motion.div>
-          );
-        })}
+        {filtered.map((loan) => (
+          <motion.div key={loan.id} variants={staggerItem} className="h-full">
+            <HeroProductCard
+              title={loan.name}
+              category={loan.category}
+              categoryColor="primary"
+              imageSrc={loan.imageSrc || '/illustrations/business_loan_hero.png'}
+              benefit={loan.benefits[0]}
+              highlightLabel="Max Amount"
+              highlightValue={`₹${(loan.maxAmount / 100000).toFixed(1)}L`}
+              secondaryLabel="Interest Rate"
+              secondaryValue={loan.interestRate}
+              isRecommended={loan.isEligible}
+              onLearnMore={() => setSelectedLoan(loan)}
+              onApply={loan.isEligible ? () => setSelectedLoan(loan) : undefined}
+            />
+          </motion.div>
+        ))}
       </motion.div>
 
       {/* Apply Modal */}
@@ -280,6 +171,33 @@ export default function LoansPage() {
                   <p className="text-base font-bold text-slate-900">{item.value}</p>
                 </div>
               ))}
+            </div>
+
+            <div className="space-y-4 pt-4 border-t border-slate-100">
+               <div>
+                 <p className="text-sm font-bold text-slate-800 tracking-wide mb-2 flex items-center gap-2">
+                   <CheckCircle size={14} className="text-success-500" /> {t('loans.eligibility', 'Eligibility')}
+                 </p>
+                 <ul className="space-y-1">
+                   {selectedLoan.eligibility.map((e) => (
+                     <li key={e} className="text-sm text-slate-600 pl-6 relative before:content-[''] before:w-1.5 before:h-1.5 before:bg-slate-300 before:rounded-full before:absolute before:left-2 before:top-2">
+                       {e}
+                     </li>
+                   ))}
+                 </ul>
+               </div>
+               <div>
+                 <p className="text-sm font-bold text-slate-800 tracking-wide mb-2 flex items-center gap-2">
+                   <span className="text-secondary-500">✦</span> {t('loans.benefits', 'Benefits')}
+                 </p>
+                 <ul className="space-y-1">
+                   {selectedLoan.benefits.map((b) => (
+                     <li key={b} className="text-sm text-slate-600 pl-6 relative before:content-[''] before:w-1.5 before:h-1.5 before:bg-slate-300 before:rounded-full before:absolute before:left-2 before:top-2">
+                       {b}
+                     </li>
+                   ))}
+                 </ul>
+               </div>
             </div>
             
             <div className="bg-primary-50 rounded-2xl p-4 border border-primary-100">

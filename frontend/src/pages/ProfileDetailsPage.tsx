@@ -16,6 +16,7 @@ import { Button } from '../components/ui/Button';
 import { useAppContext } from '../context/AppContext';
 import { staggerContainer, staggerItem } from '../utils/animations';
 import { useTranslation } from 'react-i18next';
+import { tData } from '../utils/i18nData';
 
 const indianStates = [
   { value: '', label: 'Select State' },
@@ -171,7 +172,7 @@ export default function ProfileDetailsPage() {
           />
           <Select
             label={t('profileDetails.state', 'State')}
-            options={indianStates}
+            options={indianStates.map(opt => ({ ...opt, label: opt.value ? tData(opt.label) : t('profileDetails.selectState', opt.label) }))}
             value={form.state}
             onChange={(e) => update('state', e.target.value)}
             error={errors.state}

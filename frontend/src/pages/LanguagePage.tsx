@@ -81,7 +81,7 @@ export default function LanguagePage() {
             return (
               <motion.button
                 key={lang.code}
-                variants={itemVariants}
+                variants={itemVariants as any}
                 whileHover={{ scale: 1.03 }}
                 whileTap={{ scale: 0.97 }}
                 onClick={() => handleSelect(lang)}

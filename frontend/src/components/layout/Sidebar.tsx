@@ -11,12 +11,16 @@ import {
   LogOut,
   ChevronRight,
   FileText,
+  PiggyBank,
+  QrCode,
 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import logoKargha from '../../assets/logokargha.png';
 
 const navItems = [
   { to: '/dashboard', icon: LayoutDashboard, label: 'Dashboard', key: 'common.dashboard' },
+  { to: '/payments', icon: QrCode, label: 'Payments', key: 'common.payments' },
+  { to: '/savings', icon: PiggyBank, label: 'Savings', key: 'common.savings' },
   { to: '/loans', icon: HandCoins, label: 'Loans', key: 'common.loans' },
   { to: '/insurance', icon: Shield, label: 'Insurance', key: 'common.insurance' },
   { to: '/schemes', icon: Building2, label: 'Gov Schemes', key: 'common.schemes' },
@@ -48,7 +52,7 @@ export function Sidebar({ isOpen = true, onClose }: SidebarProps) {
           <img src={logoKargha} alt="Karghadhan Logo" className="w-[54px] h-[54px] object-contain shrink-0" />
           <div className="flex flex-col justify-center">
             <span className="font-bold text-[22px] text-[#111827] leading-tight">Karghadhan</span>
-            <span className="text-[10px] text-[#2563EB] font-semibold tracking-wide uppercase">AI Weaver Finance</span>
+            <span className="text-[10px] text-[#2563EB] font-semibold tracking-wide uppercase">{t('common.brandTagline', 'AI Weaver Finance')}</span>
           </div>
         </Link>
       </div>
@@ -96,9 +100,9 @@ export function Sidebar({ isOpen = true, onClose }: SidebarProps) {
         </button>
         <div className="mt-3 px-4 py-3 bg-success-50 rounded-xl border border-success-100">
           <p className="text-xs font-bold text-success-700 flex items-center gap-1.5 uppercase tracking-wider">
-            <span className="w-1.5 h-1.5 bg-success-500 rounded-full"></span> Verified
+            <span className="w-1.5 h-1.5 bg-success-500 rounded-full"></span> {t('common.verified', 'Verified')}
           </p>
-          <p className="text-[11px] text-slate-500 font-medium mt-1">Profile 95% complete</p>
+          <p className="text-[11px] text-slate-500 font-medium mt-1">{t('sidebar.profileComplete', 'Profile 95% complete')}</p>
         </div>
       </div>
     </div>

@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { FileText, Download, CheckCircle, Clock, Upload, Trash2, Eye } from 'lucide-react';
+import { FileText, Download, CheckCircle, Clock, Upload, Eye } from 'lucide-react';
 import { documents } from '../data/documents';
 import { Card, CardContent } from '../components/ui/Card';
 import { Badge } from '../components/ui/Badge';
@@ -8,6 +8,7 @@ import { Button } from '../components/ui/Button';
 import { staggerContainer, staggerItem } from '../utils/animations';
 import { Modal, Toast } from '../components/ui/Modal';
 import { useTranslation } from 'react-i18next';
+import { tData } from '../utils/i18nData';
 
 export default function DocumentsPage() {
   const { t } = useTranslation();
@@ -139,12 +140,12 @@ export default function DocumentsPage() {
                 {/* Info */}
                 <div className="flex-1">
                   <div className="flex flex-wrap items-center gap-2 mb-1">
-                    <h3 className="font-bold text-lg text-slate-800">{doc.name}</h3>
+                    <h3 className="font-bold text-lg text-slate-800">{tData(doc.name)}</h3>
                     <Badge variant={doc.status === 'Verified' ? 'success' : 'amber'} dot>
                       {doc.status === 'Verified' ? t('documents.statusVerified', 'Verified') : t('documents.statusPending', 'Pending')}
                     </Badge>
                   </div>
-                  <p className="text-sm font-medium text-slate-500 mb-2">{doc.type}</p>
+                  <p className="text-sm font-medium text-slate-500 mb-2">{tData(doc.type)}</p>
                   <p className="text-xs text-slate-400 font-medium flex items-center gap-1.5">
                     <Calendar size={12} />
                     {t('documents.uploadedOn', 'Uploaded on')} {new Date(doc.uploadDate).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}

@@ -11,6 +11,8 @@ import {
 import { Sidebar, BottomNav } from '../components/layout/Sidebar';
 import { useAppContext } from '../context/AppContext';
 import { pageTransition } from '../utils/animations';
+import { useTranslation } from 'react-i18next';
+import { tData } from '../utils/i18nData';
 
 export function DashboardLayout() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -19,6 +21,7 @@ export function DashboardLayout() {
   const unreadCount = notifications.filter((n) => !n.isRead).length;
   const navigate = useNavigate();
   const location = useLocation();
+  const { t } = useTranslation();
 
   const handleNotificationClick = () => {
     // If on mobile or prefer a dedicated page, we could navigate to /notifications
@@ -50,7 +53,7 @@ export function DashboardLayout() {
             <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
             <input
               type="text"
-              placeholder="Search schemes, loans..."
+              placeholder={t('dashboard.searchPlaceholder', 'Search schemes, loans...')}
               className="w-full pl-9 pr-4 py-2.5 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-primary-400 focus:ring-1 focus:ring-primary-100 transition-all font-medium"
             />
           </div>
@@ -79,13 +82,13 @@ export function DashboardLayout() {
                   className="absolute right-0 top-full mt-2 w-80 bg-white rounded-2xl shadow-xl border border-slate-100 z-50 overflow-hidden"
                 >
                   <div className="p-4 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
-                    <h3 className="font-bold text-slate-800 text-sm">Notifications</h3>
-                    <span className="text-xs text-primary-600 font-bold bg-primary-50 px-2 py-0.5 rounded-full">{unreadCount} new</span>
+                    <h3 className="font-bold text-slate-800 text-sm">{t('notifications.title', 'Notifications')}</h3>
+                    <span className="text-xs text-primary-600 font-bold bg-primary-50 px-2 py-0.5 rounded-full">{unreadCount} {t('notifications.new', 'new')}</span>
                   </div>
                   <div className="max-h-72 overflow-y-auto">
                     {notifications.length === 0 ? (
                       <div className="p-6 text-center text-slate-500 text-sm">
-                        No notifications yet.
+                        {t('notifications.empty', 'No notifications yet.')}
                       </div>
                     ) : (
                       notifications.slice(0, 5).map((n) => (
@@ -100,8 +103,8 @@ export function DashboardLayout() {
                           <div className="flex items-start gap-3">
                             <div className={`w-2 h-2 rounded-full mt-2 flex-shrink-0 ${n.isRead ? 'bg-slate-300' : 'bg-primary-500'}`} />
                             <div>
-                              <p className="text-sm font-bold text-slate-800 leading-tight">{n.title}</p>
-                              <p className="text-xs text-slate-500 mt-1 line-clamp-2 leading-relaxed">{n.message}</p>
+                              <p className="text-sm font-bold text-slate-800 leading-tight">{tData(n.title)}</p>
+                              <p className="text-xs text-slate-500 mt-1 line-clamp-2 leading-relaxed">{tData(n.message)}</p>
                             </div>
                           </div>
                         </div>
@@ -116,7 +119,7 @@ export function DashboardLayout() {
                       }}
                       className="text-sm font-bold text-primary-600 hover:text-primary-700 transition-colors w-full"
                     >
-                      View all notifications
+                      {t('notifications.viewAll', 'View all notifications')}
                     </button>
                   </div>
                 </motion.div>
@@ -135,7 +138,7 @@ export function DashboardLayout() {
                 <p className="text-sm font-bold text-slate-800 leading-tight">{user?.name}</p>
                 <div className="flex items-center gap-1 mt-0.5">
                   <CheckCircle size={10} className="text-success-500" />
-                  <p className="text-[10px] text-success-600 font-bold uppercase tracking-wider">Verified</p>
+                  <p className="text-[10px] text-success-600 font-bold uppercase tracking-wider">{t('common.verified', 'Verified')}</p>
                 </div>
               </div>
             </button>
@@ -144,7 +147,7 @@ export function DashboardLayout() {
 
         {/* Page Content */}
         <main className="flex-1 p-4 sm:p-6 pb-24 lg:pb-6 relative overflow-x-hidden">
-          <motion.div {...pageTransition} key={location.pathname} className="h-full">
+          <motion.div {...(pageTransition as any)} key={location.pathname} className="h-full">
             <Outlet />
           </motion.div>
         </main>

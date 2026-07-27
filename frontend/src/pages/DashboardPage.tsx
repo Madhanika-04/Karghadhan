@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import {
@@ -5,36 +6,44 @@ import {
   Shield,
   Building2,
   BookOpen,
-  ArrowRight,
   CheckCircle,
   TrendingUp,
   Bell,
-  Search,
   ChevronRight,
 } from 'lucide-react';
 import { useAppContext } from '../context/AppContext';
-import { loans } from '../data/loans';
+import { getLoans } from '../data/loans';
 import { insurancePolicies } from '../data/insurance';
 import { govtSchemes } from '../data/schemes';
 import { learningModules } from '../data/literacy';
-import { staggerContainer, staggerItem, hoverScale } from '../utils/animations';
+import { staggerContainer, staggerItem, fadeIn, hoverScale } from '../utils/animations';
 import { ProgressBar } from '../components/ui/Badge';
 import { Button } from '../components/ui/Button';
 import { Card, CardContent } from '../components/ui/Card';
+import { PromoCarousel } from '../components/ui/PromoCarousel';
+import type { PromoBanner } from '../components/ui/PromoCarousel';
+import { HeroProductCard } from '../components/ui/HeroProductCard';
 import { useTranslation } from 'react-i18next';
 import logoKargha from '../assets/logokargha.png';
+import { globalPromos } from '../data/promos';
+import { tData } from '../utils/i18nData';
 
 export default function DashboardPage() {
   const navigate = useNavigate();
   const { user } = useAppContext();
   const { t } = useTranslation();
+  const [toast, setToast] = useState(false);
 
-  const eligibleLoans = loans.filter((l) => l.isEligible);
+  const showToast = () => {
+    setToast(true);
+    setTimeout(() => setToast(false), 3000);
+  };
+
+  const eligibleLoans = getLoans(t).filter((l) => l.isEligible);
   const recommendedInsurance = insurancePolicies.filter((p) => p.isRecommended);
   const completedModules = learningModules.filter((m) => m.isCompleted).length;
   const inProgressModules = learningModules.filter((m) => m.progress > 0 && !m.isCompleted).length;
 
-  // quick actions moved here to allow translation
   const quickActions = [
     {
       to: '/loans',
@@ -79,7 +88,7 @@ export default function DashboardPage() {
   ];
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8 pb-8">
       {/* Welcome Header */}
       <motion.div
         initial={{ opacity: 0, y: -20 }}
@@ -97,7 +106,7 @@ export default function DashboardPage() {
             <CheckCircle size={14} className="text-success-500" />
             <span className="text-sm text-success-700 font-semibold">{t('common.verified', 'Verified')} Weaver</span>
             <span className="text-slate-300">•</span>
-            <span className="text-sm text-slate-500">{user?.occupation}</span>
+            <span className="text-sm text-slate-500">{t('profile.' + user?.occupation?.toLowerCase().replace(' ', ''), user?.occupation)}</span>
           </div>
         </div>
         <Button
@@ -108,6 +117,10 @@ export default function DashboardPage() {
         >
           {t('common.askKargha', 'Ask Kargha AI')}
         </Button>
+      </motion.div>
+        
+      <motion.div variants={fadeIn} className="w-full">
+        <PromoCarousel banners={globalPromos} />
       </motion.div>
 
       {/* Stats Row */}
@@ -141,131 +154,73 @@ export default function DashboardPage() {
         })}
       </motion.div>
 
-      {/* Main Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Left column */}
-        <div className="lg:col-span-2 space-y-6">
-          {/* AI Recommendation */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2 }}
-            className="bg-gradient-to-br from-primary-600 to-indigo-700 rounded-3xl p-6 text-white relative overflow-hidden shadow-lg shadow-primary-200/50"
-          >
-            <div className="absolute top-0 right-0 w-40 h-40 bg-white/5 rounded-full -translate-y-1/2 translate-x-1/2" />
-            <div className="absolute bottom-0 left-0 w-32 h-32 bg-white/5 rounded-full translate-y-1/2 -translate-x-1/2" />
-            <div className="relative z-10">
-              <div className="flex items-center gap-2 mb-3">
-                <img src={logoKargha} alt="Icon" className="w-5 h-5 object-contain" />
-                <span className="text-sm font-bold text-white/90 uppercase tracking-wider">{t('dashboard.recommendationTitle', 'Kargha AI Recommendation')}</span>
-              </div>
-              <h3 className="text-xl font-bold mb-2">
-                {t('dashboard.recommendationSub', "🎯 You're eligible for NHDC Handloom Weaver Loan")}
-              </h3>
-              <p className="text-white/80 text-sm mb-5 max-w-lg">
-                {t('dashboard.recommendationText', 'Based on your 12 years of experience and verified Weaver ID, you can get up to ₹2,00,000 at 6% interest.')}
-              </p>
-              <Button
-                size="sm"
-                className="bg-white text-primary-700 hover:bg-slate-50 shadow-none"
-                onClick={() => navigate('/loans')}
-                rightIcon={<ArrowRight size={16} />}
-              >
-                View Loan Details
-              </Button>
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div className="lg:col-span-2 space-y-8">
+          
+          {/* Top Loan Picks - Hero Cards */}
+          <div>
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-xl font-bold text-slate-800 font-display">{t('dashboard.recommendedLoans', 'Recommended Loans')}</h2>
+              <button onClick={() => navigate('/loans')} className="text-sm text-primary-600 font-bold hover:underline flex items-center gap-1">
+                {t('dashboard.viewAll', 'View All')} <ChevronRight size={16} />
+              </button>
             </div>
-          </motion.div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+              {eligibleLoans.slice(0, 2).map((loan) => (
+                <HeroProductCard
+                  key={loan.id}
+                  title={tData(loan.name)}
+                  category={tData(loan.category)}
+                  categoryColor="primary"
+                  imageSrc={loan.imageSrc || '/illustrations/business_loan_hero.png'}
+                  benefit={tData(loan.benefits[0])}
+                  highlightLabel={t('loans.maxAmount', 'Max Amount')}
+                  highlightValue={`₹${(loan.maxAmount / 100000).toFixed(1)}L`}
+                  secondaryLabel={t('loans.interestRate', 'Interest Rate')}
+                  secondaryValue={loan.interestRate}
+                  isRecommended={loan.isEligible}
+                  onLearnMore={() => navigate('/loans')}
+                  onApply={() => navigate('/loans')}
+                />
+              ))}
+            </div>
+          </div>
 
-          {/* Top Loan Picks */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3 }}
-          >
-            <Card>
-              <CardContent className="p-6">
-                <div className="flex items-center justify-between mb-5">
-                  <h2 className="text-lg font-bold text-slate-800">{t('dashboard.topLoanPicks', 'Top Loan Picks')}</h2>
-                  <button onClick={() => navigate('/loans')} className="text-xs text-primary-600 font-bold hover:underline flex items-center gap-1">
-                    {t('common.viewAll', 'View All')} <ChevronRight size={14} />
-                  </button>
-                </div>
-                <div className="space-y-3">
-                  {eligibleLoans.slice(0, 3).map((loan) => (
-                    <div key={loan.id} className="flex items-center gap-4 p-3 rounded-2xl border border-slate-100 hover:bg-slate-50 transition-colors">
-                      <div className="w-12 h-12 bg-primary-50 rounded-xl flex items-center justify-center flex-shrink-0">
-                        <HandCoins size={20} className="text-primary-600" />
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <p className="text-sm font-bold text-slate-800 truncate">{loan.name}</p>
-                        <p className="text-xs text-slate-500">{loan.provider}</p>
-                      </div>
-                      <div className="text-right flex-shrink-0">
-                        <p className="text-sm font-bold text-primary-700">
-                          ₹{(loan.maxAmount / 100000).toFixed(1)}L
-                        </p>
-                        <p className="text-xs text-slate-500 font-medium">{loan.interestRate} p.a.</p>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  fullWidth
-                  className="mt-4"
-                  onClick={() => navigate('/loans')}
-                >
-                  See All Eligible Loans
-                </Button>
-              </CardContent>
-            </Card>
-          </motion.div>
+          {/* Insurance Picks - Hero Cards */}
+          <div>
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-xl font-bold text-slate-800 font-display">{t('dashboard.essentialInsurance', 'Essential Insurance')}</h2>
+              <button onClick={() => navigate('/insurance')} className="text-sm text-indigo-600 font-bold hover:underline flex items-center gap-1">
+                {t('dashboard.viewAll', 'View All')} <ChevronRight size={16} />
+              </button>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+              {recommendedInsurance.slice(0, 2).map((policy) => (
+                <HeroProductCard
+                  key={policy.id}
+                  title={tData(policy.name)}
+                  category={tData(policy.type)}
+                  categoryColor="indigo"
+                  imageSrc={policy.imageSrc || '/illustrations/life_insurance_hero.png'}
+                  benefit={tData(policy.shortDescription)}
+                  highlightLabel={t('insurance.coverage', 'Coverage')}
+                  highlightValue={tData(policy.coverage).split(' ')[0]}
+                  secondaryLabel={t('insurance.premium', 'Premium')}
+                  secondaryValue={`₹${policy.annualPremium}/${t('common.yr', 'yr')}`}
+                  isRecommended={policy.isRecommended}
+                  onLearnMore={() => navigate('/insurance')}
+                  onApply={() => navigate('/insurance')}
+                />
+              ))}
+            </div>
+          </div>
 
-          {/* Insurance Picks */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.4 }}
-          >
-            <Card>
-              <CardContent className="p-6">
-                <div className="flex items-center justify-between mb-5">
-                  <h2 className="text-lg font-bold text-slate-800">{t('dashboard.recommendedInsurance', 'Recommended Insurance')}</h2>
-                  <button onClick={() => navigate('/insurance')} className="text-xs text-indigo-600 font-bold hover:underline flex items-center gap-1">
-                    {t('common.viewAll', 'View All')} <ChevronRight size={14} />
-                  </button>
-                </div>
-                <div className="space-y-3">
-                  {recommendedInsurance.slice(0, 3).map((policy) => (
-                    <div key={policy.id} className="flex items-center gap-4 p-3 rounded-2xl border border-slate-100 hover:bg-slate-50 transition-colors">
-                      <div className="w-12 h-12 bg-indigo-50 rounded-xl flex items-center justify-center flex-shrink-0">
-                        <Shield size={20} className="text-indigo-600" />
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <p className="text-sm font-bold text-slate-800 truncate">{policy.name}</p>
-                        <p className="text-xs text-slate-500">{policy.coverage}</p>
-                      </div>
-                      <div className="text-right flex-shrink-0">
-                        <p className="text-sm font-bold text-indigo-700">₹{policy.annualPremium}/yr</p>
-                        <span className="text-xs bg-success-50 text-success-600 px-2 py-0.5 rounded-md font-semibold inline-block mt-0.5">Recommended</span>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-          </motion.div>
         </div>
 
         {/* Right column */}
-        <div className="space-y-6">
+        <div className="space-y-8">
           {/* Profile Card */}
-          <motion.div
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.2 }}
-          >
+          <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.2 }}>
             <Card>
               <CardContent className="p-6">
                 <div className="flex items-center gap-4 mb-5">
@@ -276,23 +231,23 @@ export default function DashboardPage() {
                     <p className="font-bold text-slate-800 text-lg leading-tight mb-1">{user?.name}</p>
                     <div className="flex items-center gap-1.5">
                       <CheckCircle size={14} className="text-success-500" />
-                      <span className="text-xs text-success-600 font-semibold">Verified Weaver</span>
+                      <span className="text-xs text-success-600 font-semibold">{t('common.verifiedWeaver', 'Verified Weaver')}</span>
                     </div>
                   </div>
                 </div>
 
                 <ProgressBar
                   value={user?.profileCompletion || 95}
-                  label="Profile Completion"
+                  label={t('profile.profileCompletion', 'Profile Completion')}
                   showValue
                   height="h-3"
                 />
 
                 <div className="mt-5 space-y-3 bg-slate-50 p-4 rounded-2xl border border-slate-100">
                   {[
-                    { label: 'District', value: user?.district },
-                    { label: 'State', value: user?.state },
-                    { label: 'Experience', value: `${user?.yearsOfExperience} years` },
+                    { label: t('profile.district', 'District'), value: tData(user?.district) },
+                    { label: t('profile.state', 'State'), value: tData(user?.state) },
+                    { label: t('profile.experience', 'Experience'), value: `${user?.yearsOfExperience} ${t('profile.years', 'years')}` },
                   ].map((item) => (
                     <div key={item.label} className="flex justify-between text-sm">
                       <span className="text-slate-500">{item.label}</span>
@@ -308,18 +263,14 @@ export default function DashboardPage() {
                   className="mt-4"
                   onClick={() => navigate('/profile')}
                 >
-                  View Full Profile
+                  {t('profile.viewFullProfile', 'View Full Profile')}
                 </Button>
               </CardContent>
             </Card>
           </motion.div>
 
           {/* Upcoming Benefits */}
-          <motion.div
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.35 }}
-          >
+          <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.35 }}>
             <Card>
               <CardContent className="p-6">
                 <div className="flex items-center justify-between mb-4">
@@ -336,7 +287,7 @@ export default function DashboardPage() {
                   ].map((item, i) => (
                     <div key={i} className={`flex items-start gap-3 border rounded-xl p-3 text-sm font-medium leading-tight ${item.color}`}>
                       <span className="mt-0.5">{item.icon}</span>
-                      <span>{item.text}</span>
+                      <span>{tData(item.text)}</span>
                     </div>
                   ))}
                 </div>
@@ -345,11 +296,7 @@ export default function DashboardPage() {
           </motion.div>
 
           {/* Learning Progress */}
-          <motion.div
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.5 }}
-          >
+          <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.5 }}>
             <Card>
               <CardContent className="p-6">
                 <div className="flex items-center justify-between mb-4">
@@ -358,7 +305,7 @@ export default function DashboardPage() {
                     <h2 className="text-lg font-bold text-slate-800">{t('dashboard.learning', 'Learning')}</h2>
                   </div>
                   <button onClick={() => navigate('/literacy')} className="text-xs text-primary-600 font-bold hover:underline">
-                    Continue →
+                    {t('dashboard.continue', 'Continue →')}
                   </button>
                 </div>
                 <div className="grid grid-cols-3 gap-3 mb-5">
@@ -377,7 +324,7 @@ export default function DashboardPage() {
                 </div>
                 <ProgressBar
                   value={(completedModules / learningModules.length) * 100}
-                  label="Overall Progress"
+                  label={t('dashboard.overallProgress', 'Overall Progress')}
                   showValue
                   height="h-2"
                 />
@@ -386,42 +333,6 @@ export default function DashboardPage() {
           </motion.div>
         </div>
       </div>
-
-      {/* Government Schemes Strip */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.6 }}
-      >
-        <Card>
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between mb-5">
-              <h2 className="text-lg font-bold text-slate-800">{t('dashboard.activeSchemes', 'Active Government Schemes')}</h2>
-              <button onClick={() => navigate('/schemes')} className="text-xs text-secondary-600 font-bold hover:underline flex items-center gap-1">
-                {t('common.viewAll', 'View All')} <ChevronRight size={14} />
-              </button>
-            </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-              {govtSchemes.slice(0, 3).map((scheme) => (
-                <div key={scheme.id} className="flex items-start gap-3 p-4 rounded-2xl bg-slate-50 border border-slate-100 hover:border-secondary-300 transition-colors">
-                  <div className="w-10 h-10 bg-white shadow-sm rounded-xl flex items-center justify-center flex-shrink-0 border border-slate-100">
-                    <Building2 size={18} className="text-secondary-600" />
-                  </div>
-                  <div>
-                    <p className="text-sm font-bold text-slate-800 leading-tight">{scheme.name}</p>
-                    <p className="text-xs text-slate-500 mt-1 line-clamp-2">{scheme.description.slice(0, 70)}...</p>
-                    {scheme.deadline && (
-                      <p className="text-xs text-danger-500 font-semibold mt-2">
-                        Deadline: {new Date(scheme.deadline).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}
-                      </p>
-                    )}
-                  </div>
-                </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
-      </motion.div>
     </div>
   );
 }

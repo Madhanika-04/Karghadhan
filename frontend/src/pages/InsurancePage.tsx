@@ -1,6 +1,6 @@
 import { useState, useMemo } from 'react';
 import { motion } from 'framer-motion';
-import { Shield, Search, SlidersHorizontal, Scale } from 'lucide-react';
+import { Search, SlidersHorizontal, Scale } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useAppContext } from '../context/AppContext';
 
@@ -8,13 +8,14 @@ import { insurancePolicies, insuranceProviders, insuranceTypes } from '../data/i
 import type { InsurancePolicy } from '../types';
 
 import { AIRecommendationEngine } from '../components/insurance/AIRecommendationEngine';
+import { tData } from '../utils/i18nData';
 import { GovernmentSchemesTab } from '../components/insurance/GovernmentSchemesTab';
 import { InsuranceProvidersTab } from '../components/insurance/InsuranceProvidersTab';
 import { InsuranceTypesTab } from '../components/insurance/InsuranceTypesTab';
 import { DetailedInsuranceModal } from '../components/insurance/DetailedInsuranceModal';
 import { CompareInsuranceModal } from '../components/insurance/CompareInsuranceModal';
-import { Toast, Modal } from '../components/ui/Modal';
-import { Button } from '../components/ui/Button';
+import { Toast } from '../components/ui/Modal';
+import { InsuranceHero } from '../components/hero/InsuranceHero';
 
 export default function InsurancePage() {
   const { t } = useTranslation();
@@ -36,11 +37,11 @@ export default function InsurancePage() {
     if (!searchQuery) return insurancePolicies;
     const lowerQ = searchQuery.toLowerCase();
     return insurancePolicies.filter(p => 
-      p.name.toLowerCase().includes(lowerQ) || 
-      p.provider.toLowerCase().includes(lowerQ) ||
-      p.type.toLowerCase().includes(lowerQ)
+      tData(p.name).toLowerCase().includes(lowerQ) || 
+      tData(p.provider).toLowerCase().includes(lowerQ) ||
+      tData(p.type).toLowerCase().includes(lowerQ)
     );
-  }, [searchQuery]);
+  }, [searchQuery, t]); // depend on t to recompute when lang changes
 
   const handleEnroll = (policy: InsurancePolicy) => {
     setToastMessage(t('insurance.enrollInitiated', 'Insurance enrollment initiated! Visit your bank with Aadhaar.'));
@@ -59,27 +60,8 @@ export default function InsurancePage() {
   };
 
   return (
-    <div className="space-y-6">
-      {/* Header */}
-      <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <div className="flex items-center gap-3">
-          <div className="w-12 h-12 bg-indigo-100 rounded-2xl flex items-center justify-center shadow-sm border border-indigo-200/50">
-            <Shield size={24} className="text-indigo-600" />
-          </div>
-          <div>
-            <h1 className="text-2xl font-bold text-slate-900 font-display tracking-tight">{t('insurance.title', 'Insurance Hub')}</h1>
-            <p className="text-sm text-slate-500 font-medium">{t('insurance.subtitle', 'Premium financial protection for you and your business')}</p>
-          </div>
-        </div>
-        <Button 
-          variant="outline" 
-          onClick={handleCompareClick} 
-          leftIcon={<Scale size={16} />}
-          className="bg-white border-slate-200 text-slate-700 hover:bg-slate-50 hover:text-indigo-600 hover:border-indigo-200 shadow-sm transition-all"
-        >
-          {t('insurance.compareBtn', 'Compare')}
-        </Button>
-      </motion.div>
+    <div className="space-y-6 pb-8 max-w-5xl mx-auto">
+      <InsuranceHero />
 
       {/* AI Recommendations */}
       {user && (

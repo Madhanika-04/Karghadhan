@@ -1,5 +1,4 @@
 import React from 'react';
-import { motion } from 'framer-motion';
 import { cn } from '../../utils/cn';
 
 const Card = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement> & { glass?: boolean }>(
@@ -7,7 +6,7 @@ const Card = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElemen
     <div
       ref={ref}
       className={cn(
-        "rounded-3xl border bg-card text-card-foreground shadow-sm transition-all duration-200",
+        "rounded-[24px] border bg-card text-card-foreground shadow-sm transition-all duration-500 ease-out hover:-translate-y-2 hover:shadow-2xl hover:shadow-indigo-500/20",
         glass ? "bg-white/70 backdrop-blur-xl border-white/40 shadow-sm" : "bg-white border-slate-100",
         className
       )}

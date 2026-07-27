@@ -125,13 +125,7 @@ export default function WelcomePage() {
       >
         <div className="bg-white rounded-3xl p-6 shadow-sm border border-slate-100 text-left space-y-3">
           <p className="text-slate-700 text-sm leading-relaxed">
-            {t('welcome.description', "I'll verify your identity and help you discover the <1>best financial services</1> available for you as a handloom weaver.", {
-              components: { 1: <span className="font-bold text-emerald-600" /> }
-            }) || (
-              <>
-                I'll verify your identity and help you discover the <span className="font-bold text-emerald-600">best financial services</span> available for you as a handloom weaver.
-              </>
-            )}
+            {t('welcome.descriptionPt1', "I'll verify your identity and help you discover the")} <span className="font-bold text-emerald-600">{t('welcome.bestFinancialServices', 'best financial services')}</span> {t('welcome.descriptionPt2', 'available for you as a handloom weaver.')}
           </p>
 
           {showFeatures && (

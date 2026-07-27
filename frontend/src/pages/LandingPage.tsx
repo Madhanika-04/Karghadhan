@@ -18,6 +18,7 @@ import { Navbar } from '../components/layout/Navbar';
 import { Footer } from '../components/layout/Footer';
 import { Button } from '../components/ui/Button';
 import { useTranslation } from 'react-i18next';
+import { tData } from '../utils/i18nData';
 import { fadeInUp, staggerContainer, staggerItem, hoverScale } from '../utils/animations';
 
 const features = [
@@ -136,7 +137,7 @@ export default function LandingPage() {
             >
               <motion.div variants={staggerItem} className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm border border-white/20 px-4 py-2 rounded-full mb-6">
                 <img src={logoKargha} alt="Icon" className="w-4 h-4 object-contain" />
-                <span className="text-white/90 text-sm font-medium">AI-Powered Financial Inclusion</span>
+                <span className="text-white/90 text-sm font-medium">{t('landing.aiPowered', 'AI-Powered Financial Inclusion')}</span>
               </motion.div>
 
               <motion.h1
@@ -209,18 +210,18 @@ export default function LandingPage() {
                     <p className="font-bold text-slate-800">Kargha AI</p>
                     <div className="flex items-center gap-1.5">
                       <span className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse" />
-                      <span className="text-xs text-emerald-600 font-semibold">Online & Ready</span>
+                      <span className="text-xs text-emerald-600 font-semibold">{t('landing.onlineReady', 'Online & Ready')}</span>
                     </div>
                   </div>
                 </div>
                 <div className="bg-emerald-50 rounded-2xl p-4 mb-3">
                   <p className="text-sm text-slate-700 leading-relaxed">
-                    "நான் உங்கள் Kargha AI. உங்கள் Weaver ID சரிபார்க்கிறேன்..."
+                    "{t('landing.aiMessageLocal', 'நான் உங்கள் Kargha AI. உங்கள் Weaver ID சரிபார்க்கிறேன்...')}"
                   </p>
-                  <p className="text-xs text-slate-500 mt-1 italic">I'm your Kargha AI. Verifying your Weaver ID...</p>
+                  <p className="text-xs text-slate-500 mt-1 italic">{t('landing.aiMessageEn', "I'm your Kargha AI. Verifying your Weaver ID...")}</p>
                 </div>
                 <div className="space-y-2">
-                  {['✅ Aadhaar Verified', '✅ Weaver ID Matched', '🔍 Checking Eligibility...'].map((item, i) => (
+                  {[t('landing.status1', '✅ Aadhaar Verified'), t('landing.status2', '✅ Weaver ID Matched'), t('landing.status3', '🔍 Checking Eligibility...')].map((item, i) => (
                     <motion.div
                       key={item}
                       initial={{ opacity: 0, x: -10 }}
@@ -241,7 +242,7 @@ export default function LandingPage() {
                 animate={{ opacity: 1 }}
                 transition={{ delay: 1 }}
               >
-                🏆 ₹1.2L Loan Approved!
+                {t('landing.loanApproved', '🏆 ₹1.2L Loan Approved!')}
               </motion.div>
 
               <motion.div
@@ -251,8 +252,8 @@ export default function LandingPage() {
                 animate={{ opacity: 1 }}
                 transition={{ delay: 1.3 }}
               >
-                <p className="text-xs font-bold text-slate-800">New Scheme Available</p>
-                <p className="text-xs text-emerald-600">Solar Loom Scheme 2025</p>
+                <p className="text-xs font-bold text-slate-800">{t('landing.newScheme', 'New Scheme Available')}</p>
+                <p className="text-xs text-emerald-600">{t('landing.solarLoom', 'Solar Loom Scheme 2025')}</p>
               </motion.div>
             </div>
           </div>
@@ -280,8 +281,8 @@ export default function LandingPage() {
                   <div className={`w-12 h-12 mx-auto mb-3 bg-slate-50 rounded-2xl flex items-center justify-center ${stat.color}`}>
                     <Icon size={22} />
                   </div>
-                  <p className="text-3xl font-bold text-slate-800 font-display">{stat.value}</p>
-                  <p className="text-sm text-slate-500 mt-1 font-medium">{stat.label}</p>
+                  <p className="text-3xl font-bold text-slate-800 font-display">{tData(stat.value)}</p>
+                  <p className="text-sm text-slate-500 mt-1 font-medium">{tData(stat.label)}</p>
                 </motion.div>
               );
             })}
@@ -327,8 +328,8 @@ export default function LandingPage() {
                   <div className={`w-12 h-12 ${f.bg} rounded-2xl flex items-center justify-center mb-4`}>
                     <Icon size={22} className={f.textColor} />
                   </div>
-                  <h3 className="text-lg font-bold text-slate-800 mb-2">{f.title}</h3>
-                  <p className="text-sm text-slate-500 leading-relaxed">{f.desc}</p>
+                  <h3 className="text-lg font-bold text-slate-800 mb-2">{tData(f.title)}</h3>
+                  <p className="text-sm text-slate-500 leading-relaxed">{tData(f.desc)}</p>
                 </motion.div>
               );
             })}
@@ -346,9 +347,9 @@ export default function LandingPage() {
             viewport={{ once: true }}
             className="text-center mb-14"
           >
-            <span className="text-emerald-600 font-bold text-sm uppercase tracking-widest">Testimonials</span>
+            <span className="text-emerald-600 font-bold text-sm uppercase tracking-widest">{t('landing.testimonials', 'Testimonials')}</span>
             <h2 className="text-3xl font-bold text-slate-800 mt-2 font-display">
-              Weavers Love Karghadhan
+              {t('landing.weaversLove', 'Weavers Love Karghadhan')}
             </h2>
           </motion.div>
 
@@ -370,14 +371,14 @@ export default function LandingPage() {
                     <Star key={i} size={14} fill="#f59e0b" className="text-amber-400" />
                   ))}
                 </div>
-                <p className="text-sm text-slate-600 leading-relaxed mb-4 italic">"{t.text}"</p>
+                <p className="text-sm text-slate-600 leading-relaxed mb-4 italic">"{tData(t.text)}"</p>
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 bg-gradient-to-br from-emerald-500 to-indigo-600 rounded-full flex items-center justify-center text-white font-bold text-sm">
-                    {t.avatar}
+                    {tData(t.avatar)}
                   </div>
                   <div>
-                    <p className="text-sm font-bold text-slate-800">{t.name}</p>
-                    <p className="text-xs text-slate-500">{t.role}</p>
+                    <p className="text-sm font-bold text-slate-800">{tData(t.name)}</p>
+                    <p className="text-xs text-slate-500">{tData(t.role)}</p>
                   </div>
                 </div>
               </motion.div>

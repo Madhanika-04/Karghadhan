@@ -7,6 +7,7 @@ import { Card, CardContent } from '../components/ui/Card';
 import { useTranslation } from 'react-i18next';
 import { staggerContainer, staggerItem } from '../utils/animations';
 import { mockUser } from '../data/mockUser';
+import { tData } from '../utils/i18nData';
 
 export default function OnboardingProfilePage() {
   const navigate = useNavigate();
@@ -41,7 +42,7 @@ export default function OnboardingProfilePage() {
                   <h2 className="text-xl font-bold text-slate-800">{mockUser.name}</h2>
                   <p className="text-sm text-slate-500 flex items-center gap-1 mt-1">
                     <ShieldCheck size={14} className="text-success-500" />
-                    {t('common.verified', 'Verified')} {mockUser.occupation}
+                    {t('common.verified', 'Verified')} {tData(mockUser.occupation)}
                   </p>
                 </div>
                 <div className="text-right">
@@ -74,7 +75,7 @@ export default function OnboardingProfilePage() {
                     <p className="text-xs font-semibold text-slate-600">{t('onboarding.experience', 'Experience')}</p>
                   </div>
                   <p className="text-lg font-bold text-slate-800">
-                    {mockUser.yearsOfExperience} Years
+                    {mockUser.yearsOfExperience} {t('common.years', 'Years')}
                   </p>
                 </div>
               </div>
@@ -93,15 +94,15 @@ export default function OnboardingProfilePage() {
               <div className="space-y-3">
                 <div className="flex items-center justify-between p-3 bg-success-50 rounded-xl border border-success-100">
                   <span className="text-sm font-semibold text-success-800">{t('onboarding.preApproved', 'Pre-approved Micro Loans')}</span>
-                  <span className="text-xs font-bold bg-success-100 text-success-700 px-2 py-1 rounded-lg">Up to ₹50,000</span>
+                  <span className="text-xs font-bold bg-success-100 text-success-700 px-2 py-1 rounded-lg">{t('onboarding.upTo50k', 'Up to ₹50,000')}</span>
                 </div>
                 <div className="flex items-center justify-between p-3 bg-primary-50 rounded-xl border border-primary-100">
                   <span className="text-sm font-semibold text-primary-800">{t('onboarding.govEligible', 'Gov. Scheme Eligibility')}</span>
-                  <span className="text-xs font-bold bg-primary-100 text-primary-700 px-2 py-1 rounded-lg">3 Schemes</span>
+                  <span className="text-xs font-bold bg-primary-100 text-primary-700 px-2 py-1 rounded-lg">3 {t('onboarding.schemesCount', 'Schemes')}</span>
                 </div>
                 <div className="flex items-center justify-between p-3 bg-secondary-50 rounded-xl border border-secondary-100">
                   <span className="text-sm font-semibold text-secondary-800">{t('onboarding.loomInsurance', 'Loom Insurance')}</span>
-                  <span className="text-xs font-bold bg-secondary-100 text-secondary-700 px-2 py-1 rounded-lg">Available</span>
+                  <span className="text-xs font-bold bg-secondary-100 text-secondary-700 px-2 py-1 rounded-lg">{t('common.available', 'Available')}</span>
                 </div>
               </div>
             </CardContent>

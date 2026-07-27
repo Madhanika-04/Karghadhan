@@ -4,6 +4,7 @@ import type { InsuranceTypeDesc } from '../../types';
 import { Card, CardContent } from '../ui/Card';
 import { useTranslation } from 'react-i18next';
 import { staggerContainer, staggerItem } from '../../utils/animations';
+import { tData } from '../../utils/i18nData';
 
 interface Props {
   types: InsuranceTypeDesc[];
@@ -57,9 +58,9 @@ export function InsuranceTypesTab({ types }: Props) {
                     {getIconForType(type.id)}
                   </div>
                   <div>
-                    <h3 className="font-bold text-slate-900 text-lg leading-tight mb-1">{type.title}</h3>
+                    <h3 className="font-bold text-slate-900 text-lg leading-tight mb-1">{tData(type.title)}</h3>
                     <p className="text-sm font-semibold text-indigo-600 bg-indigo-50 inline-block px-2 py-0.5 rounded-md">
-                      {t('insurance.recommendedFor', 'Recommended For:')} {type.recommendedUsers}
+                      {t('insurance.recommendedFor', 'Recommended For:')} {tData(type.recommendedUsers)}
                     </p>
                   </div>
                 </div>
@@ -71,7 +72,7 @@ export function InsuranceTypesTab({ types }: Props) {
                       {type.benefits.map((benefit, i) => (
                         <li key={i} className="text-sm text-slate-600 flex items-start gap-2 leading-relaxed">
                           <span className="w-1.5 h-1.5 rounded-full bg-slate-300 mt-2 flex-shrink-0" />
-                          {benefit}
+                          {tData(benefit)}
                         </li>
                       ))}
                     </ul>
@@ -82,7 +83,7 @@ export function InsuranceTypesTab({ types }: Props) {
                     <div className="flex flex-wrap gap-2">
                       {type.commonClaims.map((claim, i) => (
                         <span key={i} className="bg-slate-50 border border-slate-200 text-slate-600 text-[11px] font-semibold px-2 py-1 rounded-md">
-                          {claim}
+                          {tData(claim)}
                         </span>
                       ))}
                     </div>
@@ -99,7 +100,7 @@ export function InsuranceTypesTab({ types }: Props) {
                     </div>
                   </div>
                   <p className="text-xs font-medium text-slate-700 leading-relaxed italic">
-                    "{type.aiRecommendation}"
+                    "{tData(type.aiRecommendation)}"
                   </p>
                 </div>
               </div>

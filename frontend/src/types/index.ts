@@ -48,6 +48,7 @@ export interface Loan {
   tags: string[];
   isEligible: boolean;
   applyUrl?: string;
+  imageSrc?: string;
 }
 
 // ===== Insurance Types =====
@@ -72,6 +73,7 @@ export interface InsurancePolicy {
   enrollmentChannel: string;
   officialStatus: 'Active' | 'Closed' | 'Upcoming';
   aiRecommendation: string;
+  imageSrc?: string;
 }
 
 export interface InsuranceProvider {
@@ -106,6 +108,7 @@ export interface GovtScheme {
   ministry: string;
   isActive: boolean;
   applyUrl?: string;
+  imageSrc?: string;
 }
 
 // ===== Financial Literacy Types =====

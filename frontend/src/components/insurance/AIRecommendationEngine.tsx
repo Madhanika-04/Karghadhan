@@ -3,6 +3,7 @@ import { Star, ShieldCheck, Briefcase, Users, HandCoins } from 'lucide-react';
 import type { UserProfile, InsurancePolicy } from '../../types';
 import { Card, CardContent } from '../ui/Card';
 import { useTranslation } from 'react-i18next';
+import { tData } from '../../utils/i18nData';
 
 interface Props {
   user: UserProfile;
@@ -39,19 +40,19 @@ export function AIRecommendationEngine({ user, policies, onEnroll }: Props) {
           <div className="flex flex-wrap gap-4 mb-6 pb-6 border-b border-indigo-100/50">
             <div className="flex items-center gap-2">
               <Briefcase size={14} className="text-indigo-400" />
-              <span className="text-sm font-semibold text-slate-700">{user.occupation}</span>
+              <span className="text-sm font-semibold text-slate-700">{t('profile.' + user.occupation.toLowerCase().replace(' ', ''), user.occupation)}</span>
             </div>
             <div className="flex items-center gap-2">
               <ShieldCheck size={14} className="text-success-500" />
-              <span className="text-sm font-semibold text-slate-700">{user.ownsLoom ? 'Loom Owner' : 'Artisan'}</span>
+              <span className="text-sm font-semibold text-slate-700">{user.ownsLoom ? t('profile.loomOwner', 'Loom Owner') : t('profile.artisan', 'Artisan')}</span>
             </div>
             <div className="flex items-center gap-2">
               <Users size={14} className="text-indigo-400" />
-              <span className="text-sm font-semibold text-slate-700">{user.familyMembers} Dependents</span>
+              <span className="text-sm font-semibold text-slate-700">{user.familyMembers} {t('profile.dependents', 'Dependents')}</span>
             </div>
             <div className="flex items-center gap-2">
               <HandCoins size={14} className="text-indigo-400" />
-              <span className="text-sm font-semibold text-slate-700">{user.hasExistingLoan ? 'Active Loan' : 'No Loans'}</span>
+              <span className="text-sm font-semibold text-slate-700">{user.hasExistingLoan ? t('profile.activeLoan', 'Active Loan') : t('profile.noLoans', 'No Loans')}</span>
             </div>
           </div>
 
@@ -76,11 +77,11 @@ export function AIRecommendationEngine({ user, policies, onEnroll }: Props) {
                         <Star size={12} fill="currentColor" />
                         <Star size={12} fill="currentColor" />
                       </div>
-                      <h3 className="font-bold text-slate-800 leading-tight">{policy.name}</h3>
+                      <h3 className="font-bold text-slate-800 leading-tight">{tData(policy.name)}</h3>
                     </div>
                     <p className="text-xs text-slate-500 font-medium leading-relaxed bg-indigo-50/50 inline-block px-2 py-1 rounded-md mt-1 border border-indigo-100/50">
                       <span className="text-indigo-600 font-bold mr-1">{t('insurance.reason', 'Reason:')}</span>
-                      {policy.aiRecommendation}
+                      {tData(policy.aiRecommendation)}
                     </p>
                   </div>
                   <div className="text-right flex-shrink-0">
