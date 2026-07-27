@@ -50,6 +50,8 @@ class WeaverCreate(BaseModel):
     cluster_location: str = Field(..., min_length=2, max_length=200)
     primary_language: str = Field(default="hi", min_length=2, max_length=10)
     experience_years: int = Field(..., ge=0, le=80)
+    pehchan_id: Optional[str] = Field(default=None, description="Weaver Pehchan Card ID (e.g. IND-HL-9876543210)")
+    yarn_passbook_id: Optional[str] = Field(default=None, description="Yarn Passbook ID (e.g. YP-2024-UP-04821)")
     upi_id: Optional[str] = Field(default=None, max_length=50)
     avatar_url: Optional[str] = None
     loom_assets: list[LoomAssetCreate] = Field(default_factory=list)
@@ -69,6 +71,8 @@ class WeaverUpdate(BaseModel):
     cluster_location: Optional[str] = None
     primary_language: Optional[str] = None
     experience_years: Optional[int] = Field(default=None, ge=0, le=80)
+    pehchan_id: Optional[str] = None
+    yarn_passbook_id: Optional[str] = None
     upi_id: Optional[str] = None
     avatar_url: Optional[str] = None
 
@@ -83,6 +87,8 @@ class WeaverRead(BaseModel):
     cluster_location: str
     primary_language: str
     experience_years: int
+    pehchan_id: Optional[str] = None
+    yarn_passbook_id: Optional[str] = None
     upi_id: Optional[str]
     avatar_url: Optional[str]
     is_verified: bool

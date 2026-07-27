@@ -37,6 +37,14 @@ class Settings(BaseSettings):
     OPENAI_API_KEY: str = ""                     # optional fallback
 
     # ------------------------------------------------------------------
+    # Identity Verification / KYC Gateway
+    # ------------------------------------------------------------------
+    KYC_GATEWAY_URL: str = ""                    # e.g., https://sandbox.setu.co
+    KYC_GATEWAY_API_KEY: str = ""                 # API key for the KYC gateway
+    FACE_MATCH_THRESHOLD: float = 0.40           # cosine distance threshold
+    FACE_MATCH_MODEL: str = "VGG-Face"           # DeepFace model name
+
+    # ------------------------------------------------------------------
     # Application
     # ------------------------------------------------------------------
     APP_ENV: str = "development"

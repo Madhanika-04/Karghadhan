@@ -1,10 +1,12 @@
 import { useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Upload, CheckCircle, File, X, ArrowRight } from 'lucide-react';
+import { Upload, CheckCircle, File, X, ArrowRight, Loader2, AlertCircle } from 'lucide-react';
 import { Button } from '../components/ui/Button';
 import { ProgressBar } from '../components/ui/Badge';
 import { staggerContainer, staggerItem } from '../utils/animations';
+import { useTranslation } from 'react-i18next';
+import { runFullVerification } from '../utils/api';
 
 interface UploadZoneProps {
   id: string;
@@ -105,16 +107,23 @@ function UploadZone({
   );
 }
 
-import { useTranslation } from 'react-i18next';
-
 export default function UploadPage() {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const [files, setFiles] = useState<{ aadhaar: File | null; weaverId: File | null; passbook: File | null }>({
+  const [isVerifying, setIsVerifying] = useState(false);
+  const [verifyError, setVerifyError] = useState<string | null>(null);
+  const [aadhaarNumber, setAadhaarNumber] = useState('123456789012');
+  
+  const [files, setFiles] = useState<{ 
+    aadhaar: File | null; 
+    weaverId: File | null; 
+    passbook: File | null;
+  }>({
     aadhaar: null,
     weaverId: null,
     passbook: null,
   });
+  
   const [progress, setProgress] = useState({ aadhaar: 0, weaverId: 0, passbook: 0 });
 
   const simulateUpload = (key: 'aadhaar' | 'weaverId' | 'passbook', file: File) => {
@@ -128,7 +137,7 @@ export default function UploadPage() {
         clearInterval(interval);
       }
       setProgress((prev) => ({ ...prev, [key]: Math.round(p) }));
-    }, 150);
+    }, 120);
   };
 
   const removeFile = (key: 'aadhaar' | 'weaverId' | 'passbook') => {
@@ -136,10 +145,38 @@ export default function UploadPage() {
     setProgress((prev) => ({ ...prev, [key]: 0 }));
   };
 
-  const canContinue = files.aadhaar !== null && files.weaverId !== null;
+  const canContinue = files.aadhaar !== null && files.weaverId !== null && !isVerifying;
 
-  const handleContinue = () => {
-    navigate('/verifying');
+  const handleContinue = async () => {
+    if (!files.aadhaar) return;
+
+    setIsVerifying(true);
+    setVerifyError(null);
+
+    try {
+      // Execute the verification pipeline using backend API
+      const result = await runFullVerification(
+        files.aadhaar,
+        files.passbook,
+        files.aadhaar,
+        aadhaarNumber || '123456789012'
+      );
+
+      console.log('Verification Result:', result);
+      
+      // Store verification result in session storage for VerifyingPage
+      sessionStorage.setItem('verification_result', JSON.stringify(result));
+      navigate('/verifying');
+    } catch (err: any) {
+      console.error('API Error:', err);
+      setVerifyError(err.message || 'An error occurred during verification. Proceeding to demo verification.');
+      // Fallback transition for smooth user experience if server is loading
+      setTimeout(() => {
+        navigate('/verifying');
+      }, 1500);
+    } finally {
+      setIsVerifying(false);
+    }
   };
 
   const uploadedCount = [files.aadhaar, files.weaverId, files.passbook].filter(Boolean).length;
@@ -172,6 +209,29 @@ export default function UploadPage() {
           <span className="text-xs text-slate-500 font-medium">{t('upload.uploadedCount', '{{count}}/3 uploaded', { count: uploadedCount })}</span>
         </div>
       </motion.div>
+
+      {verifyError && (
+        <div className="mb-4 p-3 bg-amber-50 border border-amber-200 text-amber-800 rounded-2xl text-xs flex items-center gap-2">
+          <AlertCircle size={16} className="text-amber-600 flex-shrink-0" />
+          <span>{verifyError}</span>
+        </div>
+      )}
+
+      {/* Aadhaar Number Input */}
+      <div className="mb-4 bg-white rounded-2xl p-4 border border-slate-100 shadow-sm">
+        <label htmlFor="aadhaar-num-input" className="block text-xs font-bold text-slate-700 mb-1">
+          Aadhaar Number (12 Digits)
+        </label>
+        <input
+          id="aadhaar-num-input"
+          type="text"
+          maxLength={14}
+          value={aadhaarNumber}
+          onChange={(e) => setAadhaarNumber(e.target.value)}
+          placeholder="1234 5678 9012"
+          className="w-full px-3 py-2 text-sm border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500"
+        />
+      </div>
 
       <motion.div
         variants={staggerContainer}
@@ -234,9 +294,14 @@ export default function UploadPage() {
         size="lg"
         onClick={handleContinue}
         disabled={!canContinue}
-        rightIcon={<ArrowRight size={18} />}
+        rightIcon={isVerifying ? <Loader2 size={18} className="animate-spin" /> : <ArrowRight size={18} />}
       >
-        {canContinue ? t('upload.startAiVerification', 'Start AI Verification') : t('upload.uploadRequired', 'Upload Required Documents')}
+        {isVerifying 
+          ? 'Running AI Verification...' 
+          : canContinue 
+            ? t('upload.startAiVerification', 'Start AI Verification') 
+            : t('upload.uploadRequired', 'Upload Required Documents')
+        }
       </Button>
 
       <button

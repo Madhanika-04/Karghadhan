@@ -5,7 +5,7 @@ Algorithmic credit scoring pipeline for alternative underwriting of handloom wea
 from __future__ import annotations
 
 import math
-from typing import Optional
+from typing import Optional, Any, Dict
 
 def calculate_weaver_score(
     cibil_score: Optional[int],
@@ -14,22 +14,20 @@ def calculate_weaver_score(
     order_frequency_variance: float,
     avg_ticket_size_inr: float,
     past_due_instances: int
-) -> tuple[int, str]:
+) -> tuple[int, str, Dict[str, Any]]:
     """
-    Evaluates default risk and returns a Weaver Credit Score (300-900)
-    and corresponding risk tier.
+    Evaluates default risk and returns a Weaver Credit Score (300-900),
+    corresponding risk tier, and a detailed factor breakdown dictionary.
     
     Implements normalization, imputation, and logistic log-odds mapping.
     """
     
     # 1. CIBIL Score normalization and missing imputation
     if cibil_score is not None:
-        # Scale 300-900 to 0.0-1.0
         cibil_score_clamped = max(300, min(900, cibil_score))
         X_cibil = (cibil_score_clamped - 300) / 600.0
         I_cibil_missing = 0.0
     else:
-        # Impute with average baseline and set missing indicator
         X_cibil = 0.5
         I_cibil_missing = 1.0
 
@@ -40,8 +38,7 @@ def calculate_weaver_score(
     else:
         X_util = 0.5  # Neutral default
 
-    # 3. Order Frequency Variance (soft-capped std dev in days, logs)
-    # Variance is standard deviation here as requested. Let's cap std dev of 30 days.
+    # 3. Order Frequency Variance (soft-capped std dev in days)
     X_var = max(0.0, min(1.0, order_frequency_variance / 30.0))
 
     # 4. Average Ticket Size (INR capped at 50,000)
@@ -51,9 +48,7 @@ def calculate_weaver_score(
     X_pdu = max(0.0, min(1.0, past_due_instances / 5.0))
 
     # 6. Logistic Regression weights for risk log-odds z
-    # Intercept
     beta_0 = 0.5
-    # Coefficients
     beta_cibil = -2.5       # High CIBIL reduces default probability
     beta_missing = 0.5      # Missing CIBIL increases risk slightly
     beta_util = -1.2        # Active utilization reduces risk
@@ -76,8 +71,6 @@ def calculate_weaver_score(
     p_default = 1.0 / (1.0 + math.exp(-z))
 
     # Map probability of default to score [300, 900]
-    # P=0 -> Score = 900 (Excellent)
-    # P=1 -> Score = 300 (High Risk)
     credit_score = int(300 + ((1.0 - p_default) * 600.0))
     credit_score = max(300, min(900, credit_score))
 
@@ -91,4 +84,15 @@ def calculate_weaver_score(
     else:
         risk_tier = "Risky"
 
-    return credit_score, risk_tier
+    breakdown = {
+        "cibil_score_used": cibil_score,
+        "cibil_factor": round(X_cibil * 100, 1),
+        "quota_utilization_pct": round(X_util * 100, 1),
+        "order_consistency_score": round((1.0 - X_var) * 100, 1),
+        "ticket_size_factor": round(X_ticket * 100, 1),
+        "past_due_instances": past_due_instances,
+        "log_odds_z": round(z, 4),
+        "default_probability_pct": round(p_default * 100.0, 2),
+    }
+
+    return credit_score, risk_tier, breakdown

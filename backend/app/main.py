@@ -18,7 +18,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.config import get_settings
-from app.routers import auth, weavers, credit, loans, assistant, transactions, credit_scoring
+from app.routers import auth, weavers, credit, loans, assistant, transactions, credit_scoring, verification
 
 
 
@@ -37,6 +37,12 @@ logger = logging.getLogger(__name__)
 async def lifespan(app: FastAPI) -> AsyncIterator[None]:
     # Startup
     logger.info("🚀 Karghadhan API starting in [%s] mode", settings.APP_ENV)
+    try:
+        from app.db.firebase import db
+        logger.info("🔥 Firebase Firestore connected successfully")
+    except Exception as exc:
+        logger.warning("Could not initialize Firebase Firestore: %s", exc)
+
     logger.info("📚 Docs available at http://localhost:8000/docs")
     yield
     # Shutdown
@@ -92,6 +98,7 @@ app.include_router(loans.router,     prefix=API_V1)
 app.include_router(assistant.router, prefix=API_V1)
 app.include_router(transactions.router, prefix=API_V1)
 app.include_router(credit_scoring.router, prefix=API_V1)
+app.include_router(verification.router, prefix=API_V1)
 
 
 

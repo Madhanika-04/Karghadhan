@@ -76,7 +76,7 @@ class ScoreBreakdown(BaseModel):
 
 
 class CreditEvalResponse(BaseModel):
-    model_config = ConfigDict(from_attributes=True)
+    model_config = ConfigDict(from_attributes=True, protected_namespaces=())
 
     weaver_id: UUID
     alternative_credit_score: int = Field(..., ge=300, le=900)

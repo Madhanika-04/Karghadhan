@@ -4,6 +4,14 @@ from .credit import CreditEvalRequest, CreditEvalResponse, TransactionRecord
 from .loan import LoanApplyRequest, LoanRead
 from .transaction import TransactionCreate, TransactionRead
 from .credit_scoring import ScoringProfileCreate, ScoringProfileResponse
+from .verification import (
+    AadhaarQRResult,
+    AadhaarQRParsedFields,
+    AadhaarExistenceRequest,
+    AadhaarExistenceResult,
+    FaceMatchResult,
+    FullVerificationResponse,
+)
 
 __all__ = [
     "WeaverCreate", "WeaverRead", "WeaverUpdate",
@@ -12,6 +20,9 @@ __all__ = [
     "LoanApplyRequest", "LoanRead",
     "TransactionCreate", "TransactionRead",
     "ScoringProfileCreate", "ScoringProfileResponse",
+    "AadhaarQRResult", "AadhaarQRParsedFields",
+    "AadhaarExistenceRequest", "AadhaarExistenceResult",
+    "FaceMatchResult", "FullVerificationResponse",
 ]
 
 

@@ -12,8 +12,9 @@ pydantic-settings>=2.3.0
 python-dotenv>=1.0.0
 
 # ==============================================================================
-# Database – Supabase
+# Database – Firebase Firestore & Supabase
 # ==============================================================================
+firebase-admin>=6.5.0
 supabase>=2.5.0
 
 # ==============================================================================
@@ -32,3 +33,12 @@ openai>=1.35.0
 # ==============================================================================
 httpx>=0.27.0
 python-multipart>=0.0.9            # file uploads
+
+# ==============================================================================
+# Identity Verification
+# ==============================================================================
+pyzbar>=0.1.9                       # QR code decoding
+Pillow>=10.0.0                      # image processing
+deepface>=0.0.93                    # face verification
+PyMuPDF>=1.24.0                     # PDF → image rasterisation
+numpy>=1.26.0                       # numerical (deepface dependency)
