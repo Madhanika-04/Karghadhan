@@ -17,6 +17,13 @@ export interface UserProfile {
   isVerified: boolean;
   avatarUrl?: string;
   joinedDate: string;
+  familyMembers: number;
+  ownsLoom: boolean;
+  hasExistingLoan: boolean;
+  hasExistingInsurance: boolean;
+  hasUPI: boolean;
+  savingsHabit: 'Daily' | 'Weekly' | 'Monthly' | 'None';
+  trustScore: number;
 }
 
 export type Language = {
@@ -54,8 +61,36 @@ export interface InsurancePolicy {
   eligibility: string[];
   claimProcess: string[];
   type: string;
+  category: 'Government' | 'Public Sector' | 'Private Sector';
   isRecommended: boolean;
   enrollmentLink?: string;
+  shortDescription: string;
+  suitableFor: string;
+  policyPeriod: string;
+  renewal: string;
+  requiredDocuments: string[];
+  enrollmentChannel: string;
+  officialStatus: 'Active' | 'Closed' | 'Upcoming';
+  aiRecommendation: string;
+}
+
+export interface InsuranceProvider {
+  id: string;
+  name: string;
+  category: 'Public Sector' | 'Private Sector';
+  productsOffered: string[];
+  suitableFor: string;
+  applyThrough: string[];
+  logo?: string;
+}
+
+export interface InsuranceTypeDesc {
+  id: string;
+  title: string;
+  recommendedUsers: string;
+  benefits: string[];
+  commonClaims: string[];
+  aiRecommendation: string;
 }
 
 // ===== Government Scheme Types =====
@@ -110,6 +145,17 @@ export interface Notification {
   type: 'info' | 'success' | 'warning' | 'error';
   timestamp: Date;
   isRead: boolean;
+}
+
+// ===== Document Types =====
+export interface UserDocument {
+  id: string;
+  name: string;
+  type: string;
+  uploadDate: string;
+  status: 'Verified' | 'Pending' | 'Rejected';
+  fileUrl: string;
+  icon: string;
 }
 
 // ===== App Context Types =====

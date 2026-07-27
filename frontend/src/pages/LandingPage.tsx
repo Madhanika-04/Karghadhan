@@ -10,13 +10,14 @@ import {
   CheckCircle,
   Users,
   TrendingUp,
-  Sparkles,
   Star,
   Zap,
 } from 'lucide-react';
+import logoKargha from '../assets/logokargha.png';
 import { Navbar } from '../components/layout/Navbar';
 import { Footer } from '../components/layout/Footer';
 import { Button } from '../components/ui/Button';
+import { useTranslation } from 'react-i18next';
 import { fadeInUp, staggerContainer, staggerItem, hoverScale } from '../utils/animations';
 
 const features = [
@@ -81,7 +82,7 @@ const testimonials = [
   {
     name: 'Lakshmi Devi',
     role: 'Silk Weaver, Kanchipuram',
-    text: 'KarghaKadam helped me get a ₹1.2 lakh loan in just 2 weeks. The AI guidance was like having a financial advisor in my hand!',
+    text: 'Karghadhan helped me get a ₹1.2 lakh loan in just 2 weeks. The AI guidance was like having a financial advisor in my hand!',
     avatar: 'L',
   },
   {
@@ -100,6 +101,7 @@ const testimonials = [
 
 export default function LandingPage() {
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   return (
     <div className="min-h-screen">
@@ -133,7 +135,7 @@ export default function LandingPage() {
               className="flex-1 text-center lg:text-left"
             >
               <motion.div variants={staggerItem} className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm border border-white/20 px-4 py-2 rounded-full mb-6">
-                <Sparkles size={14} className="text-amber-400" />
+                <img src={logoKargha} alt="Icon" className="w-4 h-4 object-contain" />
                 <span className="text-white/90 text-sm font-medium">AI-Powered Financial Inclusion</span>
               </motion.div>
 
@@ -141,18 +143,18 @@ export default function LandingPage() {
                 variants={staggerItem}
                 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-white leading-tight font-display mb-6"
               >
-                AI Financial
+                {t('landing.heroTitle1', 'AI Financial')}
                 <span className="block bg-gradient-to-r from-emerald-400 to-teal-300 bg-clip-text text-transparent">
-                  Companion for
+                  {t('landing.heroTitle2', 'Companion for')}
                 </span>
-                Every Weaver
+                {t('landing.heroTitle3', 'Every Weaver')}
               </motion.h1>
 
               <motion.p
                 variants={staggerItem}
                 className="text-lg text-white/70 max-w-xl mb-8 leading-relaxed"
               >
-                Helping handloom weavers across India access affordable loans, insurance, government schemes, and financial literacy — in their own language.
+                {t('landing.heroSubtitle', 'Helping handloom weavers across India access affordable loans, insurance, government schemes, and financial literacy — in their own language.')}
               </motion.p>
 
               <motion.div variants={staggerItem} className="flex flex-col sm:flex-row items-center gap-4 justify-center lg:justify-start">
@@ -162,7 +164,7 @@ export default function LandingPage() {
                   rightIcon={<ArrowRight size={20} />}
                   className="bg-gradient-to-r from-emerald-400 to-emerald-600 hover:from-emerald-500 hover:to-emerald-700 text-white shadow-2xl shadow-emerald-900/50 border border-emerald-300/20"
                 >
-                  Get Started Free
+                  {t('common.getStartedFree', 'Get Started Free')}
                 </Button>
                 <Button
                   size="xl"
@@ -170,7 +172,7 @@ export default function LandingPage() {
                   onClick={() => navigate('/dashboard')}
                   className="text-white border-2 border-white/30 hover:bg-white/10"
                 >
-                  View Dashboard
+                  {t('common.viewDashboard', 'View Dashboard')}
                 </Button>
               </motion.div>
 
@@ -187,7 +189,7 @@ export default function LandingPage() {
                   ))}
                 </div>
                 <p className="text-white/60 text-sm">
-                  <span className="text-white font-bold">10,000+</span> weavers already verified
+                  <span className="text-white font-bold">10,000+</span> {t('landing.verifiedWeavers', 'weavers already verified')}
                 </p>
               </motion.div>
             </motion.div>
@@ -202,9 +204,7 @@ export default function LandingPage() {
                 className="glass rounded-3xl p-6 shadow-2xl"
               >
                 <div className="flex items-center gap-3 mb-4">
-                  <div className="w-12 h-12 bg-gradient-to-br from-emerald-500 to-indigo-600 rounded-2xl flex items-center justify-center">
-                    <Sparkles size={22} className="text-white" />
-                  </div>
+                  <img src={logoKargha} alt="Karghadhan Logo" className="w-12 h-12 object-contain shrink-0" />
                   <div>
                     <p className="font-bold text-slate-800">Kargha AI</p>
                     <div className="flex items-center gap-1.5">
@@ -299,12 +299,12 @@ export default function LandingPage() {
             viewport={{ once: true }}
             className="text-center mb-14"
           >
-            <span className="text-emerald-600 font-bold text-sm uppercase tracking-widest">Everything You Need</span>
+            <span className="text-emerald-600 font-bold text-sm uppercase tracking-widest">{t('landing.everythingYouNeed', 'Everything You Need')}</span>
             <h2 className="text-3xl sm:text-4xl font-bold text-slate-800 mt-2 font-display">
-              Built for India's Weavers
+              {t('landing.featuresTitle', "Built for India's Weavers")}
             </h2>
             <p className="text-slate-500 mt-4 max-w-xl mx-auto">
-              From AI-powered identity verification to personalised financial recommendations — all in one platform.
+              {t('landing.featuresSubtitle', 'From AI-powered identity verification to personalised financial recommendations — all in one platform.')}
             </p>
           </motion.div>
 
@@ -348,7 +348,7 @@ export default function LandingPage() {
           >
             <span className="text-emerald-600 font-bold text-sm uppercase tracking-widest">Testimonials</span>
             <h2 className="text-3xl font-bold text-slate-800 mt-2 font-display">
-              Weavers Love KarghaKadam
+              Weavers Love Karghadhan
             </h2>
           </motion.div>
 
@@ -400,10 +400,10 @@ export default function LandingPage() {
             viewport={{ once: true }}
           >
             <h2 className="text-3xl sm:text-4xl font-bold text-white font-display mb-4">
-              Start Your Financial Journey Today
+              {t('landing.ctaTitle', 'Start Your Financial Journey Today')}
             </h2>
             <p className="text-white/80 text-lg mb-8">
-              Join 10,000+ verified weavers who have already unlocked loans, insurance, and government benefits.
+              {t('landing.ctaSubtitle', 'Join 10,000+ verified weavers who have already unlocked loans, insurance, and government benefits.')}
             </p>
             <Button
               size="xl"
@@ -411,7 +411,7 @@ export default function LandingPage() {
               rightIcon={<ArrowRight size={20} />}
               className="bg-white text-emerald-700 hover:bg-emerald-50 shadow-2xl"
             >
-              Get Started for Free
+              {t('common.getStartedFree', 'Get Started for Free')}
             </Button>
           </motion.div>
         </div>

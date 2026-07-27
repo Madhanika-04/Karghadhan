@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Outlet, useNavigate } from 'react-router-dom';
+import { Outlet, useNavigate, useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import {
   Bell,
@@ -18,6 +18,14 @@ export function DashboardLayout() {
   const { notifications, markNotificationRead, user } = useAppContext();
   const unreadCount = notifications.filter((n) => !n.isRead).length;
   const navigate = useNavigate();
+  const location = useLocation();
+
+  const handleNotificationClick = () => {
+    // If on mobile or prefer a dedicated page, we could navigate to /notifications
+    // But since the dropdown exists, let's keep it for desktop, or maybe navigate if we prefer.
+    // For now, let's toggle dropdown, but also provide a "View All" link inside it.
+    setNotifOpen(!notifOpen);
+  };
 
   return (
     <div className="min-h-screen bg-slate-50 flex">
@@ -43,21 +51,21 @@ export function DashboardLayout() {
             <input
               type="text"
               placeholder="Search schemes, loans..."
-              className="w-full pl-9 pr-4 py-2 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-emerald-400 focus:ring-1 focus:ring-emerald-100"
+              className="w-full pl-9 pr-4 py-2.5 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-primary-400 focus:ring-1 focus:ring-primary-100 transition-all font-medium"
             />
           </div>
 
-          <div className="ml-auto flex items-center gap-3">
+          <div className="ml-auto flex items-center gap-3 sm:gap-4">
             {/* Notifications */}
             <div className="relative">
               <button
-                onClick={() => setNotifOpen(!notifOpen)}
+                onClick={handleNotificationClick}
                 className="relative p-2 rounded-xl hover:bg-slate-100 text-slate-600 transition-colors"
                 aria-label="Notifications"
               >
                 <Bell size={20} />
                 {unreadCount > 0 && (
-                  <span className="absolute top-1 right-1 w-4 h-4 bg-red-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center">
+                  <span className="absolute top-1 right-1.5 w-4 h-4 bg-red-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center border-2 border-white">
                     {unreadCount}
                   </span>
                 )}
@@ -68,28 +76,48 @@ export function DashboardLayout() {
                 <motion.div
                   initial={{ opacity: 0, y: 8, scale: 0.95 }}
                   animate={{ opacity: 1, y: 0, scale: 1 }}
-                  className="absolute right-0 top-full mt-2 w-80 bg-white rounded-2xl shadow-2xl border border-slate-100 z-50"
+                  className="absolute right-0 top-full mt-2 w-80 bg-white rounded-2xl shadow-xl border border-slate-100 z-50 overflow-hidden"
                 >
-                  <div className="p-4 border-b border-slate-100 flex items-center justify-between">
+                  <div className="p-4 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
                     <h3 className="font-bold text-slate-800 text-sm">Notifications</h3>
-                    <span className="text-xs text-emerald-600 font-semibold">{unreadCount} new</span>
+                    <span className="text-xs text-primary-600 font-bold bg-primary-50 px-2 py-0.5 rounded-full">{unreadCount} new</span>
                   </div>
                   <div className="max-h-72 overflow-y-auto">
-                    {notifications.map((n) => (
-                      <div
-                        key={n.id}
-                        onClick={() => markNotificationRead(n.id)}
-                        className={`p-4 border-b border-slate-50 cursor-pointer hover:bg-slate-50 transition-colors ${!n.isRead ? 'bg-emerald-50/50' : ''}`}
-                      >
-                        <div className="flex items-start gap-3">
-                          <div className={`w-2 h-2 rounded-full mt-2 flex-shrink-0 ${n.isRead ? 'bg-slate-300' : 'bg-emerald-500'}`} />
-                          <div>
-                            <p className="text-sm font-semibold text-slate-800">{n.title}</p>
-                            <p className="text-xs text-slate-500 mt-0.5">{n.message}</p>
+                    {notifications.length === 0 ? (
+                      <div className="p-6 text-center text-slate-500 text-sm">
+                        No notifications yet.
+                      </div>
+                    ) : (
+                      notifications.slice(0, 5).map((n) => (
+                        <div
+                          key={n.id}
+                          onClick={() => {
+                            markNotificationRead(n.id);
+                            // navigate('/notifications');
+                          }}
+                          className={`p-4 border-b border-slate-50 cursor-pointer hover:bg-slate-50 transition-colors ${!n.isRead ? 'bg-primary-50/30' : ''}`}
+                        >
+                          <div className="flex items-start gap-3">
+                            <div className={`w-2 h-2 rounded-full mt-2 flex-shrink-0 ${n.isRead ? 'bg-slate-300' : 'bg-primary-500'}`} />
+                            <div>
+                              <p className="text-sm font-bold text-slate-800 leading-tight">{n.title}</p>
+                              <p className="text-xs text-slate-500 mt-1 line-clamp-2 leading-relaxed">{n.message}</p>
+                            </div>
                           </div>
                         </div>
-                      </div>
-                    ))}
+                      ))
+                    )}
+                  </div>
+                  <div className="p-3 border-t border-slate-100 bg-slate-50 text-center">
+                    <button
+                      onClick={() => {
+                        setNotifOpen(false);
+                        navigate('/notifications');
+                      }}
+                      className="text-sm font-bold text-primary-600 hover:text-primary-700 transition-colors w-full"
+                    >
+                      View all notifications
+                    </button>
                   </div>
                 </motion.div>
               )}
@@ -98,16 +126,16 @@ export function DashboardLayout() {
             {/* Profile */}
             <button
               onClick={() => navigate('/profile')}
-              className="flex items-center gap-2.5 hover:bg-slate-50 rounded-xl px-2 py-1.5 transition-colors"
+              className="flex items-center gap-2.5 hover:bg-slate-100 rounded-xl px-2 py-1.5 transition-colors border border-transparent hover:border-slate-200"
             >
-              <div className="w-8 h-8 bg-gradient-to-br from-emerald-400 to-indigo-500 rounded-xl flex items-center justify-center text-white text-xs font-bold">
+              <div className="w-9 h-9 bg-gradient-to-br from-primary-500 to-secondary-500 rounded-xl flex items-center justify-center text-white text-sm font-bold shadow-sm">
                 {user?.name.charAt(0)}
               </div>
               <div className="hidden sm:block text-left">
-                <p className="text-xs font-bold text-slate-800">{user?.name}</p>
-                <div className="flex items-center gap-1">
-                  <CheckCircle size={10} className="text-emerald-500" />
-                  <p className="text-[10px] text-emerald-600 font-semibold">Verified</p>
+                <p className="text-sm font-bold text-slate-800 leading-tight">{user?.name}</p>
+                <div className="flex items-center gap-1 mt-0.5">
+                  <CheckCircle size={10} className="text-success-500" />
+                  <p className="text-[10px] text-success-600 font-bold uppercase tracking-wider">Verified</p>
                 </div>
               </div>
             </button>
@@ -115,8 +143,8 @@ export function DashboardLayout() {
         </header>
 
         {/* Page Content */}
-        <main className="flex-1 p-4 sm:p-6 pb-24 lg:pb-6">
-          <motion.div {...pageTransition} key={location.pathname}>
+        <main className="flex-1 p-4 sm:p-6 pb-24 lg:pb-6 relative overflow-x-hidden">
+          <motion.div {...pageTransition} key={location.pathname} className="h-full">
             <Outlet />
           </motion.div>
         </main>

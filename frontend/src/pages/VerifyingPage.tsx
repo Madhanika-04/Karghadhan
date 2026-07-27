@@ -1,21 +1,25 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { CheckCircle, ArrowRight, Sparkles } from 'lucide-react';
+import { CheckCircle, ArrowRight } from 'lucide-react';
 import { Button } from '../components/ui/Button';
+import { useTranslation } from 'react-i18next';
 import { useAppContext } from '../context/AppContext';
 
 const verificationSteps = [
-  { id: 1, label: 'Scanning Aadhaar Document', duration: 1800 },
-  { id: 2, label: 'Reading OCR Data', duration: 1500 },
-  { id: 3, label: 'Matching Weaver ID', duration: 1600 },
-  { id: 4, label: 'Checking Government Records', duration: 2000 },
-  { id: 5, label: 'Analysing Financial Eligibility', duration: 1700 },
-  { id: 6, label: 'Creating Digital Weaver Profile', duration: 1400 },
+  { id: 1, key: 'onboarding.step1', fallback: 'Scanning Aadhaar Document', duration: 1800 },
+  { id: 2, key: 'onboarding.step2', fallback: 'Reading OCR Data', duration: 1500 },
+  { id: 3, key: 'onboarding.step3', fallback: 'Matching Weaver ID', duration: 1600 },
+  { id: 4, key: 'onboarding.step4', fallback: 'Checking Government Records', duration: 2000 },
+  { id: 5, key: 'onboarding.step5', fallback: 'Analysing Financial Eligibility', duration: 1700 },
+  { id: 6, key: 'onboarding.step6', fallback: 'Creating Digital Weaver Profile', duration: 1400 },
 ];
+
+import logoKargha from '../assets/logokargha.png';
 
 export default function VerifyingPage() {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const { setVerified } = useAppContext();
   const [currentStep, setCurrentStep] = useState(0);
   const [completedSteps, setCompletedSteps] = useState<number[]>([]);
@@ -76,22 +80,22 @@ export default function VerifyingPage() {
                     delay: i * 0.3,
                     ease: 'easeOut',
                   }}
-                  className="absolute inset-0 rounded-full border-2 border-emerald-400/40"
+                  className="absolute inset-0 rounded-full border-2 border-primary-400/40"
                 />
               ))}
               <div className="absolute inset-0 flex items-center justify-center">
                 <motion.div
                   animate={{ rotate: 360 }}
                   transition={{ duration: 8, repeat: Infinity, ease: 'linear' }}
-                  className="w-24 h-24 bg-gradient-to-br from-emerald-400 via-emerald-500 to-indigo-600 rounded-full flex items-center justify-center shadow-2xl shadow-emerald-200"
+                  className="w-24 h-24 flex items-center justify-center"
                 >
-                  <Sparkles size={36} className="text-white" />
+                  <img src={logoKargha} alt="Logo" className="w-24 h-24 object-contain drop-shadow-xl" />
                 </motion.div>
               </div>
             </div>
 
-            <h1 className="text-2xl font-bold text-slate-800 font-display">AI Verification</h1>
-            <p className="text-slate-500 text-sm mt-2">Kargha AI is verifying your identity...</p>
+            <h1 className="text-2xl font-bold text-slate-800 font-display tracking-tight">{t('onboarding.aiVerification', 'AI Verification')}</h1>
+            <p className="text-slate-500 text-sm mt-2">{t('onboarding.verifyingIdentity', 'KarghaDhan AI is verifying your identity...')}</p>
           </motion.div>
 
           {/* Steps */}
@@ -117,13 +121,13 @@ export default function VerifyingPage() {
                         animate={{ scale: 1 }}
                         transition={{ type: 'spring', stiffness: 300, damping: 15 }}
                       >
-                        <CheckCircle size={24} className="text-emerald-500" />
+                        <CheckCircle size={24} className="text-success-500" />
                       </motion.div>
                     ) : isCurrent ? (
                       <motion.div
                         animate={{ rotate: 360 }}
                         transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
-                        className="w-6 h-6 border-2 border-emerald-500 border-t-transparent rounded-full"
+                        className="w-6 h-6 border-2 border-primary-500 border-t-transparent rounded-full"
                       />
                     ) : (
                       <div className="w-6 h-6 rounded-full border-2 border-slate-200" />
@@ -135,20 +139,20 @@ export default function VerifyingPage() {
                     <p
                       className={`text-sm font-semibold ${
                         isCompleted
-                          ? 'text-emerald-700'
+                          ? 'text-success-700'
                           : isCurrent
                           ? 'text-slate-800'
                           : 'text-slate-400'
                       }`}
                     >
-                      {step.label}
+                      {t(step.key, step.fallback)}
                     </p>
                     {isCurrent && (
                       <motion.div
                         initial={{ width: 0 }}
                         animate={{ width: '100%' }}
                         transition={{ duration: step.duration / 1000, ease: 'linear' }}
-                        className="h-1 bg-gradient-to-r from-emerald-400 to-emerald-600 rounded-full mt-1.5"
+                        className="h-1 bg-gradient-to-r from-primary-400 to-primary-600 rounded-full mt-1.5"
                       />
                     )}
                   </div>
@@ -156,7 +160,7 @@ export default function VerifyingPage() {
                   {/* Status Badge */}
                   <div className="flex-shrink-0">
                     {isCompleted && (
-                      <span className="text-xs font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full">
+                      <span className="text-xs font-bold text-success-600 bg-success-50 px-2 py-0.5 rounded-full border border-success-100">
                         Done
                       </span>
                     )}
@@ -164,13 +168,13 @@ export default function VerifyingPage() {
                       <motion.span
                         animate={{ opacity: [1, 0.5, 1] }}
                         transition={{ duration: 1.2, repeat: Infinity }}
-                        className="text-xs font-bold text-amber-600 bg-amber-50 px-2 py-0.5 rounded-full"
+                        className="text-xs font-bold text-amber-600 bg-amber-50 px-2 py-0.5 rounded-full border border-amber-100"
                       >
                         Processing
                       </motion.span>
                     )}
                     {isPending && (
-                      <span className="text-xs font-medium text-slate-300 bg-slate-50 px-2 py-0.5 rounded-full">
+                      <span className="text-xs font-medium text-slate-400 bg-slate-50 px-2 py-0.5 rounded-full border border-slate-100">
                         Pending
                       </span>
                     )}
@@ -183,14 +187,14 @@ export default function VerifyingPage() {
           {/* Progress bar */}
           <div className="bg-white rounded-2xl p-4 shadow-sm border border-slate-100">
             <div className="flex justify-between text-xs text-slate-500 mb-2">
-              <span>Overall Progress</span>
-              <span className="font-bold text-emerald-600">
+              <span>{t('onboarding.overallProgress', 'Overall Progress')}</span>
+              <span className="font-bold text-primary-600">
                 {Math.round((completedSteps.length / verificationSteps.length) * 100)}%
               </span>
             </div>
             <div className="h-2 bg-slate-100 rounded-full overflow-hidden">
               <motion.div
-                className="h-full bg-gradient-to-r from-emerald-400 to-emerald-600 rounded-full"
+                className="h-full bg-gradient-to-r from-primary-400 to-primary-600 rounded-full"
                 initial={{ width: 0 }}
                 animate={{
                   width: `${(completedSteps.length / verificationSteps.length) * 100}%`,
@@ -214,14 +218,14 @@ export default function VerifyingPage() {
               <motion.div
                 animate={{ scale: [1, 1.15, 1] }}
                 transition={{ duration: 2, repeat: Infinity }}
-                className="absolute inset-0 bg-emerald-100 rounded-full"
+                className="absolute inset-0 bg-success-100 rounded-full"
               />
               <div className="absolute inset-0 flex items-center justify-center">
                 <motion.div
                   initial={{ scale: 0 }}
                   animate={{ scale: 1 }}
                   transition={{ type: 'spring', stiffness: 200, damping: 10, delay: 0.2 }}
-                  className="w-24 h-24 bg-gradient-to-br from-emerald-400 to-emerald-600 rounded-full flex items-center justify-center shadow-xl shadow-emerald-200"
+                  className="w-24 h-24 bg-gradient-to-br from-success-400 to-success-600 rounded-full flex items-center justify-center shadow-xl shadow-success-200"
                 >
                   <CheckCircle size={48} className="text-white" />
                 </motion.div>
@@ -232,9 +236,9 @@ export default function VerifyingPage() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.3 }}
-              className="text-3xl font-bold text-slate-800 font-display mb-2"
+              className="text-3xl font-bold text-slate-800 font-display mb-2 tracking-tight"
             >
-              Identity Verified! ✅
+              {t('onboarding.verifiedTitle', 'Identity Verified!')}
             </motion.h1>
 
             <motion.p
@@ -243,42 +247,8 @@ export default function VerifyingPage() {
               transition={{ delay: 0.5 }}
               className="text-slate-500 mb-8"
             >
-              Your Digital Weaver Profile has been created
+              {t('onboarding.verifiedSub', 'Your Aadhaar and Weaver ID have been securely verified.')}
             </motion.p>
-
-            {/* Profile Completion */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.7 }}
-              className="bg-white rounded-3xl p-6 shadow-sm border border-slate-100 mb-6 text-left"
-            >
-              <div className="flex items-center justify-between mb-4">
-                <p className="font-bold text-slate-800">Profile Completion</p>
-                <span className="text-2xl font-bold text-emerald-600">95%</span>
-              </div>
-              <div className="h-3 bg-slate-100 rounded-full overflow-hidden">
-                <motion.div
-                  initial={{ width: 0 }}
-                  animate={{ width: '95%' }}
-                  transition={{ duration: 1, delay: 0.9 }}
-                  className="h-full bg-gradient-to-r from-emerald-400 to-emerald-600 rounded-full"
-                />
-              </div>
-
-              <div className="mt-4 grid grid-cols-3 gap-3">
-                {[
-                  { label: 'Loans Eligible', count: '4', color: 'text-emerald-600', bg: 'bg-emerald-50' },
-                  { label: 'Insurance Plans', count: '3', color: 'text-indigo-600', bg: 'bg-indigo-50' },
-                  { label: 'Gov. Schemes', count: '5', color: 'text-amber-600', bg: 'bg-amber-50' },
-                ].map((item) => (
-                  <div key={item.label} className={`${item.bg} rounded-xl p-3 text-center`}>
-                    <p className={`text-xl font-bold ${item.color}`}>{item.count}</p>
-                    <p className="text-xs text-slate-500 mt-0.5">{item.label}</p>
-                  </div>
-                ))}
-              </div>
-            </motion.div>
 
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -288,10 +258,10 @@ export default function VerifyingPage() {
               <Button
                 fullWidth
                 size="lg"
-                onClick={() => navigate('/dashboard')}
+                onClick={() => navigate('/onboarding-profile')}
                 rightIcon={<ArrowRight size={18} />}
               >
-                View My Dashboard
+                {t('onboarding.setupProfile', 'Setup AI Financial Profile')}
               </Button>
             </motion.div>
           </motion.div>

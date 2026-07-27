@@ -1,6 +1,6 @@
 import { Outlet } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Sparkles } from 'lucide-react';
+import logoKargha from '../assets/logokargha.png';
 
 // Step labels for onboarding progress
 const steps = [
@@ -22,10 +22,8 @@ export function OnboardingLayout({ step }: OnboardingLayoutProps) {
       {/* Top Bar */}
       <div className="px-4 sm:px-8 pt-6 pb-4 flex items-center justify-between max-w-2xl mx-auto w-full">
         <div className="flex items-center gap-2">
-          <div className="w-8 h-8 bg-gradient-to-br from-emerald-500 to-indigo-600 rounded-xl flex items-center justify-center">
-            <Sparkles size={16} className="text-white" />
-          </div>
-          <span className="font-bold text-slate-800">KarghaKadam</span>
+          <img src={logoKargha} alt="Karghadhan Logo" className="w-12 h-12 object-contain shrink-0" />
+          <span className="font-bold text-slate-800">Karghadhan</span>
         </div>
         {step !== undefined && (
           <span className="text-xs text-slate-400 font-semibold">

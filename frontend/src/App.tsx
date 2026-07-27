@@ -6,16 +6,17 @@ import { AppProvider } from './context/AppContext';
 import { DashboardLayout } from './layouts/DashboardLayout';
 import { OnboardingLayout } from './layouts/OnboardingLayout';
 
-// Pages — Public
-import LandingPage from './pages/LandingPage';
+// Pages — Public & Auth
+import SplashPage from './pages/SplashPage';
+import LanguagePage from './pages/LanguagePage';
+import LoginPage from './pages/LoginPage';
+import RegisterPage from './pages/RegisterPage';
 
 // Pages — Onboarding
-import LanguagePage from './pages/LanguagePage';
-import WelcomePage from './pages/WelcomePage';
 import VerifyPage from './pages/VerifyPage';
-import ProfileDetailsPage from './pages/ProfileDetailsPage';
 import UploadPage from './pages/UploadPage';
 import VerifyingPage from './pages/VerifyingPage';
+import OnboardingProfilePage from './pages/OnboardingProfilePage';
 
 // Pages — Dashboard
 import DashboardPage from './pages/DashboardPage';
@@ -25,6 +26,8 @@ import SchemesPage from './pages/SchemesPage';
 import LiteracyPage from './pages/LiteracyPage';
 import AssistantPage from './pages/AssistantPage';
 import ProfilePage from './pages/ProfilePage';
+import DocumentsPage from './pages/DocumentsPage';
+import NotificationsPage from './pages/NotificationsPage';
 
 export default function App() {
   return (
@@ -32,27 +35,24 @@ export default function App() {
       <BrowserRouter>
         <AnimatePresence mode="wait">
           <Routes>
-            {/* Landing */}
-            <Route path="/" element={<LandingPage />} />
+            {/* Public */}
+            <Route path="/" element={<SplashPage />} />
+            <Route path="/language" element={<LanguagePage />} />
+            <Route path="/login" element={<LoginPage />} />
+            <Route path="/register" element={<RegisterPage />} />
 
             {/* Onboarding Flow */}
             <Route element={<OnboardingLayout step={0} />}>
-              <Route path="/language" element={<LanguagePage />} />
-            </Route>
-            <Route element={<OnboardingLayout step={1} />}>
-              <Route path="/welcome" element={<WelcomePage />} />
-            </Route>
-            <Route element={<OnboardingLayout step={2} />}>
               <Route path="/verify" element={<VerifyPage />} />
             </Route>
-            <Route element={<OnboardingLayout step={3} />}>
-              <Route path="/profile-details" element={<ProfileDetailsPage />} />
-            </Route>
-            <Route element={<OnboardingLayout step={4} />}>
+            <Route element={<OnboardingLayout step={1} />}>
               <Route path="/upload" element={<UploadPage />} />
             </Route>
-            <Route element={<OnboardingLayout step={5} />}>
+            <Route element={<OnboardingLayout step={2} />}>
               <Route path="/verifying" element={<VerifyingPage />} />
+            </Route>
+            <Route element={<OnboardingLayout step={3} />}>
+              <Route path="/onboarding-profile" element={<OnboardingProfilePage />} />
             </Route>
 
             {/* Dashboard */}
@@ -63,6 +63,8 @@ export default function App() {
               <Route path="/schemes" element={<SchemesPage />} />
               <Route path="/literacy" element={<LiteracyPage />} />
               <Route path="/assistant" element={<AssistantPage />} />
+              <Route path="/documents" element={<DocumentsPage />} />
+              <Route path="/notifications" element={<NotificationsPage />} />
               <Route path="/profile" element={<ProfilePage />} />
             </Route>
 

@@ -2,6 +2,7 @@ import React, { createContext, useContext, useState, useCallback } from 'react';
 import type { AppContextType, AppState, Language, Notification, UserProfile } from '../types';
 import { languages } from '../data/languages';
 import { mockUser, notifications as initialNotifications } from '../data/mockUser';
+import i18n from '../i18n';
 
 const AppContext = createContext<AppContextType | null>(null);
 
@@ -17,7 +18,18 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const [state, setState] = useState<AppState>(defaultState);
 
   const setLanguage = useCallback((language: Language) => {
+    i18n.changeLanguage(language.code);
     setState((prev) => ({ ...prev, language }));
+  }, []);
+
+  // Sync initial state if i18n detected a language from localStorage
+  React.useEffect(() => {
+    if (i18n.language && i18n.language !== state.language.code) {
+      const detected = languages.find(l => l.code === i18n.language);
+      if (detected) {
+        setState(prev => ({ ...prev, language: detected }));
+      }
+    }
   }, []);
 
   const setUser = useCallback((user: UserProfile) => {

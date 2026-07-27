@@ -17,6 +17,13 @@ export const mockUser: UserProfile = {
   profileCompletion: 95,
   isVerified: true,
   joinedDate: '2024-11-15',
+  familyMembers: 4,
+  ownsLoom: true,
+  hasExistingLoan: false,
+  hasExistingInsurance: false,
+  hasUPI: true,
+  savingsHabit: 'Monthly',
+  trustScore: 780,
 };
 
 export const aiResponses: Record<string, string> = {
@@ -37,7 +44,7 @@ export const aiResponses: Record<string, string> = {
   'how to improve loan eligibility': `Here are 5 key steps to improve your loan eligibility:
 1. **Build CIBIL score** – Pay all EMIs and credit card bills on time
 2. **Maintain savings** – Keep 3–6 months income as bank balance
-3. **Complete your profile** – Your current KarghaKadam profile is 95% complete!
+3. **Complete your profile** – Your current Karghadhan profile is 95% complete!
 4. **Join a Cooperative** – Cooperative membership improves loan terms significantly
 5. **Keep documents ready** – Aadhaar, Weaver ID, bank statements up to date`,
 

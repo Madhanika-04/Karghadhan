@@ -1,108 +1,51 @@
-import React from 'react';
+import * as React from "react"
+import { cn } from "../../utils/cn"
 
-interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
+export interface InputProps
+  extends React.InputHTMLAttributes<HTMLInputElement> {
+  error?: string | boolean;
   label?: string;
-  error?: string;
   leftIcon?: React.ReactNode;
-  rightIcon?: React.ReactNode;
   helperText?: string;
 }
 
-export function Input({
-  label,
-  error,
-  leftIcon,
-  rightIcon,
-  helperText,
-  className = '',
-  id,
-  ...rest
-}: InputProps) {
-  const inputId = id || `input-${label?.toLowerCase().replace(/\s/g, '-')}`;
-
-  return (
-    <div className="flex flex-col gap-1.5 w-full">
-      {label && (
-        <label htmlFor={inputId} className="text-sm font-semibold text-slate-700">
-          {label}
-        </label>
-      )}
-      <div className="relative">
-        {leftIcon && (
-          <div className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">
-            {leftIcon}
-          </div>
+const Input = React.forwardRef<HTMLInputElement, InputProps>(
+  ({ className, type, error, label, leftIcon, helperText, ...props }, ref) => {
+    return (
+      <div className="w-full">
+        {label && (
+          <label className="block text-sm font-medium text-slate-700 mb-1.5">
+            {label}
+          </label>
         )}
-        <input
-          id={inputId}
-          className={[
-            'w-full rounded-xl border px-4 py-3 text-slate-800 bg-white transition-all duration-200',
-            'placeholder:text-slate-400 text-sm font-medium',
-            leftIcon ? 'pl-10' : '',
-            rightIcon ? 'pr-10' : '',
-            error
-              ? 'border-red-300 focus:border-red-500 focus:ring-2 focus:ring-red-100'
-              : 'border-slate-200 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-100',
-            className,
-          ].join(' ')}
-          {...rest}
-        />
-        {rightIcon && (
-          <div className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400">
-            {rightIcon}
-          </div>
+        <div className="relative flex items-center">
+          {leftIcon && (
+            <div className="absolute left-3 flex items-center justify-center text-slate-400 pointer-events-none">
+              {leftIcon}
+            </div>
+          )}
+          <input
+            type={type}
+            className={cn(
+              "flex h-11 w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm ring-offset-white file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-slate-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 disabled:cursor-not-allowed disabled:opacity-50 transition-colors shadow-sm",
+              leftIcon && "pl-10",
+              error && "border-danger-500 focus-visible:ring-danger-500",
+              className
+            )}
+            ref={ref}
+            {...props}
+          />
+        </div>
+        {helperText && !error && (
+          <p className="mt-1.5 text-xs text-slate-500">{helperText}</p>
+        )}
+        {error && typeof error === 'string' && (
+          <p className="mt-1.5 text-xs text-danger-500 font-medium">{error}</p>
         )}
       </div>
-      {error && <p className="text-xs text-red-500 font-medium">{error}</p>}
-      {helperText && !error && (
-        <p className="text-xs text-slate-400">{helperText}</p>
-      )}
-    </div>
-  );
-}
+    )
+  }
+)
+Input.displayName = "Input"
 
-interface SelectProps extends React.SelectHTMLAttributes<HTMLSelectElement> {
-  label?: string;
-  error?: string;
-  options: { value: string; label: string }[];
-  leftIcon?: React.ReactNode;
-}
-
-export function Select({ label, error, options, leftIcon, className = '', id, ...rest }: SelectProps) {
-  const selectId = id || `select-${label?.toLowerCase().replace(/\s/g, '-')}`;
-  return (
-    <div className="flex flex-col gap-1.5 w-full">
-      {label && (
-        <label htmlFor={selectId} className="text-sm font-semibold text-slate-700">
-          {label}
-        </label>
-      )}
-      <div className="relative">
-        {leftIcon && (
-          <div className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 z-10">
-            {leftIcon}
-          </div>
-        )}
-        <select
-          id={selectId}
-          className={[
-            'w-full rounded-xl border px-4 py-3 text-slate-800 bg-white transition-all duration-200 appearance-none text-sm font-medium',
-            leftIcon ? 'pl-10' : '',
-            error
-              ? 'border-red-300 focus:border-red-500'
-              : 'border-slate-200 focus:border-emerald-500',
-            className,
-          ].join(' ')}
-          {...rest}
-        >
-          {options.map((o) => (
-            <option key={o.value} value={o.value}>
-              {o.label}
-            </option>
-          ))}
-        </select>
-      </div>
-      {error && <p className="text-xs text-red-500">{error}</p>}
-    </div>
-  );
-}
+export { Input }

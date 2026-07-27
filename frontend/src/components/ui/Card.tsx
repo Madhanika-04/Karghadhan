@@ -1,70 +1,71 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { hoverScale } from '../../utils/animations';
+import { cn } from '../../utils/cn';
 
-interface CardProps {
-  children: React.ReactNode;
-  className?: string;
-  glass?: boolean;
-  hover?: boolean;
-  gradient?: string;
-  onClick?: () => void;
-  padding?: string;
-}
+const Card = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement> & { glass?: boolean }>(
+  ({ className, glass, ...props }, ref) => (
+    <div
+      ref={ref}
+      className={cn(
+        "rounded-3xl border bg-card text-card-foreground shadow-sm transition-all duration-200",
+        glass ? "bg-white/70 backdrop-blur-xl border-white/40 shadow-sm" : "bg-white border-slate-100",
+        className
+      )}
+      {...props}
+    />
+  )
+)
+Card.displayName = "Card"
 
-export function Card({
-  children,
-  className = '',
-  glass = false,
-  hover = false,
-  gradient,
-  onClick,
-  padding = 'p-6',
-}: CardProps) {
-  const base =
-    'rounded-2xl shadow-sm border border-white/60 transition-all duration-200';
-  const glassStyle = glass
-    ? 'bg-white/70 backdrop-blur-xl border-white/40'
-    : 'bg-white';
-  const hoverStyle = hover ? 'card-hover cursor-pointer' : '';
-  const gradientStyle = gradient ? gradient : '';
+const CardHeader = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(
+  ({ className, ...props }, ref) => (
+    <div
+      ref={ref}
+      className={cn("flex flex-col space-y-1.5 p-6", className)}
+      {...props}
+    />
+  )
+)
+CardHeader.displayName = "CardHeader"
 
-  const Wrapper = onClick ? motion.div : 'div';
-  const motionProps = onClick ? { ...hoverScale, onClick } : { onClick };
+const CardTitle = React.forwardRef<HTMLParagraphElement, React.HTMLAttributes<HTMLHeadingElement>>(
+  ({ className, ...props }, ref) => (
+    <h3
+      ref={ref}
+      className={cn("text-lg font-semibold leading-none tracking-tight text-slate-900", className)}
+      {...props}
+    />
+  )
+)
+CardTitle.displayName = "CardTitle"
 
-  return (
-    <Wrapper
-      className={[base, glassStyle, hoverStyle, gradientStyle, padding, className].join(' ')}
-      {...(motionProps as any)}
-    >
-      {children}
-    </Wrapper>
-  );
-}
+const CardDescription = React.forwardRef<HTMLParagraphElement, React.HTMLAttributes<HTMLParagraphElement>>(
+  ({ className, ...props }, ref) => (
+    <p
+      ref={ref}
+      className={cn("text-sm text-slate-500", className)}
+      {...props}
+    />
+  )
+)
+CardDescription.displayName = "CardDescription"
 
-interface StatCardProps {
-  icon: React.ReactNode;
-  label: string;
-  value: string;
-  subValue?: string;
-  color?: string;
-  bgColor?: string;
-}
+const CardContent = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(
+  ({ className, ...props }, ref) => (
+    <div ref={ref} className={cn("p-6 pt-0", className)} {...props} />
+  )
+)
+CardContent.displayName = "CardContent"
 
-export function StatCard({ icon, label, value, subValue, color = 'text-emerald-600', bgColor = 'bg-emerald-50' }: StatCardProps) {
-  return (
-    <motion.div
-      {...hoverScale}
-      className="bg-white rounded-2xl p-5 shadow-sm border border-white/60 flex items-center gap-4"
-    >
-      <div className={`w-12 h-12 ${bgColor} rounded-xl flex items-center justify-center flex-shrink-0`}>
-        <div className={color}>{icon}</div>
-      </div>
-      <div>
-        <p className="text-2xl font-bold text-slate-800">{value}</p>
-        <p className="text-sm text-slate-500">{label}</p>
-        {subValue && <p className="text-xs text-emerald-600 font-medium">{subValue}</p>}
-      </div>
-    </motion.div>
-  );
-}
+const CardFooter = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(
+  ({ className, ...props }, ref) => (
+    <div
+      ref={ref}
+      className={cn("flex items-center p-6 pt-0", className)}
+      {...props}
+    />
+  )
+)
+CardFooter.displayName = "CardFooter"
+
+export { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter }

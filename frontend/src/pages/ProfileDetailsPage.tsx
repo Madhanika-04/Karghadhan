@@ -10,10 +10,12 @@ import {
   Calendar,
   CreditCard,
 } from 'lucide-react';
-import { Input, Select } from '../components/ui/Input';
+import { Input } from '../components/ui/Input';
+import { Select } from '../components/ui/Select';
 import { Button } from '../components/ui/Button';
 import { useAppContext } from '../context/AppContext';
 import { staggerContainer, staggerItem } from '../utils/animations';
+import { useTranslation } from 'react-i18next';
 
 const indianStates = [
   { value: '', label: 'Select State' },
@@ -48,6 +50,7 @@ const occupationOptions = [
 ];
 
 export default function ProfileDetailsPage() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const { setUser, user } = useAppContext();
 
@@ -72,14 +75,14 @@ export default function ProfileDetailsPage() {
 
   const validate = () => {
     const errs: Record<string, string> = {};
-    if (!form.name.trim()) errs.name = 'Full name is required';
-    if (!form.age || Number(form.age) < 18) errs.age = 'Age must be 18 or above';
-    if (!form.gender) errs.gender = 'Please select gender';
-    if (!form.district.trim()) errs.district = 'District is required';
-    if (!form.state) errs.state = 'Please select state';
-    if (!form.occupation) errs.occupation = 'Please select occupation';
+    if (!form.name.trim()) errs.name = t('validation.nameRequired', 'Full name is required');
+    if (!form.age || Number(form.age) < 18) errs.age = t('validation.ageRequired', 'Age must be 18 or above');
+    if (!form.gender) errs.gender = t('validation.genderRequired', 'Please select gender');
+    if (!form.district.trim()) errs.district = t('validation.districtRequired', 'District is required');
+    if (!form.state) errs.state = t('validation.stateRequired', 'Please select state');
+    if (!form.occupation) errs.occupation = t('validation.occupationRequired', 'Please select occupation');
     if (!form.monthlyIncome || Number(form.monthlyIncome) <= 0)
-      errs.monthlyIncome = 'Please enter monthly income';
+      errs.monthlyIncome = t('validation.incomeRequired', 'Please enter monthly income');
     return errs;
   };
 
@@ -114,8 +117,8 @@ export default function ProfileDetailsPage() {
         <div className="w-16 h-16 bg-gradient-to-br from-indigo-500 to-violet-600 rounded-3xl mx-auto mb-4 flex items-center justify-center shadow-xl">
           <User size={28} className="text-white" />
         </div>
-        <h1 className="text-2xl font-bold text-slate-800 font-display">Personal Details</h1>
-        <p className="text-slate-500 text-sm mt-2">Help us build your financial profile</p>
+        <h1 className="text-2xl font-bold text-slate-800 font-display">{t('profileDetails.title', 'Personal Details')}</h1>
+        <p className="text-slate-500 text-sm mt-2">{t('profileDetails.subtitle', 'Help us build your financial profile')}</p>
       </motion.div>
 
       <motion.div
@@ -127,7 +130,7 @@ export default function ProfileDetailsPage() {
         {/* Row 1: Name + Age */}
         <motion.div variants={staggerItem} className="grid grid-cols-2 gap-4">
           <Input
-            label="Full Name"
+            label={t('profileDetails.fullName', 'Full Name')}
             placeholder="Hari Krishnan"
             value={form.name}
             onChange={(e) => update('name', e.target.value)}
@@ -135,7 +138,7 @@ export default function ProfileDetailsPage() {
             leftIcon={<User size={16} />}
           />
           <Input
-            label="Age"
+            label={t('profileDetails.age', 'Age')}
             type="number"
             placeholder="34"
             value={form.age}
@@ -148,8 +151,8 @@ export default function ProfileDetailsPage() {
         {/* Gender */}
         <motion.div variants={staggerItem}>
           <Select
-            label="Gender"
-            options={genderOptions}
+            label={t('profileDetails.gender', 'Gender')}
+            options={genderOptions.map(opt => ({ ...opt, label: t(`profileDetails.gender_${opt.value}`, opt.label) }))}
             value={form.gender}
             onChange={(e) => update('gender', e.target.value)}
             error={errors.gender}
@@ -159,7 +162,7 @@ export default function ProfileDetailsPage() {
         {/* District + State */}
         <motion.div variants={staggerItem} className="grid grid-cols-2 gap-4">
           <Input
-            label="District"
+            label={t('profileDetails.district', 'District')}
             placeholder="Kanchipuram"
             value={form.district}
             onChange={(e) => update('district', e.target.value)}
@@ -167,7 +170,7 @@ export default function ProfileDetailsPage() {
             leftIcon={<MapPin size={16} />}
           />
           <Select
-            label="State"
+            label={t('profileDetails.state', 'State')}
             options={indianStates}
             value={form.state}
             onChange={(e) => update('state', e.target.value)}
@@ -178,8 +181,8 @@ export default function ProfileDetailsPage() {
         {/* Occupation */}
         <motion.div variants={staggerItem}>
           <Select
-            label="Occupation"
-            options={occupationOptions}
+            label={t('profileDetails.occupation', 'Occupation')}
+            options={occupationOptions.map(opt => ({ ...opt, label: t(`profileDetails.occupation_${opt.value}`, opt.label) }))}
             value={form.occupation}
             onChange={(e) => update('occupation', e.target.value)}
             error={errors.occupation}
@@ -190,7 +193,7 @@ export default function ProfileDetailsPage() {
         {/* Experience + Income */}
         <motion.div variants={staggerItem} className="grid grid-cols-2 gap-4">
           <Input
-            label="Years of Experience"
+            label={t('profileDetails.yearsOfExperience', 'Years of Experience')}
             type="number"
             placeholder="12"
             value={form.yearsOfExperience}
@@ -198,7 +201,7 @@ export default function ProfileDetailsPage() {
             leftIcon={<Briefcase size={16} />}
           />
           <Input
-            label="Monthly Income (₹)"
+            label={t('profileDetails.monthlyIncome', 'Monthly Income (₹)')}
             type="number"
             placeholder="18000"
             value={form.monthlyIncome}
@@ -211,18 +214,18 @@ export default function ProfileDetailsPage() {
         {/* Bank Account */}
         <motion.div variants={staggerItem}>
           <Input
-            label="Bank Account Number (Optional)"
-            placeholder="Leave blank if none"
+            label={t('profileDetails.bankAccountOptional', 'Bank Account Number (Optional)')}
+            placeholder={t('profileDetails.leaveBlank', 'Leave blank if none')}
             value={form.bankAccount}
             onChange={(e) => update('bankAccount', e.target.value)}
             leftIcon={<CreditCard size={16} />}
-            helperText="This helps us verify your bank account for loan disbursement"
+            helperText={t('profileDetails.bankHelperText', 'This helps us verify your bank account for loan disbursement')}
           />
         </motion.div>
 
         <motion.div variants={staggerItem}>
           <Button fullWidth size="lg" onClick={handleSubmit} rightIcon={<ArrowRight size={18} />}>
-            Save & Continue
+            {t('common.saveContinue', 'Save & Continue')}
           </Button>
         </motion.div>
       </motion.div>

@@ -1,20 +1,26 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { BookOpen, Clock, Play, CheckCircle, Trophy, Lock } from 'lucide-react';
+import { BookOpen, Clock, Play, CheckCircle, Trophy } from 'lucide-react';
 import { learningModules } from '../data/literacy';
 import { ProgressBar, Badge } from '../components/ui/Badge';
 import { Button } from '../components/ui/Button';
 import { Modal } from '../components/ui/Modal';
+import { Card, CardContent } from '../components/ui/Card';
 import { staggerContainer, staggerItem } from '../utils/animations';
 import type { LearningModule } from '../types';
+import { useTranslation } from 'react-i18next';
 
-const difficultyColor: Record<string, 'emerald' | 'amber' | 'red'> = {
-  Beginner: 'emerald',
+const difficultyColor: Record<string, 'success' | 'amber' | 'danger'> = {
+  Beginner: 'success',
   Intermediate: 'amber',
-  Advanced: 'red',
+  Advanced: 'danger',
 };
 
+// Map original gradient strings to our new theme if needed, or keep them for variety.
+// We will replace violet/indigo with primary/secondary.
+
 export default function LiteracyPage() {
+  const { t } = useTranslation();
   const [selectedModule, setSelectedModule] = useState<LearningModule | null>(null);
   const [activeFilter, setActiveFilter] = useState('All');
 
@@ -29,12 +35,12 @@ export default function LiteracyPage() {
       {/* Header */}
       <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }}>
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-violet-100 rounded-xl flex items-center justify-center">
-            <BookOpen size={22} className="text-violet-600" />
+          <div className="w-12 h-12 bg-primary-100 rounded-2xl flex items-center justify-center shadow-sm">
+            <BookOpen size={24} className="text-primary-600" />
           </div>
           <div>
-            <h1 className="text-2xl font-bold text-slate-800 font-display">Financial Literacy</h1>
-            <p className="text-sm text-slate-500">Learn, grow, and protect your finances</p>
+            <h1 className="text-2xl font-bold text-slate-900 font-display tracking-tight">{t('literacy.title', 'Financial Literacy')}</h1>
+            <p className="text-sm text-slate-500">{t('literacy.subtitle', 'Learn, grow, and protect your finances')}</p>
           </div>
         </div>
       </motion.div>
@@ -43,13 +49,14 @@ export default function LiteracyPage() {
       <motion.div
         initial={{ opacity: 0, scale: 0.97 }}
         animate={{ opacity: 1, scale: 1 }}
-        className="bg-gradient-to-r from-violet-600 to-indigo-700 rounded-3xl p-6 text-white"
+        className="bg-gradient-to-br from-primary-600 to-indigo-700 rounded-3xl p-6 text-white shadow-lg shadow-primary-200/50 relative overflow-hidden"
       >
-        <div className="flex flex-col sm:flex-row items-center gap-6">
+        <div className="absolute top-0 right-0 w-48 h-48 bg-white/5 rounded-full -translate-y-1/2 translate-x-1/2" />
+        <div className="relative z-10 flex flex-col sm:flex-row items-center gap-8">
           {/* Circular Progress */}
-          <div className="relative w-24 h-24 flex-shrink-0">
+          <div className="relative w-28 h-28 flex-shrink-0">
             <svg className="w-full h-full -rotate-90" viewBox="0 0 100 100">
-              <circle cx="50" cy="50" r="40" fill="none" stroke="rgba(255,255,255,0.2)" strokeWidth="8" />
+              <circle cx="50" cy="50" r="40" fill="none" stroke="rgba(255,255,255,0.15)" strokeWidth="8" />
               <motion.circle
                 cx="50"
                 cy="50"
@@ -61,34 +68,34 @@ export default function LiteracyPage() {
                 strokeDasharray={`${2 * Math.PI * 40}`}
                 initial={{ strokeDashoffset: 2 * Math.PI * 40 }}
                 animate={{ strokeDashoffset: 2 * Math.PI * 40 * (1 - overallProgress / 100) }}
-                transition={{ duration: 1.5, delay: 0.3 }}
+                transition={{ duration: 1.5, delay: 0.3, ease: "easeOut" }}
               />
             </svg>
             <div className="absolute inset-0 flex items-center justify-center">
               <div className="text-center">
-                <p className="text-2xl font-bold">{overallProgress}%</p>
-                <p className="text-[10px] text-white/70">Done</p>
+                <p className="text-3xl font-bold">{overallProgress}%</p>
+                <p className="text-[10px] text-white/80 font-medium uppercase tracking-wider">{t('literacy.done', 'Done')}</p>
               </div>
             </div>
           </div>
 
           <div className="flex-1 text-center sm:text-left">
-            <h3 className="text-xl font-bold mb-1">Your Learning Journey</h3>
-            <p className="text-white/70 text-sm mb-3">
-              {completedCount} of {learningModules.length} modules completed
+            <h3 className="text-xl font-bold mb-1">{t('literacy.learningJourney', 'Your Learning Journey')}</h3>
+            <p className="text-white/80 text-sm mb-4 font-medium">
+              {t('literacy.modulesCompleted', '{{completed}} of {{total}} modules completed', { completed: completedCount, total: learningModules.length })}
             </p>
-            <div className="flex gap-3 justify-center sm:justify-start">
-              <div className="bg-white/15 rounded-2xl px-4 py-2 text-center">
-                <p className="font-bold text-lg">{completedCount}</p>
-                <p className="text-[10px] text-white/70">Completed</p>
+            <div className="flex gap-4 justify-center sm:justify-start">
+              <div className="bg-white/10 backdrop-blur-sm rounded-2xl px-5 py-3 text-center border border-white/10">
+                <p className="font-bold text-xl">{completedCount}</p>
+                <p className="text-[10px] text-white/80 font-medium uppercase tracking-wider mt-0.5">{t('literacy.completed', 'Completed')}</p>
               </div>
-              <div className="bg-white/15 rounded-2xl px-4 py-2 text-center">
-                <p className="font-bold text-lg">{learningModules.filter((m) => m.progress > 0 && !m.isCompleted).length}</p>
-                <p className="text-[10px] text-white/70">In Progress</p>
+              <div className="bg-white/10 backdrop-blur-sm rounded-2xl px-5 py-3 text-center border border-white/10">
+                <p className="font-bold text-xl">{learningModules.filter((m) => m.progress > 0 && !m.isCompleted).length}</p>
+                <p className="text-[10px] text-white/80 font-medium uppercase tracking-wider mt-0.5">{t('literacy.inProgress', 'In Progress')}</p>
               </div>
-              <div className="bg-white/15 rounded-2xl px-4 py-2 text-center">
-                <p className="font-bold text-lg">{learningModules.reduce((sum, m) => sum + m.estimatedMinutes, 0)} min</p>
-                <p className="text-[10px] text-white/70">Total Time</p>
+              <div className="bg-white/10 backdrop-blur-sm rounded-2xl px-5 py-3 text-center border border-white/10">
+                <p className="font-bold text-xl">{learningModules.reduce((sum, m) => sum + m.estimatedMinutes, 0)}m</p>
+                <p className="text-[10px] text-white/80 font-medium uppercase tracking-wider mt-0.5">{t('literacy.totalTime', 'Total Time')}</p>
               </div>
             </div>
           </div>
@@ -96,19 +103,19 @@ export default function LiteracyPage() {
       </motion.div>
 
       {/* Filters */}
-      <div className="flex gap-2 overflow-x-auto pb-2">
+      <div className="flex gap-2 overflow-x-auto pb-2 pt-2 scrollbar-hide">
         {categories.map((cat) => (
           <button
             key={cat}
             onClick={() => setActiveFilter(cat)}
             className={[
-              'flex-shrink-0 px-4 py-2 rounded-xl text-xs font-bold transition-all',
+              'flex-shrink-0 px-4 py-2 rounded-xl text-xs font-bold transition-all duration-200',
               activeFilter === cat
-                ? 'bg-violet-600 text-white'
-                : 'bg-white text-slate-600 border border-slate-200 hover:border-violet-300',
+                ? 'bg-primary-600 text-white shadow-md shadow-primary-200'
+                : 'bg-white text-slate-600 border border-slate-200 hover:border-primary-300 hover:bg-primary-50',
             ].join(' ')}
           >
-            {cat}
+            {cat === 'All' ? t('literacy.filterAll', 'All') : cat}
           </button>
         ))}
       </div>
@@ -124,107 +131,121 @@ export default function LiteracyPage() {
           <motion.div
             key={module.id}
             variants={staggerItem}
-            whileHover={{ scale: 1.03, y: -4 }}
+            whileHover={{ scale: 1.02, y: -4 }}
             whileTap={{ scale: 0.98 }}
             onClick={() => setSelectedModule(module)}
-            className="bg-white rounded-3xl shadow-sm border border-slate-100 overflow-hidden cursor-pointer group transition-shadow hover:shadow-lg"
+            className="cursor-pointer group h-full"
           >
-            {/* Card Top Gradient */}
-            <div className={`bg-gradient-to-br ${module.color} p-5 relative overflow-hidden`}>
-              <div className="absolute top-0 right-0 w-16 h-16 bg-white/10 rounded-full translate-x-4 -translate-y-4" />
-              <div className="text-3xl mb-2">{module.icon}</div>
-              {module.isCompleted && (
-                <div className="absolute top-3 right-3">
-                  <div className="w-7 h-7 bg-white rounded-full flex items-center justify-center">
-                    <Trophy size={14} className="text-amber-500" />
+            <Card className="h-full border-2 border-slate-100 hover:border-primary-200 transition-all duration-300 shadow-sm hover:shadow-md">
+              <CardContent className="p-0 flex flex-col h-full">
+                {/* Card Top Gradient */}
+                <div className={`bg-gradient-to-br ${module.color.replace('violet', 'primary').replace('fuchsia', 'secondary')} p-6 relative overflow-hidden rounded-t-[1.3rem]`}>
+                  <div className="absolute top-0 right-0 w-24 h-24 bg-white/10 rounded-full translate-x-8 -translate-y-8" />
+                  <div className="text-4xl mb-3 relative z-10">{module.icon}</div>
+                  {module.isCompleted && (
+                    <div className="absolute top-4 right-4 z-10">
+                      <div className="w-8 h-8 bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center border border-white/30">
+                        <Trophy size={16} className="text-amber-300" />
+                      </div>
+                    </div>
+                  )}
+                  <h3 className="text-white font-bold text-base leading-tight relative z-10 pr-4">{module.title}</h3>
+                </div>
+
+                <div className="p-5 flex flex-col flex-1">
+                  <div className="flex items-center justify-between gap-2 mb-3">
+                    <Badge variant={difficultyColor[module.difficulty]}>{t(`literacy.difficulty${module.difficulty}`, module.difficulty)}</Badge>
+                    <div className="flex items-center gap-1.5 text-xs font-medium text-slate-500 bg-slate-50 px-2 py-1 rounded-md">
+                      <Clock size={12} />
+                      {module.estimatedMinutes} {t('literacy.min', 'min')}
+                    </div>
+                  </div>
+
+                  <p className="text-sm text-slate-600 line-clamp-2 leading-relaxed mb-6 flex-1">{module.description}</p>
+
+                  {/* Progress */}
+                  <div className="mt-auto space-y-3">
+                    <ProgressBar
+                      value={module.progress}
+                      height="h-2"
+                      color={`bg-gradient-to-r ${module.color.replace('violet', 'primary')}`}
+                    />
+                    
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs text-slate-500 font-bold">{module.progress}% {t('literacy.doneProgress', 'done')}</span>
+                      {module.isCompleted ? (
+                        <div className="flex items-center gap-1.5 text-xs text-success-600 font-bold bg-success-50 px-2.5 py-1 rounded-full">
+                          <CheckCircle size={12} />
+                          {t('literacy.statusDone', 'Done!')}
+                        </div>
+                      ) : (
+                        <div className="flex items-center gap-1.5 text-xs font-bold text-primary-600 group-hover:gap-2 transition-all">
+                          <Play size={12} fill="currentColor" />
+                          {module.progress > 0 ? t('literacy.continue', 'Continue') : t('literacy.start', 'Start')}
+                        </div>
+                      )}
+                    </div>
                   </div>
                 </div>
-              )}
-              <h3 className="text-white font-bold text-sm leading-tight">{module.title}</h3>
-            </div>
-
-            <div className="p-4 space-y-3">
-              <div className="flex items-center justify-between gap-2">
-                <Badge variant={difficultyColor[module.difficulty]}>{module.difficulty}</Badge>
-                <div className="flex items-center gap-1 text-xs text-slate-400">
-                  <Clock size={11} />
-                  {module.estimatedMinutes} min
-                </div>
-              </div>
-
-              <p className="text-xs text-slate-500 line-clamp-2 leading-relaxed">{module.description}</p>
-
-              {/* Progress */}
-              <ProgressBar
-                value={module.progress}
-                height="h-1.5"
-                color={`bg-gradient-to-r ${module.color}`}
-              />
-
-              <div className="flex items-center justify-between">
-                <span className="text-xs text-slate-400 font-medium">{module.progress}% done</span>
-                {module.isCompleted ? (
-                  <div className="flex items-center gap-1 text-xs text-emerald-600 font-bold">
-                    <CheckCircle size={12} />
-                    Done!
-                  </div>
-                ) : (
-                  <div className="flex items-center gap-1 text-xs font-bold text-violet-600 group-hover:gap-2 transition-all">
-                    <Play size={11} fill="currentColor" />
-                    {module.progress > 0 ? 'Continue' : 'Start'}
-                  </div>
-                )}
-              </div>
-            </div>
+              </CardContent>
+            </Card>
           </motion.div>
         ))}
       </motion.div>
 
-      {/* Module Detail Modal */}
       <Modal
         isOpen={!!selectedModule}
         onClose={() => setSelectedModule(null)}
-        title={selectedModule?.title}
+        title={t('literacy.moduleTitle', 'Learning Module')}
         size="lg"
       >
         {selectedModule && (
-          <div className="space-y-5">
-            <div className={`bg-gradient-to-br ${selectedModule.color} rounded-2xl p-5 text-white`}>
-              <div className="flex items-center gap-3">
-                <span className="text-4xl">{selectedModule.icon}</span>
+          <div className="space-y-6">
+            <div className={`bg-gradient-to-br ${selectedModule.color.replace('violet', 'primary')} rounded-2xl p-6 text-white relative overflow-hidden`}>
+              <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full translate-x-1/3 -translate-y-1/3" />
+              <div className="flex items-start gap-4 relative z-10">
+                <div className="text-5xl bg-white/20 p-3 rounded-2xl backdrop-blur-sm border border-white/20">{selectedModule.icon}</div>
                 <div>
-                  <p className="font-bold text-lg">{selectedModule.title}</p>
-                  <div className="flex items-center gap-2 mt-1">
-                    <Clock size={12} />
-                    <span className="text-sm">{selectedModule.estimatedMinutes} minutes</span>
-                    <span>·</span>
-                    <span className="text-sm">{selectedModule.difficulty}</span>
+                  <p className="font-bold text-xl mb-2">{selectedModule.title}</p>
+                  <div className="flex flex-wrap items-center gap-3 text-white/90">
+                    <div className="flex items-center gap-1.5 bg-white/10 px-2.5 py-1 rounded-lg text-sm font-medium">
+                      <Clock size={14} />
+                      <span>{selectedModule.estimatedMinutes} {t('literacy.mins', 'mins')}</span>
+                    </div>
+                    <div className="flex items-center gap-1.5 bg-white/10 px-2.5 py-1 rounded-lg text-sm font-medium">
+                      <span>{t(`literacy.difficulty${selectedModule.difficulty}`, selectedModule.difficulty)}</span>
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
 
-            <p className="text-sm text-slate-600 leading-relaxed">{selectedModule.description}</p>
+            <div className="bg-slate-50 p-4 rounded-2xl border border-slate-100">
+              <p className="text-sm text-slate-700 leading-relaxed font-medium">{selectedModule.description}</p>
+            </div>
 
             <div>
-              <p className="text-sm font-bold text-slate-700 mb-3">Topics Covered:</p>
-              <div className="grid grid-cols-2 gap-2">
+              <p className="text-sm font-bold text-slate-800 mb-3">{t('literacy.topicsCovered', 'Topics Covered:')}</p>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 {selectedModule.topics.map((topic) => (
-                  <div key={topic} className="flex items-center gap-2 text-sm text-slate-600 bg-slate-50 rounded-xl px-3 py-2">
-                    <CheckCircle size={14} className="text-emerald-500 flex-shrink-0" />
-                    {topic}
+                  <div key={topic} className="flex items-start gap-2.5 text-sm text-slate-700 bg-white border border-slate-200 rounded-xl px-4 py-3 shadow-sm">
+                    <CheckCircle size={16} className="text-success-500 flex-shrink-0 mt-0.5" />
+                    <span className="font-medium">{topic}</span>
                   </div>
                 ))}
               </div>
             </div>
 
             {selectedModule.progress > 0 && (
-              <ProgressBar
-                value={selectedModule.progress}
-                label="Your Progress"
-                showValue
-                height="h-3"
-              />
+              <div className="bg-primary-50 p-4 rounded-2xl border border-primary-100">
+                <ProgressBar
+                  value={selectedModule.progress}
+                  label={t('literacy.yourProgress', 'Your Progress')}
+                  showValue
+                  height="h-3"
+                  color="bg-primary-500"
+                />
+              </div>
             )}
 
             <Button
@@ -232,8 +253,9 @@ export default function LiteracyPage() {
               size="lg"
               variant={selectedModule.isCompleted ? 'outline' : 'primary'}
               leftIcon={selectedModule.isCompleted ? <CheckCircle size={18} /> : <Play size={18} fill="currentColor" />}
+              className={!selectedModule.isCompleted ? 'shadow-md shadow-primary-200' : ''}
             >
-              {selectedModule.isCompleted ? 'Review Module' : selectedModule.progress > 0 ? 'Continue Learning' : 'Start Learning'}
+              {selectedModule.isCompleted ? t('literacy.reviewModule', 'Review Module') : selectedModule.progress > 0 ? t('literacy.continueLearning', 'Continue Learning') : t('literacy.startLearning', 'Start Learning')}
             </Button>
           </div>
         )}

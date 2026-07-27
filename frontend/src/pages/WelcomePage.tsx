@@ -1,9 +1,11 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { ArrowRight, Sparkles } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
+import logoKargha from '../assets/logokargha.png';
 import { useAppContext } from '../context/AppContext';
 import { Button } from '../components/ui/Button';
+import { useTranslation } from 'react-i18next';
 
 const greetingMessages = [
   { lang: 'ta', greeting: 'வணக்கம்! நான் Kargha AI.' },
@@ -22,6 +24,7 @@ const steps = [
 ];
 
 export default function WelcomePage() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const { language } = useAppContext();
   const [displayText, setDisplayText] = useState('');
@@ -29,7 +32,7 @@ export default function WelcomePage() {
 
   const fullGreeting =
     greetingMessages.find((g) => g.lang === language.code)?.greeting ||
-    'Hello! I am Kargha AI.';
+    t('welcome.defaultGreeting', 'Hello! I am Kargha AI.');
 
   // Typewriter effect
   useEffect(() => {
@@ -75,9 +78,9 @@ export default function WelcomePage() {
           initial={{ scale: 0, rotate: -20 }}
           animate={{ scale: 1, rotate: 0 }}
           transition={{ type: 'spring', stiffness: 200, damping: 15, delay: 0.2 }}
-          className="relative w-24 h-24 bg-gradient-to-br from-emerald-400 via-emerald-500 to-indigo-600 rounded-3xl flex items-center justify-center shadow-2xl shadow-emerald-200"
+          className="relative w-24 h-24 flex items-center justify-center drop-shadow-2xl"
         >
-          <Sparkles size={40} className="text-white" />
+          <img src={logoKargha} alt="Karghadhan Logo" className="w-24 h-24 object-contain" />
 
           {/* Status dot */}
           <motion.div
@@ -122,7 +125,13 @@ export default function WelcomePage() {
       >
         <div className="bg-white rounded-3xl p-6 shadow-sm border border-slate-100 text-left space-y-3">
           <p className="text-slate-700 text-sm leading-relaxed">
-            I'll verify your identity and help you discover the <span className="font-bold text-emerald-600">best financial services</span> available for you as a handloom weaver.
+            {t('welcome.description', "I'll verify your identity and help you discover the <1>best financial services</1> available for you as a handloom weaver.", {
+              components: { 1: <span className="font-bold text-emerald-600" /> }
+            }) || (
+              <>
+                I'll verify your identity and help you discover the <span className="font-bold text-emerald-600">best financial services</span> available for you as a handloom weaver.
+              </>
+            )}
           </p>
 
           {showFeatures && (
@@ -132,10 +141,10 @@ export default function WelcomePage() {
               className="space-y-2 pt-2 border-t border-slate-100"
             >
               {[
-                { icon: '🔍', text: 'AI-powered identity verification' },
-                { icon: '💰', text: 'Personalised loan recommendations' },
-                { icon: '🛡️', text: 'Insurance tailored for you' },
-                { icon: '🏛️', text: 'Government schemes you qualify for' },
+                { icon: '🔍', text: t('welcome.feature1', 'AI-powered identity verification') },
+                { icon: '💰', text: t('welcome.feature2', 'Personalised loan recommendations') },
+                { icon: '🛡️', text: t('welcome.feature3', 'Insurance tailored for you') },
+                { icon: '🏛️', text: t('welcome.feature4', 'Government schemes you qualify for') },
               ].map((item, i) => (
                 <motion.div
                   key={i}
@@ -166,10 +175,10 @@ export default function WelcomePage() {
           onClick={() => navigate('/verify')}
           rightIcon={<ArrowRight size={18} />}
         >
-          {language.greeting} Start Verification
+          {language.greeting} {t('verify.startVerification', 'Start Verification')}
         </Button>
         <p className="text-xs text-slate-400 mt-3">
-          🔒 Your data is encrypted and secure. We follow DPDP Act guidelines.
+          🔒 {t('welcome.secureData', 'Your data is encrypted and secure. We follow DPDP Act guidelines.')}
         </p>
       </motion.div>
     </div>

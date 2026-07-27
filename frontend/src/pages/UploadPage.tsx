@@ -15,6 +15,7 @@ interface UploadZoneProps {
   uploadedFile: File | null;
   progress: number;
   onRemove: () => void;
+  t?: any;
 }
 
 function UploadZone({
@@ -26,6 +27,7 @@ function UploadZone({
   uploadedFile,
   progress,
   onRemove,
+  t,
 }: UploadZoneProps) {
   const [isDragging, setIsDragging] = useState(false);
 
@@ -50,25 +52,25 @@ function UploadZone({
         <motion.div
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
-          className="border-2 border-emerald-300 bg-emerald-50 rounded-2xl p-5"
+          className="border-2 border-primary-300 bg-primary-50 rounded-2xl p-5"
         >
           <div className="flex items-start gap-3 mb-3">
-            <div className="w-10 h-10 bg-emerald-100 rounded-xl flex items-center justify-center flex-shrink-0">
-              <File size={18} className="text-emerald-600" />
+            <div className="w-10 h-10 bg-primary-100 rounded-xl flex items-center justify-center flex-shrink-0">
+              <File size={18} className="text-primary-600" />
             </div>
             <div className="flex-1 min-w-0">
               <p className="text-sm font-bold text-slate-800 truncate">{uploadedFile.name}</p>
               <p className="text-xs text-slate-500">{(uploadedFile.size / 1024).toFixed(1)} KB</p>
             </div>
-            <button onClick={onRemove} className="text-slate-400 hover:text-red-500 transition-colors p-1">
+            <button onClick={onRemove} className="text-slate-400 hover:text-danger-500 transition-colors p-1">
               <X size={16} />
             </button>
           </div>
-          <ProgressBar value={progress} height="h-2" />
+          <ProgressBar value={progress} height="h-2" color="bg-primary-500" />
           {progress === 100 && (
             <div className="flex items-center gap-2 mt-2">
-              <CheckCircle size={14} className="text-emerald-500" />
-              <span className="text-xs font-semibold text-emerald-600">Uploaded successfully</span>
+              <CheckCircle size={14} className="text-success-500" />
+              <span className="text-xs font-semibold text-success-600">{t?.('upload.uploadedSuccessfully') || 'Uploaded successfully'}</span>
             </div>
           )}
         </motion.div>
@@ -81,8 +83,8 @@ function UploadZone({
           className={[
             'flex flex-col items-center gap-3 border-2 border-dashed rounded-2xl p-6 cursor-pointer transition-all duration-200',
             isDragging
-              ? 'border-emerald-400 bg-emerald-50 scale-[1.02]'
-              : 'border-slate-200 bg-slate-50 hover:border-emerald-300 hover:bg-emerald-50/50',
+              ? 'border-primary-400 bg-primary-50 scale-[1.02]'
+              : 'border-slate-200 bg-white hover:border-primary-300 hover:bg-primary-50/50',
           ].join(' ')}
         >
           <div className="w-14 h-14 bg-white rounded-2xl flex items-center justify-center shadow-sm border border-slate-100">
@@ -92,9 +94,9 @@ function UploadZone({
             <p className="text-sm font-bold text-slate-700">{label}</p>
             <p className="text-xs text-slate-400 mt-0.5">{description}</p>
           </div>
-          <div className="flex items-center gap-2 px-4 py-2 bg-emerald-100 text-emerald-700 rounded-xl text-xs font-semibold">
+          <div className="flex items-center gap-2 px-4 py-2 bg-primary-100 text-primary-700 rounded-xl text-xs font-semibold mt-2">
             <Upload size={14} />
-            Browse or Drag & Drop
+            {t?.('upload.browseDragDrop') || 'Browse or Drag & Drop'}
           </div>
           <input id={id} type="file" accept="image/*,.pdf" onChange={handleChange} className="sr-only" />
         </label>
@@ -103,7 +105,10 @@ function UploadZone({
   );
 }
 
+import { useTranslation } from 'react-i18next';
+
 export default function UploadPage() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [files, setFiles] = useState<{ aadhaar: File | null; weaverId: File | null; passbook: File | null }>({
     aadhaar: null,
@@ -146,11 +151,11 @@ export default function UploadPage() {
         animate={{ opacity: 1, y: 0 }}
         className="text-center mb-8"
       >
-        <div className="w-16 h-16 bg-gradient-to-br from-amber-500 to-orange-600 rounded-3xl mx-auto mb-4 flex items-center justify-center shadow-xl">
+        <div className="w-16 h-16 bg-gradient-to-br from-primary-500 to-primary-700 rounded-3xl mx-auto mb-4 flex items-center justify-center shadow-xl shadow-primary-200/50">
           <Upload size={28} className="text-white" />
         </div>
-        <h1 className="text-2xl font-bold text-slate-800 font-display">Upload Documents</h1>
-        <p className="text-slate-500 text-sm mt-2">We need a few documents to verify your identity</p>
+        <h1 className="text-2xl font-bold text-slate-800 font-display tracking-tight">{t('upload.title', 'Upload Documents')}</h1>
+        <p className="text-slate-500 text-sm mt-2">{t('upload.subtitle', 'We need a few documents to verify your identity')}</p>
 
         {/* Progress */}
         <div className="mt-4 bg-white rounded-2xl px-4 py-3 shadow-sm border border-slate-100 inline-flex items-center gap-3">
@@ -159,12 +164,12 @@ export default function UploadPage() {
               <div
                 key={i}
                 className={`w-8 h-1.5 rounded-full transition-all duration-500 ${
-                  i < uploadedCount ? 'bg-emerald-500' : 'bg-slate-200'
+                  i < uploadedCount ? 'bg-primary-500' : 'bg-slate-200'
                 }`}
               />
             ))}
           </div>
-          <span className="text-xs text-slate-500 font-medium">{uploadedCount}/3 uploaded</span>
+          <span className="text-xs text-slate-500 font-medium">{t('upload.uploadedCount', '{{count}}/3 uploaded', { count: uploadedCount })}</span>
         </div>
       </motion.div>
 
@@ -177,48 +182,50 @@ export default function UploadPage() {
         <motion.div variants={staggerItem}>
           <UploadZone
             id="aadhaar-upload"
-            label="Aadhaar Card *"
-            description="Upload front side of your Aadhaar card"
+            label={t('upload.aadhaarLabel', 'Aadhaar Card *')}
+            description={t('upload.aadhaarDesc', 'Upload front side of your Aadhaar card')}
             emoji="🪪"
             onUpload={(file) => simulateUpload('aadhaar', file)}
             uploadedFile={files.aadhaar}
             progress={progress.aadhaar}
             onRemove={() => removeFile('aadhaar')}
+            t={t}
           />
         </motion.div>
 
         <motion.div variants={staggerItem}>
           <UploadZone
             id="weaver-upload"
-            label="Weaver ID Card *"
-            description="Upload your government-issued Weaver ID"
+            label={t('upload.weaverIdLabel', 'Weaver ID Card *')}
+            description={t('upload.weaverIdDesc', 'Upload your government-issued Weaver ID')}
             emoji="🧵"
             onUpload={(file) => simulateUpload('weaverId', file)}
             uploadedFile={files.weaverId}
             progress={progress.weaverId}
             onRemove={() => removeFile('weaverId')}
+            t={t}
           />
         </motion.div>
 
         <motion.div variants={staggerItem}>
           <UploadZone
             id="passbook-upload"
-            label="Bank Passbook (Optional)"
-            description="First page of bank passbook or account statement"
+            label={t('upload.passbookLabel', 'Bank Passbook (Optional)')}
+            description={t('upload.passbookDesc', 'First page of bank passbook or account statement')}
             emoji="📒"
             onUpload={(file) => simulateUpload('passbook', file)}
             uploadedFile={files.passbook}
             progress={progress.passbook}
             onRemove={() => removeFile('passbook')}
+            t={t}
           />
         </motion.div>
       </motion.div>
 
-      {/* Info */}
-      <div className="bg-blue-50 rounded-2xl p-4 mb-6">
-        <p className="text-xs text-blue-700 font-semibold flex items-start gap-2">
+      <div className="bg-primary-50 rounded-2xl p-4 mb-6">
+        <p className="text-xs text-primary-800 font-semibold flex items-start gap-2 leading-relaxed">
           <span>🔒</span>
-          <span>Your documents are encrypted end-to-end and processed only for verification. We do not store your originals.</span>
+          <span>{t('upload.encryptionNotice', 'Your documents are encrypted end-to-end and processed only for verification. We do not store your originals.')}</span>
         </p>
       </div>
 
@@ -229,15 +236,14 @@ export default function UploadPage() {
         disabled={!canContinue}
         rightIcon={<ArrowRight size={18} />}
       >
-        {canContinue ? 'Start AI Verification' : 'Upload Required Documents'}
+        {canContinue ? t('upload.startAiVerification', 'Start AI Verification') : t('upload.uploadRequired', 'Upload Required Documents')}
       </Button>
 
-      {/* Demo Skip */}
       <button
         onClick={() => navigate('/verifying')}
         className="w-full text-center text-xs text-slate-400 mt-3 hover:text-slate-600 transition-colors py-2"
       >
-        Skip for demo →
+        {t('common.skipDemo', 'Skip for demo')} →
       </button>
     </div>
   );
