@@ -18,7 +18,8 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.config import get_settings
-from app.routers import auth, weavers, credit, loans, assistant, transactions
+from app.routers import auth, weavers, credit, loans, assistant, transactions, credit_scoring
+
 
 
 # ---------------------------------------------------------------------------
@@ -90,6 +91,8 @@ app.include_router(credit.router,    prefix=API_V1)
 app.include_router(loans.router,     prefix=API_V1)
 app.include_router(assistant.router, prefix=API_V1)
 app.include_router(transactions.router, prefix=API_V1)
+app.include_router(credit_scoring.router, prefix=API_V1)
+
 
 
 

@@ -3,6 +3,7 @@ from .weaver import WeaverCreate, WeaverRead, WeaverUpdate, LoomAssetCreate, Loo
 from .credit import CreditEvalRequest, CreditEvalResponse, TransactionRecord
 from .loan import LoanApplyRequest, LoanRead
 from .transaction import TransactionCreate, TransactionRead
+from .credit_scoring import ScoringProfileCreate, ScoringProfileResponse
 
 __all__ = [
     "WeaverCreate", "WeaverRead", "WeaverUpdate",
@@ -10,5 +11,7 @@ __all__ = [
     "CreditEvalRequest", "CreditEvalResponse", "TransactionRecord",
     "LoanApplyRequest", "LoanRead",
     "TransactionCreate", "TransactionRead",
+    "ScoringProfileCreate", "ScoringProfileResponse",
 ]
+
 

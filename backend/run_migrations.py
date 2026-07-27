@@ -12,14 +12,16 @@ def run_migrations():
         print("Error: DATABASE_URL not found or not configured in .env file.")
         sys.exit(1)
 
-    sql_file_path = os.path.join("sql", "001_initial_schema.sql")
-    if not os.path.exists(sql_file_path):
-        print(f"Error: SQL migration file not found at {sql_file_path}")
+    sql_dir = "sql"
+    if not os.path.exists(sql_dir):
+        print(f"Error: SQL migration directory not found at {sql_dir}")
         sys.exit(1)
 
-    print(f"Reading migration file: {sql_file_path}")
-    with open(sql_file_path, "r", encoding="utf-8") as f:
-        sql_content = f.read()
+    # Find and sort all SQL files in the sql/ directory
+    sql_files = sorted([f for f in os.listdir(sql_dir) if f.endswith(".sql")])
+    if not sql_files:
+        print(f"Error: No SQL files found in {sql_dir}")
+        sys.exit(1)
 
     print("Connecting to Supabase PostgreSQL database...")
     
@@ -65,10 +67,15 @@ def run_migrations():
         conn.autocommit = True
         cur = conn.cursor()
         
-        print("Executing migration statements...")
-        cur.execute(sql_content)
-        print("Migrations executed successfully!")
-        
+        for sql_file in sql_files:
+            file_path = os.path.join(sql_dir, sql_file)
+            print(f"Executing migration file: {file_path}...")
+            with open(file_path, "r", encoding="utf-8") as f:
+                content = f.read()
+            cur.execute(content)
+            print(f"Successfully executed {sql_file}!")
+            
+        print("All migrations executed successfully!")
         cur.close()
         conn.close()
     except Exception as e:

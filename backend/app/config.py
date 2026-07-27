@@ -3,8 +3,10 @@ app/config.py
 Centralised settings loaded from environment variables / .env file.
 Uses Pydantic v2 BaseSettings for strict type-checking and validation.
 """
+from __future__ import annotations
+
 from functools import lru_cache
-from pydantic import field_validator
+from pydantic import field_validator, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -20,16 +22,19 @@ class Settings(BaseSettings):
     # Supabase
     # ------------------------------------------------------------------
     SUPABASE_URL: str
-    SUPABASE_KEY: str                       # anon / public key
-    SUPABASE_SERVICE_ROLE_KEY: str          # service-role secret (bypasses RLS)
-    DATABASE_URL: str = ""                  # PostgreSQL connection string
+    SUPABASE_KEY: str = ""                       # anon / public key
+    SUPABASE_SERVICE_ROLE_KEY: str = ""          # service-role secret (bypasses RLS)
+    DATABASE_URL: str = ""                       # PostgreSQL connection string
 
+    # Alternative new Supabase naming conventions support
+    SUPABASE_PUBLISHABLE_KEY: str = ""
+    SUPABASE_SECRET_KEY: str = ""
 
     # ------------------------------------------------------------------
     # AI / LLM
     # ------------------------------------------------------------------
     GEMINI_API_KEY: str
-    OPENAI_API_KEY: str = ""                # optional fallback
+    OPENAI_API_KEY: str = ""                     # optional fallback
 
     # ------------------------------------------------------------------
     # Application
@@ -45,6 +50,22 @@ class Settings(BaseSettings):
         if v not in allowed:
             raise ValueError(f"APP_ENV must be one of {allowed}")
         return v
+
+    @model_validator(mode="after")
+    def resolve_keys(self) -> Settings:
+        # Map new Supabase client key names to legacy names if legacy is empty
+        if not self.SUPABASE_KEY and self.SUPABASE_PUBLISHABLE_KEY:
+            self.SUPABASE_KEY = self.SUPABASE_PUBLISHABLE_KEY
+        if not self.SUPABASE_SERVICE_ROLE_KEY and self.SUPABASE_SECRET_KEY:
+            self.SUPABASE_SERVICE_ROLE_KEY = self.SUPABASE_SECRET_KEY
+
+        # Validate that we have at least one valid key pair
+        if not self.SUPABASE_KEY:
+            raise ValueError("SUPABASE_KEY or SUPABASE_PUBLISHABLE_KEY must be provided")
+        if not self.SUPABASE_SERVICE_ROLE_KEY:
+            raise ValueError("SUPABASE_SERVICE_ROLE_KEY or SUPABASE_SECRET_KEY must be provided")
+
+        return self
 
 
 @lru_cache
