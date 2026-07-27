@@ -38,8 +38,18 @@ def analyse_transactions(state: AgentState) -> AgentState:
       income_total, expense_total, net_cashflow,
       transaction_consistency, income_expense_ratio, order_book_strength
     """
-    transactions: list[dict] = state.get("transactions", [])
-    loom_assets: list[dict] = state.get("loom_assets", [])
+    transactions: list[dict] = state.get("transactions", []) or []
+    loom_assets: list[dict] = state.get("loom_assets", []) or []
+
+    # Safe float conversion to prevent decimal.Decimal or string type-mixing errors
+    for t in transactions:
+        t["amount"] = float(t["amount"]) if t.get("amount") is not None else 0.0
+
+    for a in loom_assets:
+        if "capacity" in a and a["capacity"] is not None:
+            a["capacity"] = float(a["capacity"])
+        if "capacity_metres_per_day" in a and a["capacity_metres_per_day"] is not None:
+            a["capacity_metres_per_day"] = float(a["capacity_metres_per_day"])
 
     income = sum(t["amount"] for t in transactions if t["transaction_type"] == "CREDIT")
     expense = sum(t["amount"] for t in transactions if t["transaction_type"] == "DEBIT")
@@ -125,7 +135,9 @@ def llm_reasoning(state: AgentState) -> AgentState:
         # Parse JSON response
         parsed = json.loads(raw_text.strip().strip("```json").strip("```").strip())
         reasoning = parsed.get("reasoning", "Evaluation complete.")
-        experience_bonus = float(parsed.get("experience_bonus", 50.0))
+        exp_val = parsed.get("experience_bonus")
+        experience_bonus = float(exp_val) if exp_val is not None else 50.0
+
 
     except Exception as exc:
         logger.warning("LLM call failed, using defaults: %s", exc)

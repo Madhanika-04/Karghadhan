@@ -22,34 +22,57 @@ def run_migrations():
         sql_content = f.read()
 
     print("Connecting to Supabase PostgreSQL database...")
-    try:
-        # Connect to DB. Since local DNS might fail IPv6 resolution, we try to fall back
-        # to the IPv4 pooler hostname if the host is db.zlsxzoxqtcwjtidlcinq.supabase.co
-        # host resolves to IPv6 only.
-        if "db.zlsxzoxqtcwjtidlcinq.supabase.co" in db_url:
-            print("Note: Detected default IPv6 database host. Translating connection to IPv4 pooler host for compatibility...")
-            # Translate postgresql://postgres:Teamraisershhpm@db.zlsxzoxqtcwjtidlcinq.supabase.co:5432/postgres
-            # to postgresql://postgres.zlsxzoxqtcwjtidlcinq:Teamraisershhpm@aws-0-ap-south-1.pooler.supabase.com:6543/postgres
-            db_url = db_url.replace(
-                "db.zlsxzoxqtcwjtidlcinq.supabase.co:5432", 
-                "aws-0-ap-south-1.pooler.supabase.com:6543"
-            )
-            # Add project reference suffix to the postgres username
-            db_url = db_url.replace("://postgres:", "://postgres.zlsxzoxqtcwjtidlcinq:")
+    
+    connection_attempts = []
+    
+    # Attempt 1: Try the original DATABASE_URL (Direct connection, standard port 5432)
+    connection_attempts.append(("Direct Connection", db_url))
+    
+    # Attempt 2 & 3: If it's a Supabase direct domain, try connection pooler fallbacks
+    if "db.zlsxzoxqtcwjtidlcinq.supabase.co" in db_url:
+        # Pooler port 6543 (transaction mode)
+        pooler_url_6543 = db_url.replace(
+            "db.zlsxzoxqtcwjtidlcinq.supabase.co:5432", 
+            "aws-0-ap-south-1.pooler.supabase.com:6543"
+        ).replace("://postgres:", "://postgres.zlsxzoxqtcwjtidlcinq:")
+        connection_attempts.append(("Pooler Connection (Port 6543 - Transaction Mode)", pooler_url_6543))
+        
+        # Pooler port 5432 (session mode)
+        pooler_url_5432 = db_url.replace(
+            "db.zlsxzoxqtcwjtidlcinq.supabase.co:5432", 
+            "aws-0-ap-south-1.pooler.supabase.com:5432"
+        ).replace("://postgres:", "://postgres.zlsxzoxqtcwjtidlcinq:")
+        connection_attempts.append(("Pooler Connection (Port 5432 - Session Mode)", pooler_url_5432))
 
-        conn = psycopg2.connect(db_url)
+    conn = None
+    last_error = None
+    for name, url in connection_attempts:
+        print(f"Trying connection via {name}...")
+        try:
+            conn = psycopg2.connect(url, connect_timeout=5)
+            print(f"Successfully connected via {name}!")
+            break
+        except Exception as e:
+            print(f"Failed to connect via {name}: {e}")
+            last_error = e
+
+    if not conn:
+        print(f"\nError: All database connection attempts failed. Last error: {last_error}")
+        print("Please check your database connection credentials and internet connectivity.")
+        sys.exit(1)
+
+    try:
         conn.autocommit = True
         cur = conn.cursor()
         
         print("Executing migration statements...")
-        # Split sql_content into individual commands to handle errors or execute cleanly
         cur.execute(sql_content)
         print("Migrations executed successfully!")
         
         cur.close()
         conn.close()
     except Exception as e:
-        print(f"Migration failed with error: {e}")
+        print(f"Migration execution failed with error: {e}")
         sys.exit(1)
 
 if __name__ == "__main__":
