@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { ArrowRight } from 'lucide-react';
-import logoKargha from '../assets/logokargha.png';
+import logoKargha from '@/assets/logos/logoKargha.png';
 import { useAppContext } from '../context/AppContext';
 import { Button } from '../components/ui/Button';
 import { useTranslation } from 'react-i18next';

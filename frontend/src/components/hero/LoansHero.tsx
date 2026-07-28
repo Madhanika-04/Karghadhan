@@ -1,3 +1,4 @@
+import businessExpansion from '@/assets/loans/business_expansion.png';
 import { motion } from 'framer-motion';
 import { ChevronRight } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
@@ -12,7 +13,7 @@ export function LoansHero() {
         initial={{ x: 100, opacity: 0 }}
         animate={{ x: 0, opacity: 1 }}
         transition={{ duration: 0.8, ease: "easeOut" }}
-        src="/assets/loans/business_expansion.png" 
+        src={businessExpansion} 
         alt="Business Expansion"
         className="absolute right-0 inset-y-0 h-full w-full sm:w-[65%] object-cover sm:object-contain object-right opacity-90 mix-blend-luminosity sm:mix-blend-normal"
       />

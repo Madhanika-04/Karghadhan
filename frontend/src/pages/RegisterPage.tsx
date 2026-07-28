@@ -7,7 +7,7 @@ import { Input } from '../components/ui/Input';
 import { Select } from '../components/ui/Select';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '../components/ui/Card';
 import { useTranslation } from 'react-i18next';
-import logoKargha from '../assets/logokargha.png';
+import logoKargha from '@/assets/logos/logoKargha.png';
 
 export default function RegisterPage() {
   const navigate = useNavigate();

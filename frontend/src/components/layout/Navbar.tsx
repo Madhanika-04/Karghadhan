@@ -2,7 +2,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Button } from '../ui/Button';
 import { useTranslation } from 'react-i18next';
-import logoKargha from '../../assets/logokargha.png';
+import logoKargha from '@/assets/logos/logoKargha.png';
 
 interface NavbarProps {
   transparent?: boolean;
@@ -28,7 +28,7 @@ export function Navbar({ transparent = false }: NavbarProps) {
             <img src={logoKargha} alt="Karghadhan Logo" className="w-12 h-12 md:w-[52px] md:h-[52px] lg:w-14 lg:h-14 object-contain shrink-0" />
             <div className="flex flex-col justify-center">
               <span className="font-bold text-[24px] md:text-[30px] text-[#111827] leading-tight">Karghadhan</span>
-              <span className="text-[12px] md:text-[14px] text-[#2563EB] font-semibold tracking-wide uppercase">{t('common.brandTagline', 'AI Weaver Finance')}</span>
+              <span className="text-[12px] md:text-[14px] text-[#2563EB] font-semibold tracking-wide uppercase">{t('common.brandTagline', 'Weaver Finance')}</span>
             </div>
           </Link>
 

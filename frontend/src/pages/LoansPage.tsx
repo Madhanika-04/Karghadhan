@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import businessLoanHero from '@/assets/illustrations/business_loan_hero.png';
 import { motion } from 'framer-motion';
 import {
   HandCoins,
@@ -128,7 +129,7 @@ export default function LoansPage() {
               title={loan.name}
               category={loan.category}
               categoryColor="primary"
-              imageSrc={loan.imageSrc || '/illustrations/business_loan_hero.png'}
+              imageSrc={loan.imageSrc || businessLoanHero}
               benefit={loan.benefits[0]}
               highlightLabel="Max Amount"
               highlightValue={`₹${(loan.maxAmount / 100000).toFixed(1)}L`}

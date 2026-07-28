@@ -1,3 +1,4 @@
+import bannerProtect from '@/assets/banners/banner_protect.png';
 import { motion } from 'framer-motion';
 import { ShieldCheck } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
@@ -12,7 +13,7 @@ export function InsuranceHero() {
         initial={{ opacity: 0, scale: 1.05 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 1.5, ease: "easeOut" }}
-        src="/assets/banners/banner_protect.png" 
+        src={bannerProtect} 
         alt="Insurance Protection"
         className="absolute inset-0 w-full h-full object-cover object-[center_top] opacity-80"
       />

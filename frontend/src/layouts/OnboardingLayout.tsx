@@ -1,6 +1,6 @@
 import { Outlet } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import logoKargha from '../assets/logokargha.png';
+import logoKargha from '@/assets/logos/logoKargha.png';
 import { useTranslation } from 'react-i18next';
 
 // Step labels for onboarding progress

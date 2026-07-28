@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Bot, Send, User, Mic, Volume2, Keyboard, Sparkles } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { AssistantHero } from '../components/hero/AssistantHero';
-import logoKargha from '../assets/logokargha.png';
+import logoKargha from '@/assets/logos/logoKargha.png';
 import { aiResponses, suggestedQuestions } from '../data/mockUser';
 import type { ChatMessage } from '../types';
 import { tData } from '../utils/i18nData';

@@ -1,3 +1,4 @@
+import logoKargha from '@/assets/logos/logoKargha.png';
 import { motion } from 'framer-motion';
 import { Sparkles, Mic } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
@@ -35,7 +36,7 @@ export function AssistantHero() {
         initial={{ scale: 0.8, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         transition={{ duration: 1.5, ease: "easeOut" }}
-        src="/assets/logokargha.png" 
+        src={logoKargha} 
         alt="Kargha AI"
         className="absolute right-12 sm:right-40 w-32 h-32 sm:w-40 sm:h-40 object-contain drop-shadow-[0_0_15px_rgba(34,211,238,0.5)] z-10"
       />

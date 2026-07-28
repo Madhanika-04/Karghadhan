@@ -1,3 +1,4 @@
+import microCredit from '@/assets/loans/micro_credit.png';
 import { motion } from 'framer-motion';
 import { ScanLine } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
@@ -56,7 +57,7 @@ export function PaymentsHero() {
           
           {/* Artwork inside phone */}
           <img 
-            src="/assets/loans/micro_credit.png" 
+            src={microCredit} 
             alt="Digital Payment"
             className="absolute inset-0 w-full h-full object-cover opacity-90 mix-blend-screen"
           />

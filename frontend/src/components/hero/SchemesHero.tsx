@@ -1,3 +1,4 @@
+import bannerUpgrade from '@/assets/banners/banner_upgrade.png';
 import { motion } from 'framer-motion';
 import { FileSignature } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
@@ -19,7 +20,7 @@ export function SchemesHero() {
         className="absolute inset-0 flex justify-center"
       >
         <img 
-          src="/assets/banners/banner_upgrade.png" 
+          src={bannerUpgrade} 
           alt="Government Schemes"
           className="w-full h-full object-cover sm:object-contain object-center opacity-30 mix-blend-multiply blur-[2px]"
         />

@@ -1,3 +1,9 @@
+import mudraLoan from '@/assets/loans/mudra_loan.png';
+import weaverLoan from '@/assets/loans/weaver_loan.png';
+import pmegpLoan from '@/assets/loans/pmegp_loan.png';
+import womenWeaver from '@/assets/loans/women_weaver.png';
+import businessExpansion from '@/assets/loans/business_expansion.png';
+import workingCapital from '@/assets/loans/working_capital.png';
 import type { Loan } from '../types';
 
 export const getLoans = (t: any): Loan[] => [
@@ -30,7 +36,7 @@ export const getLoans = (t: any): Loan[] => [
     category: 'Government Loans',
     tags: ['No Collateral', 'Government Backed', 'Quick Approval'],
     isEligible: true,
-    imageSrc: '/assets/loans/mudra_loan.png',
+    imageSrc: mudraLoan,
   },
   {
     id: 'handloom-weaver-loan',
@@ -61,7 +67,7 @@ export const getLoans = (t: any): Loan[] => [
     category: 'Cooperative Loans',
     tags: ['Subsidised', 'Handloom Specific', 'NHDC'],
     isEligible: true,
-    imageSrc: '/assets/loans/weaver_loan.png',
+    imageSrc: weaverLoan,
   },
   {
     id: 'pmegp',
@@ -92,7 +98,7 @@ export const getLoans = (t: any): Loan[] => [
     category: 'Government Loans',
     tags: ['High Amount', 'Subsidy', 'Business Growth'],
     isEligible: false,
-    imageSrc: '/assets/loans/pmegp_loan.png',
+    imageSrc: pmegpLoan,
   },
   {
     id: 'stand-up-india',
@@ -123,7 +129,7 @@ export const getLoans = (t: any): Loan[] => [
     category: 'Public Banks',
     tags: ['Women Empowerment', 'SC/ST', 'Business'],
     isEligible: true,
-    imageSrc: '/assets/loans/women_weaver.png',
+    imageSrc: womenWeaver,
   },
   {
     id: 'sidbi-msme',
@@ -154,7 +160,7 @@ export const getLoans = (t: any): Loan[] => [
     category: 'Public Banks',
     tags: ['MSME', 'SIDBI', 'Established Business'],
     isEligible: false,
-    imageSrc: '/assets/loans/business_expansion.png',
+    imageSrc: businessExpansion,
   },
   {
     id: 'nbfc-working-capital',
@@ -184,6 +190,6 @@ export const getLoans = (t: any): Loan[] => [
     category: 'NBFC',
     tags: ['Fast Approval', 'Minimal Docs', 'Microfinance'],
     isEligible: true,
-    imageSrc: '/assets/loans/working_capital.png',
+    imageSrc: workingCapital,
   },
 ];

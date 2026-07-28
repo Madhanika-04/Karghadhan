@@ -15,7 +15,7 @@ const verificationSteps = [
   { id: 6, key: 'onboarding.step6', fallback: 'Creating Digital Weaver Profile', duration: 1400 },
 ];
 
-import logoKargha from '../assets/logokargha.png';
+import logoKargha from '@/assets/logos/logoKargha.png';
 
 export default function VerifyingPage() {
   const navigate = useNavigate();

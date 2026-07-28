@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
+import businessLoanHero from '@/assets/illustrations/business_loan_hero.png';
 import { Building2, CheckCircle, ExternalLink, Filter } from 'lucide-react';
 import { govtSchemes } from '../data/schemes';
 import type { GovtScheme } from '../types';
@@ -75,7 +76,7 @@ export default function SchemesPage() {
                 title={tData(scheme.name)}
                 category={tData(scheme.category)}
                 categoryColor={badgeVariant}
-                imageSrc={scheme.imageSrc || '/illustrations/business_loan_hero.png'}
+                imageSrc={scheme.imageSrc || businessLoanHero}
                 benefit={tData(scheme.description)}
                 highlightLabel={t('schemes.ministry', 'Ministry')}
                 highlightValue={tData(scheme.ministry).split(' ').slice(0,2).join(' ')}

@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import googleIcon from '@/assets/icons/google-color.svg';
 import { useNavigate, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { ArrowRight, Smartphone } from 'lucide-react';
@@ -6,7 +7,7 @@ import { Button } from '../components/ui/Button';
 import { Input } from '../components/ui/Input';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '../components/ui/Card';
 import { useTranslation } from 'react-i18next';
-import logoKargha from '../assets/logokargha.png';
+import logoKargha from '@/assets/logos/logoKargha.png';
 
 export default function LoginPage() {
   const navigate = useNavigate();
@@ -78,7 +79,7 @@ export default function LoginPage() {
                 </div>
                 
                 <Button variant="outline" fullWidth type="button" className="gap-2">
-                  <img src="https://www.svgrepo.com/show/475656/google-color.svg" alt="Google" className="w-5 h-5" />
+                  <img src={googleIcon} alt="Google" className="w-5 h-5" />
                   {t('auth.signInGoogle', 'Sign in with Google')}
                 </Button>
               </form>

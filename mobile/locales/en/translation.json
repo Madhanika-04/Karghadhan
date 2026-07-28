@@ -1,0 +1,112 @@
+{
+  "splash": {
+    "app_name": "Karghadhan",
+    "slogan": "Empowering Weavers"
+  },
+  "language": {
+    "choose_language": "Choose Language",
+    "language_desc": "Select your preferred language for the app",
+    "continue": "Continue"
+  },
+  "login": {
+    "welcome_back": "Welcome Back",
+    "enter_phone": "Enter your phone number to continue",
+    "phone_number": "Phone Number",
+    "get_otp": "Get OTP",
+    "login_biometric": "Login with Biometric",
+    "no_account": "Don't have an account?",
+    "register_now": "Register Now",
+    "login": "Login"
+  },
+  "register": {
+    "join_karghadhan": "Join Karghadhan",
+    "empowering_weavers": "Empowering weavers across India",
+    "mock_register": "Mock Registration",
+    "already_account": "Already have an account?"
+  },
+  "tabs": {
+    "home": "Home",
+    "loans": "Loans",
+    "pay": "Pay",
+    "protect": "Protect",
+    "ai": "AI",
+    "profile": "Profile"
+  },
+  "dashboard": {
+    "good_morning": "Good Morning, Weaver",
+    "total_balance": "Total Balance",
+    "send": "Send",
+    "receive": "Receive",
+    "history": "History",
+    "quick_actions": "Quick Actions",
+    "scan_qr": "Scan QR",
+    "bank_transfer": "Bank Transfer",
+    "self_transfer": "Self Transfer",
+    "recharge": "Recharge",
+    "apply_now_desc": "Apply now for collateral-free loans at 6% interest."
+  },
+  "loans": {
+    "loan_marketplace": "Loan Marketplace",
+    "loan_desc": "Discover customized loans for weavers.",
+    "interest_rate": "Interest Rate",
+    "apply_btn": "Apply Now",
+    "tag_govt": "Govt. Backed",
+    "tag_quick": "Quick Disbursal",
+    "tag_subsidized": "Subsidized",
+    "loan_raw_material": "Raw Material Advance",
+    "loan_loom_upgrade": "Loom Upgradation",
+    "amount_range_1": "₹ 50,000 - 5 Lakhs",
+    "amount_range_2": "Upto ₹ 25,000",
+    "amount_range_3": "Upto ₹ 1 Lakh",
+    "rate_6": "6% p.a.",
+    "rate_8": "8% p.a.",
+    "rate_7_5": "7.5% p.a."
+  },
+  "payments": {
+    "payments": "Payments",
+    "upi_id": "UPI ID: arun@okkargha",
+    "scan_any_qr": "Scan any QR",
+    "transfer_money": "Transfer Money",
+    "to_mobile": "To Mobile",
+    "to_bank": "To Bank",
+    "to_self": "To Self",
+    "split_bill": "Split Bill",
+    "recent": "Recent",
+    "view_all": "View All",
+    "today": "Today, 10:30 AM",
+    "yesterday": "Yesterday",
+    "karthik_yarn": "Karthik Yarn Supplier",
+    "handloom_coop": "Handloom Co-op",
+    "electricity_bill": "Electricity Bill",
+    "date_may": "12 May 2024"
+  },
+  "insurance": {
+    "insurance": "Insurance",
+    "insurance_desc": "Protect your health and livelihood.",
+    "active_policies": "Active Policies",
+    "active_desc": "You have 1 active policy covering your family.",
+    "valid_till": "Valid till 31 Mar 2025",
+    "recommended_plans": "Recommended Plans",
+    "weaver_health": "Weaver Health Care",
+    "weaver_health_desc": "Comprehensive coverage up to ₹5 Lakhs",
+    "loom_protection": "Loom Protection Plan",
+    "loom_protection_desc": "Cover against fire, theft and damage",
+    "premium_150": "₹150/month",
+    "premium_50": "₹50/month"
+  },
+  "ai": {
+    "ai_title": "Kargha AI",
+    "online": "Online",
+    "ai_greeting": "Vanakkam! I am Kargha AI. How can I assist you with your weaving business today?",
+    "ai_mock_response": "This is a mocked AI response.",
+    "type_message": "Type your message..."
+  },
+  "profile": {
+    "verified_weaver": "Verified Weaver",
+    "language": "Language",
+    "privacy": "Privacy & Security",
+    "help_support": "Help & Support",
+    "logout": "Logout",
+    "english": "English"
+  }
+}

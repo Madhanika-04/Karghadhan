@@ -1,9 +1,12 @@
+import bannerGrow from '@/assets/banners/banner_grow.png';
+import bannerProtect from '@/assets/banners/banner_protect.png';
+import bannerUpgrade from '@/assets/banners/banner_upgrade.png';
 import type { PromoBanner } from '../components/ui/PromoCarousel';
 
 export const globalPromos: PromoBanner[] = [
   {
     id: 'promo-1',
-    imageSrc: '/assets/banners/banner_grow.png',
+    imageSrc: bannerGrow,
     title: 'Grow Your Weaving Business',
     description: 'Get access to fast, collateral-free micro-credit to expand your inventory and buy new yarn.',
     ctaText: 'Apply Now',
@@ -12,7 +15,7 @@ export const globalPromos: PromoBanner[] = [
   },
   {
     id: 'promo-2',
-    imageSrc: '/assets/banners/banner_protect.png',
+    imageSrc: bannerProtect,
     title: 'Protect Your Family',
     description: 'Ensure your loved ones are secure with our affordable micro-insurance plans starting at ₹12/year.',
     ctaText: 'View Plans',
@@ -21,7 +24,7 @@ export const globalPromos: PromoBanner[] = [
   },
   {
     id: 'promo-3',
-    imageSrc: '/assets/banners/banner_upgrade.png',
+    imageSrc: bannerUpgrade,
     title: 'Upgrade Your Loom',
     description: 'Avail up to 35% subsidy on modern jacquard looms under the PMEGP scheme.',
     ctaText: 'Check Eligibility',

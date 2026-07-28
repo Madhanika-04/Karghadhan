@@ -1,4 +1,8 @@
 import { motion } from 'framer-motion';
+import user1 from '@/assets/profile/user1.jpg';
+import user2 from '@/assets/profile/user2.jpg';
+import user3 from '@/assets/profile/user3.jpg';
+import user4 from '@/assets/profile/user4.jpg';
 import {
   QrCode,
   Send,
@@ -18,10 +22,10 @@ import { PaymentsHero } from '../components/hero/PaymentsHero';
 import { staggerContainer, staggerItem, fadeIn, hoverScale } from '../utils/animations';
 
 const recentContacts = [
-  { id: 1, name: 'Lakshmi Traders', image: 'https://i.pravatar.cc/150?u=1' },
-  { id: 2, name: 'Srinivas Silk', image: 'https://i.pravatar.cc/150?u=2' },
-  { id: 3, name: 'Murugan Dyes', image: 'https://i.pravatar.cc/150?u=3' },
-  { id: 4, name: 'Asha (Worker)', image: 'https://i.pravatar.cc/150?u=4' },
+  { id: 1, name: 'Lakshmi Traders', image: user1 },
+  { id: 2, name: 'Srinivas Silk', image: user2 },
+  { id: 3, name: 'Murugan Dyes', image: user3 },
+  { id: 4, name: 'Asha (Worker)', image: user4 },
 ];
 
 const transactions = [

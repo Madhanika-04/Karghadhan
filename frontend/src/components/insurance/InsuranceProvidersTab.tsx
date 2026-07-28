@@ -38,7 +38,7 @@ export function InsuranceProvidersTab({ providers }: Props) {
                   <div className="flex items-center gap-4">
                     <div className="w-14 h-14 bg-slate-50 rounded-2xl flex items-center justify-center border border-slate-100 shadow-sm">
                       {provider.logo ? (
-                        <img src={provider.logo} alt={tData(provider.name)} className="w-8 h-8 object-contain" />
+                        <img src={provider.logo} /* Assume logos are locally imported in data */ alt={tData(provider.name)} className="w-8 h-8 object-contain" />
                       ) : (
                         <Building2 size={24} className="text-slate-400" />
                       )}

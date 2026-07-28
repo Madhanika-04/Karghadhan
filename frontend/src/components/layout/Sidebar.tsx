@@ -15,7 +15,7 @@ import {
   QrCode,
 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-import logoKargha from '../../assets/logokargha.png';
+import logoKargha from '@/assets/logos/logoKargha.png';
 
 const navItems = [
   { to: '/dashboard', icon: LayoutDashboard, label: 'Dashboard', key: 'common.dashboard' },
@@ -52,7 +52,7 @@ export function Sidebar({ isOpen = true, onClose }: SidebarProps) {
           <img src={logoKargha} alt="Karghadhan Logo" className="w-[54px] h-[54px] object-contain shrink-0" />
           <div className="flex flex-col justify-center">
             <span className="font-bold text-[22px] text-[#111827] leading-tight">Karghadhan</span>
-            <span className="text-[10px] text-[#2563EB] font-semibold tracking-wide uppercase">{t('common.brandTagline', 'AI Weaver Finance')}</span>
+            <span className="text-[10px] text-[#2563EB] font-semibold tracking-wide uppercase">{t('common.brandTagline', 'Weaver Finance')}</span>
           </div>
         </Link>
       </div>

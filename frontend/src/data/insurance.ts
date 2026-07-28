@@ -1,5 +1,10 @@
 import type { InsurancePolicy, InsuranceProvider, InsuranceTypeDesc } from '../types';
 
+import lifeInsuranceHero from '@/assets/illustrations/life_insurance_hero.png';
+import accidentInsuranceHero from '@/assets/illustrations/accident_insurance_hero.png';
+import healthInsuranceHero from '@/assets/illustrations/health_insurance_hero.png';
+import assetInsuranceHero from '@/assets/illustrations/asset_insurance_hero.png';
+
 export const insurancePolicies: InsurancePolicy[] = [
   {
     id: 'pmjjby',
@@ -35,7 +40,7 @@ export const insurancePolicies: InsurancePolicy[] = [
     enrollmentChannel: 'Participating Banks & Post Offices',
     officialStatus: 'Active',
     aiRecommendation: 'Recommended for every eligible weaver because it provides ₹2,00,000 life coverage at a very affordable annual premium.',
-    imageSrc: '/illustrations/life_insurance_hero.png',
+    imageSrc: lifeInsuranceHero,
   },
   {
     id: 'pmsby',
@@ -71,7 +76,7 @@ export const insurancePolicies: InsurancePolicy[] = [
     enrollmentChannel: 'Participating Banks',
     officialStatus: 'Active',
     aiRecommendation: 'Strongly recommended for all active weavers due to occupational accident risks associated with weaving.',
-    imageSrc: '/illustrations/accident_insurance_hero.png',
+    imageSrc: accidentInsuranceHero,
   },
   {
     id: 'ayushman-bharat',
@@ -107,7 +112,7 @@ export const insurancePolicies: InsurancePolicy[] = [
     enrollmentChannel: 'Common Service Centres (CSC) / Empanelled Hospitals',
     officialStatus: 'Active',
     aiRecommendation: 'Automatically recommend only if the user is eligible according to PM-JAY criteria.',
-    imageSrc: '/illustrations/health_insurance_hero.png',
+    imageSrc: healthInsuranceHero,
   },
   {
     id: 'lic-jeevan-anand',
@@ -143,7 +148,7 @@ export const insurancePolicies: InsurancePolicy[] = [
     enrollmentChannel: 'LIC Branch / Agents / Online',
     officialStatus: 'Active',
     aiRecommendation: 'Recommended for weavers wanting to build a retirement corpus while ensuring family protection.',
-    imageSrc: '/illustrations/life_insurance_hero.png',
+    imageSrc: lifeInsuranceHero,
   },
   {
     id: 'star-health',
@@ -178,7 +183,7 @@ export const insurancePolicies: InsurancePolicy[] = [
     enrollmentChannel: 'Star Health Website / Agents',
     officialStatus: 'Active',
     aiRecommendation: 'Protects family against unexpected hospitalization costs and medical emergencies.',
-    imageSrc: '/illustrations/health_insurance_hero.png',
+    imageSrc: healthInsuranceHero,
   },
   {
     id: 'loom-insurance-national',
@@ -210,7 +215,7 @@ export const insurancePolicies: InsurancePolicy[] = [
     enrollmentChannel: 'National Insurance Branch',
     officialStatus: 'Active',
     aiRecommendation: 'Highly recommended for protecting your primary source of income—your loom.',
-    imageSrc: '/illustrations/asset_insurance_hero.png',
+    imageSrc: assetInsuranceHero,
   },
 ];
 

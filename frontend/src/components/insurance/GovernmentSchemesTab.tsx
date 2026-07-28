@@ -2,6 +2,7 @@ import { motion } from 'framer-motion';
 import type { InsurancePolicy } from '../../types';
 import { HeroProductCard } from '../ui/HeroProductCard';
 import { useTranslation } from 'react-i18next';
+import lifeInsuranceHero from '@/assets/illustrations/life_insurance_hero.png';
 import { staggerContainer, staggerItem } from '../../utils/animations';
 import { tData } from '../../utils/i18nData';
 
@@ -28,7 +29,7 @@ export function GovernmentSchemesTab({ policies, onViewDetails }: Props) {
             title={tData(policy.name)}
             category={tData(policy.type)}
             categoryColor="indigo"
-            imageSrc={policy.imageSrc || '/illustrations/life_insurance_hero.png'}
+            imageSrc={policy.imageSrc || lifeInsuranceHero}
             benefit={tData(policy.shortDescription)}
             highlightLabel={t('insurance.coverage', 'Coverage')}
             highlightValue={policy.coverage.split(' ')[0]}

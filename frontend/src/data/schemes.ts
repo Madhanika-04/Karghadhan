@@ -1,3 +1,8 @@
+import businessLoanHero from '@/assets/illustrations/business_loan_hero.png';
+import microCreditHero from '@/assets/illustrations/micro_credit_hero.png';
+import assetInsuranceHero from '@/assets/illustrations/asset_insurance_hero.png';
+import womenWeaverHero from '@/assets/illustrations/women_weaver_hero.png';
+import workingCapitalHero from '@/assets/illustrations/working_capital_hero.png';
 import type { GovtScheme } from '../types';
 
 export const govtSchemes: GovtScheme[] = [
@@ -27,7 +32,7 @@ export const govtSchemes: GovtScheme[] = [
     category: 'Subsidies',
     ministry: 'Ministry of Textiles',
     isActive: true,
-    imageSrc: '/illustrations/business_loan_hero.png',
+    imageSrc: businessLoanHero,
   },
   {
     id: 'yarn-subsidy',
@@ -50,7 +55,7 @@ export const govtSchemes: GovtScheme[] = [
     category: 'Subsidies',
     ministry: 'Ministry of Textiles',
     isActive: true,
-    imageSrc: '/illustrations/micro_credit_hero.png',
+    imageSrc: microCreditHero,
   },
   {
     id: 'solar-loom',
@@ -78,7 +83,7 @@ export const govtSchemes: GovtScheme[] = [
     category: 'Subsidies',
     ministry: 'Ministry of New and Renewable Energy',
     isActive: true,
-    imageSrc: '/illustrations/asset_insurance_hero.png',
+    imageSrc: assetInsuranceHero,
   },
   {
     id: 'nhdp',
@@ -106,7 +111,7 @@ export const govtSchemes: GovtScheme[] = [
     category: 'Training',
     ministry: 'Ministry of Textiles',
     isActive: true,
-    imageSrc: '/illustrations/women_weaver_hero.png',
+    imageSrc: womenWeaverHero,
   },
   {
     id: 'skill-development',
@@ -135,6 +140,6 @@ export const govtSchemes: GovtScheme[] = [
     category: 'Training',
     ministry: 'Ministry of Textiles / NSDC',
     isActive: true,
-    imageSrc: '/illustrations/working_capital_hero.png',
+    imageSrc: workingCapitalHero,
   },
 ];

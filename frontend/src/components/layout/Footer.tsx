@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
 import { Heart, ExternalLink } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-import logoKargha from '../../assets/logokargha.png';
+import logoKargha from '@/assets/logos/logoKargha.png';
 
 export function Footer() {
   const { t } = useTranslation();

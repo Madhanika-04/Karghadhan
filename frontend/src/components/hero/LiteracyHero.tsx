@@ -1,3 +1,4 @@
+import educationLoan from '@/assets/loans/education_loan.png';
 import { motion } from 'framer-motion';
 import { BookOpen, GraduationCap } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
@@ -19,7 +20,7 @@ export function LiteracyHero() {
         initial={{ y: 20, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 1.2, ease: "easeOut" }}
-        src="/assets/loans/education_loan.png" 
+        src={educationLoan} 
         alt="Financial Literacy"
         className="absolute right-0 inset-y-0 h-full w-full sm:w-[60%] object-cover sm:object-contain object-right opacity-80 mix-blend-overlay sm:mix-blend-normal sm:opacity-100"
       />

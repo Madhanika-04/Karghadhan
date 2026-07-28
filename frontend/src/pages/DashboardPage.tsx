@@ -1,4 +1,6 @@
 import { useState } from 'react';
+import businessLoanHero from '@/assets/illustrations/business_loan_hero.png';
+import lifeInsuranceHero from '@/assets/illustrations/life_insurance_hero.png';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import {
@@ -24,7 +26,7 @@ import { PromoCarousel } from '../components/ui/PromoCarousel';
 import type { PromoBanner } from '../components/ui/PromoCarousel';
 import { HeroProductCard } from '../components/ui/HeroProductCard';
 import { useTranslation } from 'react-i18next';
-import logoKargha from '../assets/logokargha.png';
+import logoKargha from '@/assets/logos/logoKargha.png';
 import { globalPromos } from '../data/promos';
 import { tData } from '../utils/i18nData';
 
@@ -106,7 +108,7 @@ export default function DashboardPage() {
             <CheckCircle size={14} className="text-success-500" />
             <span className="text-sm text-success-700 font-semibold">{t('common.verified', 'Verified')} Weaver</span>
             <span className="text-slate-300">•</span>
-            <span className="text-sm text-slate-500">{t('profile.' + user?.occupation?.toLowerCase().replace(' ', ''), user?.occupation)}</span>
+            <span className="text-sm text-slate-500">{t(`profile.${user?.occupation?.toLowerCase().replace(' ', '')}`, user?.occupation || '')}</span>
           </div>
         </div>
         <Button
@@ -172,7 +174,7 @@ export default function DashboardPage() {
                   title={tData(loan.name)}
                   category={tData(loan.category)}
                   categoryColor="primary"
-                  imageSrc={loan.imageSrc || '/illustrations/business_loan_hero.png'}
+                  imageSrc={loan.imageSrc || businessLoanHero as string}
                   benefit={tData(loan.benefits[0])}
                   highlightLabel={t('loans.maxAmount', 'Max Amount')}
                   highlightValue={`₹${(loan.maxAmount / 100000).toFixed(1)}L`}
@@ -201,7 +203,7 @@ export default function DashboardPage() {
                   title={tData(policy.name)}
                   category={tData(policy.type)}
                   categoryColor="indigo"
-                  imageSrc={policy.imageSrc || '/illustrations/life_insurance_hero.png'}
+                  imageSrc={policy.imageSrc || lifeInsuranceHero as string}
                   benefit={tData(policy.shortDescription)}
                   highlightLabel={t('insurance.coverage', 'Coverage')}
                   highlightValue={tData(policy.coverage).split(' ')[0]}
@@ -245,8 +247,8 @@ export default function DashboardPage() {
 
                 <div className="mt-5 space-y-3 bg-slate-50 p-4 rounded-2xl border border-slate-100">
                   {[
-                    { label: t('profile.district', 'District'), value: tData(user?.district) },
-                    { label: t('profile.state', 'State'), value: tData(user?.state) },
+                    { label: t('profile.district', 'District'), value: tData(user?.district || '') },
+                    { label: t('profile.state', 'State'), value: tData(user?.state || '') },
                     { label: t('profile.experience', 'Experience'), value: `${user?.yearsOfExperience} ${t('profile.years', 'years')}` },
                   ].map((item) => (
                     <div key={item.label} className="flex justify-between text-sm">

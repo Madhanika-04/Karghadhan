@@ -1,3 +1,4 @@
+import workingCapital from '@/assets/loans/working_capital.png';
 import { motion } from 'framer-motion';
 import { TrendingUp, PiggyBank } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
@@ -61,7 +62,7 @@ export function SavingsHero() {
         </motion.div>
         
         <img 
-          src="/assets/loans/working_capital.png" 
+          src={workingCapital} 
           alt="Wealth"
           className="absolute right-0 top-0 w-[120%] h-[120%] object-cover object-left opacity-90 mix-blend-overlay"
         />
