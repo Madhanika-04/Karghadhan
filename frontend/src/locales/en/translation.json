@@ -42,7 +42,8 @@
     "apply": "Apply",
     "understoodApply": "Understood, I'll Apply",
     "skipDemo": "Skip for demo",
-    "savings": "Savings"
+    "savings": "Savings",
+    "verifiedWeaver": "Verified Weaver"
   },
   "landing": {
     "heroTitle1": "AI Financial",
@@ -150,7 +151,10 @@
     "alerts": "Alerts",
     "loansAvailable": "Loans available",
     "plansEligible": "Plans eligible",
-    "modulesAvailable": "Modules available"
+    "modulesAvailable": "Modules available",
+    "alert1": "PMJJBY renewal in 15 days",
+    "alert2": "Yarn Subsidy Scheme closes Jun 30",
+    "alert3": "New Skill Training batch starting"
   },
   "assistant": {
     "title": "Kargha AI Assistant",

@@ -106,7 +106,7 @@ export default function DashboardPage() {
           </div>
           <div className="flex items-center gap-2">
             <CheckCircle size={14} className="text-success-500" />
-            <span className="text-sm text-success-700 font-semibold">{t('common.verified', 'Verified')} Weaver</span>
+            <span className="text-sm text-success-700 font-semibold">{t('common.verifiedWeaver', 'Verified Weaver')}</span>
             <span className="text-slate-300">•</span>
             <span className="text-sm text-slate-500">{t(`profile.${user?.occupation?.toLowerCase().replace(' ', '')}`, user?.occupation || '')}</span>
           </div>
@@ -283,13 +283,13 @@ export default function DashboardPage() {
                 </div>
                 <div className="space-y-3">
                   {[
-                    { text: 'PMJJBY renewal in 15 days', color: 'bg-secondary-50 text-secondary-700 border-secondary-100', icon: '⚠️' },
-                    { text: 'Yarn Subsidy Scheme closes Jun 30', color: 'bg-danger-50 text-danger-700 border-danger-100', icon: '📅' },
-                    { text: 'New Skill Training batch starting', color: 'bg-success-50 text-success-700 border-success-100', icon: '🎓' },
+                    { text: t('dashboard.alert1', 'PMJJBY renewal in 15 days'), color: 'bg-secondary-50 text-secondary-700 border-secondary-100', icon: '⚠️' },
+                    { text: t('dashboard.alert2', 'Yarn Subsidy Scheme closes Jun 30'), color: 'bg-danger-50 text-danger-700 border-danger-100', icon: '📅' },
+                    { text: t('dashboard.alert3', 'New Skill Training batch starting'), color: 'bg-success-50 text-success-700 border-success-100', icon: '🎓' },
                   ].map((item, i) => (
                     <div key={i} className={`flex items-start gap-3 border rounded-xl p-3 text-sm font-medium leading-tight ${item.color}`}>
                       <span className="mt-0.5">{item.icon}</span>
-                      <span>{tData(item.text)}</span>
+                      <span>{item.text}</span>
                     </div>
                   ))}
                 </div>

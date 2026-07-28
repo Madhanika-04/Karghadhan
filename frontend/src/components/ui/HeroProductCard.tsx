@@ -53,16 +53,12 @@ export function HeroProductCard({
         </div>
       )}
 
-      {/* Image Container with Skeleton */}
+      {/* Image Container */}
       <div className="relative h-48 w-full overflow-hidden bg-slate-100 flex-shrink-0">
-        {!imgLoaded && (
-          <div className="absolute inset-0 bg-slate-200 animate-pulse" />
-        )}
         <motion.img
           src={imageSrc}
           alt={title}
-          onLoad={() => setImgLoaded(true)}
-          className={`w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-110 ${imgLoaded ? 'opacity-100' : 'opacity-0'}`}
+          className={`w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-110 opacity-100`}
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent" />
         

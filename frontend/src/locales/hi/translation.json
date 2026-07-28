@@ -42,7 +42,8 @@
     "apply": "आवेदन करना",
     "understoodApply": "समझ गया, मैं आवेदन करूंगा",
     "skipDemo": "डेमो के लिए छोड़ें",
-    "savings": "बचत"
+    "savings": "बचत",
+    "verifiedWeaver": "सत्यापित बुनकर"
   },
   "landing": {
     "heroTitle1": "एआई वित्तीय",
@@ -150,7 +151,10 @@
     "alerts": "अलर्ट",
     "loansAvailable": "ऋण उपलब्ध है",
     "plansEligible": "योजनाएँ पात्र",
-    "modulesAvailable": "मॉड्यूल उपलब्ध हैं"
+    "modulesAvailable": "मॉड्यूल उपलब्ध हैं",
+    "alert1": "15 दिनों में PMJJBY नवीनीकरण",
+    "alert2": "यार्न सब्सिडी योजना 30 जून को बंद हो रही है",
+    "alert3": "नया कौशल प्रशिक्षण बैच शुरू हो रहा है"
   },
   "assistant": {
     "title": "करघा एआई सहायक",
