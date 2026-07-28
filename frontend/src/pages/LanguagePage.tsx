@@ -48,17 +48,17 @@ export default function LanguagePage() {
           className="flex flex-col items-center mt-8 sm:mt-0 mb-10"
         >
           <div className="flex items-center gap-2 mb-6">
-            <div className="flex flex-col gap-[2px] opacity-90">
-              <div className="flex gap-[2px]">
-                <div className="w-2.5 h-2.5 rounded-sm bg-[#0F766E]"></div>
-                <div className="w-2.5 h-2.5 rounded-sm bg-[#0F766E] opacity-70"></div>
+            <div className="flex flex-col gap-[3px] opacity-90">
+              <div className="flex gap-[3px]">
+                <div className="w-[14px] h-[14px] rounded-sm bg-[#0F766E]"></div>
+                <div className="w-[14px] h-[14px] rounded-sm bg-[#0F766E] opacity-70"></div>
               </div>
-              <div className="flex gap-[2px]">
-                <div className="w-2.5 h-2.5 rounded-sm bg-[#0F766E] opacity-70"></div>
-                <div className="w-2.5 h-2.5 rounded-sm bg-[#D97706]"></div>
+              <div className="flex gap-[3px]">
+                <div className="w-[14px] h-[14px] rounded-sm bg-[#0F766E] opacity-70"></div>
+                <div className="w-[14px] h-[14px] rounded-sm bg-[#D97706]"></div>
               </div>
             </div>
-            <span className="text-xs font-bold tracking-[0.2em] text-[#1F2937]">KARGADHAN</span>
+            <span className="text-sm font-bold tracking-[0.2em] text-[#1F2937]">KARGADHAN</span>
           </div>
           
           <h1 className="text-[32px] font-bold text-[#1F2937] leading-tight text-center">
@@ -102,7 +102,6 @@ export default function LanguagePage() {
                   </motion.div>
                 )}
                 
-                <span className="text-xl mb-1">{['🏴󠁧󠁢󠁥󠁮󠁧󠁿', '🇮🇳', '🇮🇳', '🇮🇳', '🇮🇳', '🇮🇳'][idx]}</span>
                 <p className="text-[20px] font-semibold text-[#1F2937] leading-tight">
                   {lang.nativeName}
                 </p>

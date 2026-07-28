@@ -43,7 +43,8 @@
     "understoodApply": "Understood, I'll Apply",
     "skipDemo": "Skip for demo",
     "savings": "Savings",
-    "verifiedWeaver": "Verified Weaver"
+    "verifiedWeaver": "Verified Weaver",
+    "financialActivity": "Financial Activity"
   },
   "landing": {
     "heroTitle1": "AI Financial",
@@ -444,5 +445,21 @@
     "assistantTitle": "Your Smart Financial Assistant",
     "assistantSubtitle": "Ask questions, get scheme recommendations, and manage your weaving business using just your voice.",
     "talkToAi": "Talk to AI"
+  },
+  "finance": {
+    "title": "Financial Activity",
+    "totalIncome": "Total Income",
+    "totalExpenses": "Total Expenses",
+    "netSavings": "Net Savings",
+    "monthlySummary": "Monthly Financial Summary",
+    "aiInsightTitle": "Kargha AI Insight",
+    "aiInsightText": "You have received ₹15,000 from the Silk Subsidy scheme this month. Your next EMI is due in 5 days.",
+    "reminders": "Upcoming Reminders",
+    "recentActivity": "Recent Activity",
+    "viewAll": "View All",
+    "sixMonths": "Last 6 Months",
+    "thisYear": "This Year",
+    "income": "Income",
+    "expense": "Expense"
   }
 }

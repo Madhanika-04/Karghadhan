@@ -89,7 +89,7 @@ export default function VerifyingPage() {
                   transition={{ duration: 8, repeat: Infinity, ease: 'linear' }}
                   className="w-24 h-24 flex items-center justify-center"
                 >
-                  <img src={logoKargha} alt="Logo" className="w-24 h-24 object-contain drop-shadow-xl" />
+                  <img src={logoKargha} alt="Logo" className="w-32 h-32 object-contain drop-shadow-xl" />
                 </motion.div>
               </div>
             </div>

@@ -43,7 +43,8 @@
     "understoodApply": "समझ गया, मैं आवेदन करूंगा",
     "skipDemo": "डेमो के लिए छोड़ें",
     "savings": "बचत",
-    "verifiedWeaver": "सत्यापित बुनकर"
+    "verifiedWeaver": "सत्यापित बुनकर",
+    "financialActivity": "वित्तीय गतिविधि"
   },
   "landing": {
     "heroTitle1": "एआई वित्तीय",
@@ -444,5 +445,21 @@
     "assistantTitle": "आपका स्मार्ट वित्तीय सहायक",
     "assistantSubtitle": "प्रश्न पूछें, योजना अनुशंसाएँ प्राप्त करें, और केवल अपनी आवाज़ का उपयोग करके अपना बुनाई व्यवसाय प्रबंधित करें।",
     "talkToAi": "एआई से बात करें"
+  },
+  "finance": {
+    "title": "वित्तीय गतिविधि",
+    "totalIncome": "कुल आय",
+    "totalExpenses": "कुल व्यय",
+    "netSavings": "शुद्ध बचत",
+    "monthlySummary": "मासिक वित्तीय सारांश",
+    "aiInsightTitle": "करघा एआई इनसाइट",
+    "aiInsightText": "आपको इस महीने सिल्क सब्सिडी योजना से ₹15,000 मिले हैं। आपकी अगली ईएमआई 5 दिनों में देय है।",
+    "reminders": "आगामी अनुस्मारक",
+    "recentActivity": "हाल की गतिविधि",
+    "viewAll": "सभी देखें",
+    "sixMonths": "पिछले 6 महीने",
+    "thisYear": "इस वर्ष",
+    "income": "आय",
+    "expense": "व्यय"
   }
 }

@@ -25,7 +25,7 @@ export function Navbar({ transparent = false }: NavbarProps) {
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <Link to="/" className="flex items-center gap-4 group">
-            <img src={logoKargha} alt="Karghadhan Logo" className="w-12 h-12 md:w-[52px] md:h-[52px] lg:w-14 lg:h-14 object-contain shrink-0" />
+            <img src={logoKargha} alt="Karghadhan Logo" className="w-[44px] h-[44px] md:w-[48px] md:h-[48px] lg:w-[56px] lg:h-[56px] object-contain shrink-0" />
             <div className="flex flex-col justify-center">
               <span className="font-bold text-[24px] md:text-[30px] text-[#111827] leading-tight">Karghadhan</span>
               <span className="text-[12px] md:text-[14px] text-[#2563EB] font-semibold tracking-wide uppercase">{t('common.brandTagline', 'Weaver Finance')}</span>

@@ -20,7 +20,7 @@ export default function OnboardingProfilePage() {
         animate={{ opacity: 1, y: 0 }}
         className="text-center mb-8"
       >
-        <img src={logoKargha} alt="Karghadhan Logo" className="w-16 h-16 object-contain drop-shadow-md mx-auto mb-4" />
+        <img src={logoKargha} alt="Karghadhan Logo" className="w-20 h-20 object-contain drop-shadow-md mx-auto mb-4" />
         <h1 className="text-2xl font-bold text-slate-800 font-display tracking-tight">{t('onboarding.profileTitle', 'AI Financial Profile')}</h1>
         <p className="text-slate-500 text-sm mt-2">
           {t('onboarding.profileSub', 'Your profile is ready! Here is your AI-generated financial summary.')}

@@ -17,12 +17,14 @@ function getAIResponse(question: string): string {
   }
   return aiResponses['default'];
 }
+const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
 
 export default function AssistantPage() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [mode, setMode] = useState<'chat' | 'voice'>('chat');
   const [voiceState, setVoiceState] = useState<'idle' | 'listening' | 'processing' | 'speaking'>('idle');
   const [transcript, setTranscript] = useState('');
+  const [errorMessage, setErrorMessage] = useState('');
   const [messages, setMessages] = useState<ChatMessage[]>([
     {
       id: '0',
@@ -34,21 +36,119 @@ export default function AssistantPage() {
   const [input, setInput] = useState('');
   const [isTyping, setIsTyping] = useState(false);
   const bottomRef = useRef<HTMLDivElement>(null);
+  
+  // Refs for speech instances
+  const recognitionRef = useRef<any>(null);
+  const synthesisRef = useRef<SpeechSynthesisUtterance | null>(null);
+
+  // Initialize Speech Recognition
+  useEffect(() => {
+    if (SpeechRecognition) {
+      const recognition = new SpeechRecognition();
+      recognition.continuous = false;
+      recognition.interimResults = true;
+      
+      // Map i18n language to BCP 47 tags for better recognition
+      const langMap: Record<string, string> = {
+        'en': 'en-IN',
+        'ta': 'ta-IN',
+        'te': 'te-IN',
+        'hi': 'hi-IN',
+        'kn': 'kn-IN',
+        'ml': 'ml-IN'
+      };
+      recognition.lang = langMap[i18n.language] || 'en-IN';
+
+      recognition.onresult = (event: any) => {
+        let currentTranscript = '';
+        for (let i = event.resultIndex; i < event.results.length; i++) {
+          currentTranscript += event.results[i][0].transcript;
+        }
+        setTranscript(currentTranscript);
+      };
+
+      recognition.onerror = (event: any) => {
+        console.error('Speech recognition error', event.error);
+        if (event.error === 'not-allowed') {
+          setErrorMessage(t('assistant.errorMic', 'Microphone permission denied.'));
+        } else if (event.error === 'no-speech') {
+          setErrorMessage(t('assistant.errorNoSpeech', 'No speech detected. Please try again.'));
+        } else {
+          setErrorMessage(t('assistant.errorGeneric', 'Audio capture failed.'));
+        }
+        setVoiceState('idle');
+      };
+
+      recognition.onend = () => {
+        // If we are in listening state and recognition ends, process what we heard
+        setVoiceState((prev) => {
+          if (prev === 'listening') {
+            return 'processing';
+          }
+          return prev;
+        });
+      };
+
+      recognitionRef.current = recognition;
+    }
+  }, [i18n.language, t]);
+
+  // Effect to handle transition to processing
+  useEffect(() => {
+    if (voiceState === 'processing' && transcript.trim()) {
+      const processVoice = async () => {
+        await sendMessage(transcript.trim(), true);
+      };
+      processVoice();
+    } else if (voiceState === 'processing') {
+      // Empty transcript
+      setVoiceState('idle');
+    }
+  }, [voiceState]);
 
   useEffect(() => {
     if (mode === 'chat') {
       bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
     }
+    // Cancel any ongoing speech when unmounting or switching to chat
+    return () => {
+      window.speechSynthesis.cancel();
+      if (recognitionRef.current) recognitionRef.current.abort();
+    };
   }, [messages, isTyping, mode]);
 
-  const sendMessage = async (text: string) => {
+  const speakText = (text: string) => {
+    if (!('speechSynthesis' in window)) return;
+    window.speechSynthesis.cancel(); // Stop any ongoing speech
+
+    // Clean markdown before speaking
+    const cleanText = text.replace(/\*\*(.*?)\*\*/g, '$1');
+
+    const utterance = new SpeechSynthesisUtterance(cleanText);
+    const langMap: Record<string, string> = {
+      'en': 'en-IN', 'ta': 'ta-IN', 'te': 'te-IN', 'hi': 'hi-IN', 'kn': 'kn-IN', 'ml': 'ml-IN'
+    };
+    utterance.lang = langMap[i18n.language] || 'en-IN';
+
+    utterance.onstart = () => setVoiceState('speaking');
+    utterance.onend = () => setVoiceState('idle');
+    utterance.onerror = () => setVoiceState('idle');
+    
+    synthesisRef.current = utterance;
+    window.speechSynthesis.speak(utterance);
+  };
+
+  const sendMessage = async (text: string, fromVoice = false) => {
     if (!text.trim()) return;
     const userMsg: ChatMessage = { id: Date.now().toString(), role: 'user', content: text, timestamp: new Date() };
     setMessages((prev) => [...prev, userMsg]);
     setInput('');
     setIsTyping(true);
+    setErrorMessage('');
 
-    if (mode === 'voice') setMode('chat'); // Switch back to chat to see response
+    if (mode === 'voice' && !fromVoice) {
+      setMode('chat');
+    }
 
     await new Promise((r) => setTimeout(r, 1200 + Math.random() * 800));
 
@@ -61,6 +161,10 @@ export default function AssistantPage() {
     };
     setMessages((prev) => [...prev, aiMsg]);
     setIsTyping(false);
+    
+    if (fromVoice && mode === 'voice') {
+      speakText(responseText);
+    }
   };
 
   const handleSend = () => sendMessage(input);
@@ -73,42 +177,27 @@ export default function AssistantPage() {
   };
 
   const toggleRecording = () => {
+    setErrorMessage('');
     if (voiceState === 'idle' || voiceState === 'speaking') {
-      setVoiceState('listening');
+      window.speechSynthesis.cancel(); // Stop AI speaking if user interrupts
       setTranscript('');
-      
-      // Simulate listening progress
-      let text = "Which loan ";
-      let i = 0;
-      const interval = setInterval(() => {
-        if (i < text.length) {
-          setTranscript(prev => prev + text.charAt(i));
-          i++;
-        } else {
-          clearInterval(interval);
+      setVoiceState('listening');
+      if (recognitionRef.current) {
+        try {
+          recognitionRef.current.start();
+        } catch (e) {
+          console.error(e);
         }
-      }, 100);
-
-      setTimeout(() => {
-        clearInterval(interval);
-        setTranscript("Which loan is best for me?");
-        setVoiceState('processing');
-        
-        setTimeout(() => {
-          setVoiceState('speaking');
-          sendMessage("Which loan is best for me?");
-          
-          setTimeout(() => {
-            setVoiceState('idle');
-          }, 3000); // Speaking duration
-        }, 1500); // Processing duration
-      }, 2500); // Listening duration
-    } else {
-      // Manual stop
-      setVoiceState('processing');
-      setTimeout(() => {
+      } else {
+        setErrorMessage(t('assistant.notSupported', 'Voice recognition is not supported in this browser.'));
         setVoiceState('idle');
-      }, 1000);
+      }
+    } else if (voiceState === 'listening') {
+      // Manual stop
+      if (recognitionRef.current) {
+        recognitionRef.current.stop();
+      }
+      setVoiceState('processing');
     }
   };
 
@@ -304,15 +393,20 @@ export default function AssistantPage() {
           <div className="flex-1 flex flex-col justify-center items-center w-full max-w-lg z-10 text-center space-y-4 my-8">
             <AnimatePresence mode="wait">
               {voiceState === 'idle' ? (
-                <motion.p
-                  key="idle"
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -10 }}
-                  className="text-2xl font-medium text-slate-400"
-                >
-                  "{t('assistant.howCanIHelp', 'How can I help you today?')}"
-                </motion.p>
+                  <motion.p
+                    key="idle"
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -10 }}
+                    className="text-2xl font-medium text-slate-400 flex flex-col items-center gap-2"
+                  >
+                    <span>"{t('assistant.howCanIHelp', 'How can I help you today?')}"</span>
+                    {errorMessage && (
+                      <span className="text-sm font-bold text-red-400 mt-2 bg-red-500/10 px-4 py-2 rounded-full border border-red-500/20">
+                        {errorMessage}
+                      </span>
+                    )}
+                  </motion.p>
               ) : voiceState === 'speaking' ? (
                 <motion.div
                   key="speaking"

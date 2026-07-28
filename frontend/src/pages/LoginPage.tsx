@@ -35,7 +35,7 @@ export default function LoginPage() {
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
           <div className="flex items-center justify-center mb-4">
-            <img src={logoKargha} alt="Karghadhan Logo" className="w-24 h-24 object-contain drop-shadow-lg" />
+            <img src={logoKargha} alt="Karghadhan Logo" className="w-32 h-32 object-contain drop-shadow-lg" />
           </div>
           <h1 className="text-2xl font-bold text-slate-900">{t('auth.loginTitle', 'Welcome Back')}</h1>
           <p className="text-slate-500 mt-2">{t('auth.loginSubtitle', 'Sign in to KarghaDhan')}</p>

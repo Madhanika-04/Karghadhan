@@ -13,13 +13,14 @@ import {
   FileText,
   PiggyBank,
   QrCode,
+  Activity,
 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import logoKargha from '@/assets/logos/logoKargha.png';
 
 const navItems = [
   { to: '/dashboard', icon: LayoutDashboard, label: 'Dashboard', key: 'common.dashboard' },
-  { to: '/payments', icon: QrCode, label: 'Payments', key: 'common.payments' },
+  { to: '/finances', icon: Activity, label: 'Financial Activity', key: 'common.financialActivity' },
   { to: '/savings', icon: PiggyBank, label: 'Savings', key: 'common.savings' },
   { to: '/loans', icon: HandCoins, label: 'Loans', key: 'common.loans' },
   { to: '/insurance', icon: Shield, label: 'Insurance', key: 'common.insurance' },
@@ -49,7 +50,7 @@ export function Sidebar({ isOpen = true, onClose }: SidebarProps) {
       {/* Logo */}
       <div className="p-5 border-b border-slate-100">
         <Link to="/dashboard" className="flex items-center gap-4 group">
-          <img src={logoKargha} alt="Karghadhan Logo" className="w-[54px] h-[54px] object-contain shrink-0" />
+          <img src={logoKargha} alt="Karghadhan Logo" className="w-[68px] h-[68px] object-contain shrink-0" />
           <div className="flex flex-col justify-center">
             <span className="font-bold text-[22px] text-[#111827] leading-tight">Karghadhan</span>
             <span className="text-[10px] text-[#2563EB] font-semibold tracking-wide uppercase">{t('common.brandTagline', 'Weaver Finance')}</span>

@@ -80,7 +80,7 @@ export default function WelcomePage() {
           transition={{ type: 'spring', stiffness: 200, damping: 15, delay: 0.2 }}
           className="relative w-24 h-24 flex items-center justify-center drop-shadow-2xl"
         >
-          <img src={logoKargha} alt="Karghadhan Logo" className="w-24 h-24 object-contain" />
+          <img src={logoKargha} alt="Karghadhan Logo" className="w-32 h-32 object-contain" />
 
           {/* Status dot */}
           <motion.div
