@@ -7,6 +7,7 @@ from app.agents.insurance_agent import insurance_agent, InsuranceAgent
 from app.agents.savings_agent import savings_agent, SavingsAgent
 from app.agents.notification_agent import notification_agent, NotificationAgent
 from app.agents.literacy_agent import literacy_agent, LiteracyAgent
+from app.agents.form_agent import form_agent, FormFillingAgent
 
 __all__ = [
     "BaseAgent",
@@ -24,4 +25,6 @@ __all__ = [
     "NotificationAgent",
     "literacy_agent",
     "LiteracyAgent",
+    "form_agent",
+    "FormFillingAgent",
 ]

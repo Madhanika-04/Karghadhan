@@ -1,6 +1,6 @@
 """
 backend/test_all_agents.py
-Comprehensive test suite verifying real-world Yarn Passbook transaction history evaluation across KarghaDhan Multi-Agent system.
+Comprehensive test suite verifying real-world Yarn Passbook evaluation, automated Form Filling & User Document Vault auto-attachment across KarghaDhan Multi-Agent system.
 """
 from app.agents import (
     creditworthiness_agent,
@@ -10,7 +10,35 @@ from app.agents import (
     savings_agent,
     notification_agent,
     literacy_agent,
+    form_agent,
 )
+
+def test_form_agent_with_document_vault():
+    user = {
+        "weaver_id": "test-weaver-vault-1",
+        "full_name": "Ramesh Weaver",
+        "phone_number": "+919876543210",
+        "pehchan_id": "IND-HL-9876543210",
+        "yarn_passbook_id": "YP-2024-UP-04821",
+        "cluster_location": "Varanasi Handloom Cluster",
+        "experience_years": 8,
+        "upi_id": "ramesh@upi",
+        "form_type": "PM_VISHWAKARMA",
+        "document_vault": {
+            "pehchan_card": {"doc_url": "https://karghadhan.gov.in/vault/test/pehchan.pdf"},
+            "aadhaar_card": {"doc_url": "https://karghadhan.gov.in/vault/test/aadhaar.pdf"},
+            "bank_passbook": {"doc_url": "https://karghadhan.gov.in/vault/test/bank_passbook.pdf"},
+            "loom_photo": {"doc_url": "https://karghadhan.gov.in/vault/test/loom_setup.jpg"},
+        }
+    }
+    res = form_agent.run(user_details=user)
+    assert res["execution_mode"] == "DETERMINISTIC"
+    assert res["form_key"] == "PM_VISHWAKARMA"
+    assert res["total_completion_percentage"] == 100.0
+    assert len(res["auto_attached_documents"]) == 4
+    assert res["is_ready_for_submission"] is True
+    print("[OK] form_agent automated pre-filling & document vault auto-attachment test passed")
+
 
 def test_insurance_agent_yarn_passbook():
     user = {
@@ -29,7 +57,6 @@ def test_insurance_agent_yarn_passbook():
     assert res["has_active_yarn_passbook"] is True
     assert res["passbook_monthly_turnover_inr"] == 15500.0
     
-    # Check that PMJJBY, PMSBY, MGBBY, LOOM_ASSET_PROTECT were evaluated
     policies = {p["policy_id"]: p for p in res["evaluated_policies"]}
     assert policies["PMJJBY"]["eligibility_status"] == "ELIGIBLE"
     assert policies["PMSBY"]["eligibility_status"] == "ELIGIBLE"
@@ -117,6 +144,7 @@ def test_literacy_agent():
 
 
 if __name__ == "__main__":
+    test_form_agent_with_document_vault()
     test_insurance_agent_yarn_passbook()
     test_scheme_agent_yarn_passbook()
     test_loan_agent_passbook_cashflow()
@@ -124,4 +152,4 @@ if __name__ == "__main__":
     test_savings_agent()
     test_notification_agent()
     test_literacy_agent()
-    print("All Real-World Yarn Passbook & Agent Tests Passed!")
+    print("All 8 Agents Verified Successfully!")
