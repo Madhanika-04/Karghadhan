@@ -12,6 +12,14 @@ from .verification import (
     FaceMatchResult,
     FullVerificationResponse,
 )
+from .financial_product import (
+    LoanProduct,
+    SavingsProduct,
+    InsuranceProduct,
+    ProductRecommendationsResponse,
+    PortalApplicationRequest,
+    PortalApplicationResponse,
+)
 
 __all__ = [
     "WeaverCreate", "WeaverRead", "WeaverUpdate",
@@ -23,6 +31,10 @@ __all__ = [
     "AadhaarQRResult", "AadhaarQRParsedFields",
     "AadhaarExistenceRequest", "AadhaarExistenceResult",
     "FaceMatchResult", "FullVerificationResponse",
+    "LoanProduct", "SavingsProduct", "InsuranceProduct",
+    "ProductRecommendationsResponse", "PortalApplicationRequest",
+    "PortalApplicationResponse",
 ]
+
 
 

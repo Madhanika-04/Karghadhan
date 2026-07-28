@@ -77,6 +77,9 @@ class WeaverUpdate(BaseModel):
     avatar_url: Optional[str] = None
 
 
+from app.schemas.finance import SavingsSummary, InsurancePolicy
+
+
 class WeaverRead(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
@@ -93,6 +96,9 @@ class WeaverRead(BaseModel):
     avatar_url: Optional[str]
     is_verified: bool
     loom_assets: list[LoomAssetRead] = Field(default_factory=list)
+    savings_summary: Optional[SavingsSummary] = None
+    insurance_policies: list[InsurancePolicy] = Field(default_factory=list)
     created_at: datetime
     updated_at: datetime
+
 

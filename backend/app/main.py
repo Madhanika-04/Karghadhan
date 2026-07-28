@@ -18,7 +18,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.config import get_settings
-from app.routers import auth, weavers, credit, loans, assistant, transactions, credit_scoring, verification
+from app.routers import auth, weavers, credit, loans, assistant, transactions, credit_scoring, verification, financial_products, finance, agents
 
 
 
@@ -99,6 +99,10 @@ app.include_router(assistant.router, prefix=API_V1)
 app.include_router(transactions.router, prefix=API_V1)
 app.include_router(credit_scoring.router, prefix=API_V1)
 app.include_router(verification.router, prefix=API_V1)
+app.include_router(financial_products.router, prefix=API_V1)
+app.include_router(finance.router,   prefix=API_V1)
+app.include_router(agents.router,    prefix=API_V1)
+
 
 
 

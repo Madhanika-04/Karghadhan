@@ -13,10 +13,14 @@ from fastapi import APIRouter, HTTPException, status
 
 from app.db.firebase import db
 from app.schemas.weaver import WeaverCreate, WeaverRead, WeaverUpdate, LoomAssetCreate, LoomAssetRead
+from app.services.edhaga_simulation import generate_edhaga_passbook
+from app.services.credit_scoring import calculate_weaver_score
 
 router = APIRouter(prefix="/weavers", tags=["Weavers"])
 
 WEAVERS_COLLECTION = "weavers"
+SCORING_COLLECTION = "weaver_scoring_profiles"
+TRANSACTIONS_COLLECTION = "transaction_ledger"
 
 
 @router.get("/{weaver_id}", response_model=WeaverRead, summary="Get weaver profile by ID")
@@ -188,3 +192,95 @@ async def delete_loom(loom_id: UUID):
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=str(exc),
         ) from exc
+
+
+@router.post("/{weaver_id}/apply-credentials", summary="Apply for new government Weaver Pehchan Card and Yarn Passbook")
+async def apply_credentials(weaver_id: UUID, state_code: str = "UP"):
+    """
+    Simulates applying for a new Weaver Pehchan ID and e-Dhaga Yarn Passbook.
+    Generates credentials, seeds deterministic transaction ledger, and calculates credit score.
+    """
+    weaver_id_str = str(weaver_id)
+    doc_ref = db.collection(WEAVERS_COLLECTION).document(weaver_id_str)
+    doc = doc_ref.get()
+    if not doc.exists:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Weaver {weaver_id} not found."
+        )
+
+    weaver_data = doc.to_dict()
+
+    # Generate unique credentials
+    import random
+    import string
+    # Pehchan ID: IND-HL-XXXXXXXXXX
+    random_suffix = "".join(random.choices(string.ascii_uppercase + string.digits, k=10))
+    pehchan_id = f"IND-HL-{random_suffix}"
+    # Yarn Passbook: YP-2026-STATE-XXXXX
+    rand_digits = "".join(random.choices(string.digits, k=5))
+    state_prefix = state_code.strip().upper()[:2] or "UP"
+    yarn_passbook_id = f"YP-2026-{state_prefix}-{rand_digits}"
+
+    # Generate mock e-Dhaga transactional history
+    edhaga_data = generate_edhaga_passbook(
+        yarn_passbook_id=yarn_passbook_id,
+        pehchan_id=pehchan_id,
+        weaver_name=weaver_data.get("full_name"),
+    )
+
+    # Seed the transaction ledger
+    for tx in edhaga_data.transactions:
+        tx_dict = tx.model_dump()
+        tx_dict["weaver_id"] = weaver_id_str
+        db.collection(TRANSACTIONS_COLLECTION).document(tx.id).set(tx_dict, merge=True)
+
+    # Calculate alternative credit score
+    score, risk_tier, breakdown = calculate_weaver_score(
+        cibil_score=weaver_data.get("cibil_score"),
+        total_allocated_quota=edhaga_data.total_allocated_quota_kg,
+        total_utilized_quota=edhaga_data.total_utilized_quota_kg,
+        order_frequency_variance=edhaga_data.order_frequency_variance,
+        avg_ticket_size_inr=edhaga_data.avg_ticket_size_inr,
+        past_due_instances=edhaga_data.past_due_instances
+    )
+
+    now = datetime.now(timezone.utc).isoformat()
+
+    # Update weaver profile with new IDs
+    update_data = {
+        "pehchan_id": pehchan_id,
+        "yarn_passbook_id": yarn_passbook_id,
+        "cluster_location": edhaga_data.cluster_office,
+        "is_verified": True,
+        "updated_at": now
+    }
+    doc_ref.update(update_data)
+
+    # Save scoring profile
+    scoring_record = {
+        "weaver_id": weaver_id_str,
+        "pehchan_id": pehchan_id,
+        "yarn_passbook_id": yarn_passbook_id,
+        "cibil_score": weaver_data.get("cibil_score"),
+        "total_allocated_quota": edhaga_data.total_allocated_quota_kg,
+        "total_utilized_quota": edhaga_data.total_utilized_quota_kg,
+        "order_frequency_variance": edhaga_data.order_frequency_variance,
+        "avg_ticket_size_inr": edhaga_data.avg_ticket_size_inr,
+        "past_due_instances": edhaga_data.past_due_instances,
+        "score": score,
+        "risk_tier": risk_tier,
+        "score_breakdown": breakdown,
+        "updated_at": now
+    }
+    db.collection(SCORING_COLLECTION).document(weaver_id_str).set(scoring_record, merge=True)
+
+    # Fetch updated weaver profile
+    updated_weaver = doc_ref.get().to_dict()
+    updated_weaver["id"] = updated_weaver.get("id", weaver_id_str)
+
+    return {
+        "weaver_profile": updated_weaver,
+        "scoring_profile": scoring_record
+    }
+
