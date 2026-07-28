@@ -1,7 +1,7 @@
 """
 app/agents/creditworthiness_agent.py
-Creditworthiness Agent for KarghaDhan.
-Evaluates Yarn Passbook allocations, loom asset capacity, informal sales, and computes an alternative credit score, risk category, financial health indicators, strengths, and risks.
+Institutional Creditworthiness Agent for KarghaDhan.
+Evaluates Yarn Passbook allocations, loom asset capacity, informal sales, and computes an official alternative credit score (KACS v2.0 - 300 to 900 scale), risk category, financial health indicators, strengths, risks, and institutional scheme matrix.
 """
 from __future__ import annotations
 
@@ -9,8 +9,8 @@ from typing import Any, Optional
 from app.agents.base_agent import BaseAgent
 from app.services.credit_scoring import calculate_weaver_score
 
-_SYSTEM_PROMPT = """You are an expert credit analyst for Indian handloom weavers. 
-Evaluate the weaver's yarn passbook records, loom capacity, and transaction history to assess creditworthiness, financial health, risk level, and loan eligibility."""
+_SYSTEM_PROMPT = """You are an institutional credit risk analyst for Indian handloom weavers and artisans. 
+Evaluate the weaver's Yarn Passbook telemetry, loom capacity, and transaction history using the KarghaDhan Alternative Credit Scoring model to assess creditworthiness, risk tier, default probability, and government loan/scheme eligibility."""
 
 
 class CreditworthinessAgent(BaseAgent):
@@ -19,7 +19,7 @@ class CreditworthinessAgent(BaseAgent):
 
     def _build_response(self, user_details: dict[str, Any], message: str = "") -> Optional[dict[str, Any]]:
         """
-        Deterministic creditworthiness evaluation using yarn passbook metrics and loom assets.
+        Deterministic creditworthiness evaluation using RBI-aligned multi-factor scoring model.
         """
         if not user_details:
             return None
@@ -39,51 +39,57 @@ class CreditworthinessAgent(BaseAgent):
             order_frequency_variance=variance,
             avg_ticket_size_inr=avg_ticket,
             past_due_instances=past_due,
+            experience_years=experience_years,
         )
+
+        max_loan = breakdown.get("max_eligible_micro_loan_inr", 150000.0)
+        subvention_rate = breakdown.get("concessional_interest_rate_pct", 6.0)
 
         # Financial Health Rating
         if score >= 750:
-            financial_health = "Robust"
-            max_loan = 200000.0
+            financial_health = "Institutional Prime (Low Risk)"
         elif score >= 650:
-            financial_health = "Stable"
-            max_loan = 120000.0
+            financial_health = "Stable Credit (Low Risk)"
         elif score >= 550:
-            financial_health = "Moderate"
-            max_loan = 50000.0
+            financial_health = "Moderate Risk (Requires Guarantor/JLG)"
         else:
-            financial_health = "Vulnerable"
-            max_loan = 20000.0
+            financial_health = "Vulnerable Credit (Requires SHG Shield)"
 
         # Identify strengths and risks
         strengths = []
         risks = []
 
-        if breakdown.get("quota_utilization_pct", 0) >= 70:
-            strengths.append(f"High Yarn Quota Utilization ({breakdown['quota_utilization_pct']}%), indicating active loom production.")
-        if breakdown.get("order_consistency_score", 0) >= 80:
-            strengths.append("Consistent order pattern with low frequency variance.")
-        if experience_years >= 10:
-            strengths.append(f"Seasoned artisan with {experience_years} years of weaving experience.")
+        factor_scores = breakdown.get("factor_scores", {})
+        if factor_scores.get("quota_capacity_utilization_score_30pct", 0) >= 70:
+            strengths.append(f"High Yarn Quota Utilization ({factor_scores['quota_capacity_utilization_score_30pct']}%), proving active loom production.")
+        if factor_scores.get("order_cashflow_stability_score_15pct", 0) >= 75:
+            strengths.append("Consistent order book cashflow with low frequency variance.")
+        if experience_years >= 5:
+            strengths.append(f"Seasoned artisan with {experience_years} years of cluster weaving experience.")
         if past_due == 0:
-            strengths.append("Clean repayment track record with zero past-due instances.")
+            strengths.append("Clean repayment track record with zero Days Past Due (DPD).")
 
         if past_due > 0:
-            risks.append(f"Recorded {past_due} past-due payment instances.")
-        if breakdown.get("order_consistency_score", 0) < 50:
-            risks.append("Irregular order frequency indicating seasonal income volatility.")
+            risks.append(f"Recorded {past_due} past-due payment instance(s).")
+        if factor_scores.get("order_cashflow_stability_score_15pct", 0) < 50:
+            risks.append("Higher order frequency variance indicating seasonal income volatility.")
         if cibil is None:
-            risks.append("No formal CIBIL credit history on record (alternative scoring applied).")
+            risks.append("No formal CIBIL credit history on record (KarghaDhan NTC alternative scoring applied).")
 
         return {
             "credit_score": score,
-            "risk_level": risk_tier,
+            "score_scale": "300 - 900",
+            "risk_tier": risk_tier,
+            "risk_grade": breakdown.get("risk_grade"),
+            "probability_of_default_pct": breakdown.get("probability_of_default_pct"),
             "financial_health": financial_health,
-            "max_eligible_loan": max_loan,
+            "max_eligible_micro_loan_inr": max_loan,
+            "concessional_interest_rate_pct": subvention_rate,
             "score_breakdown": breakdown,
             "strengths": strengths or ["Active handloom weaver profile"],
-            "risks": risks or ["Informal income stream subject to raw yarn price fluctuation"],
-            "loan_recommendation": f"Eligible for micro-loans up to ₹{max_loan:,.2f} with subvention under Weaver Mudra / KarghaDhan micro-credit.",
+            "risks": risks or ["Informal sales subject to raw material price fluctuations"],
+            "institutional_eligible_schemes": breakdown.get("institutional_eligible_schemes", []),
+            "loan_recommendation": f"Eligible for micro-credit up to ₹{max_loan:,.2f} at {subvention_rate}% p.a. interest under Weaver Mudra / PM Vishwakarma.",
         }
 
 
