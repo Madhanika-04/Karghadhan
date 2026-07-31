@@ -130,6 +130,14 @@ export const productsApi = {
 // AUTHENTICATION API
 // ---------------------------------------------------------------------------
 export const authApi = {
+  sendOtp: async (phone_number: string) => {
+    const response = await api.post('/auth/send-otp', { phone_number });
+    return response.data;
+  },
+  verifyOtp: async (phone_number: string, otp: string) => {
+    const response = await api.post('/auth/verify-otp', { phone_number, otp });
+    return response.data;
+  },
   login: async (credentials: any) => {
     const response = await api.post('/auth/login', credentials);
     return response.data;
