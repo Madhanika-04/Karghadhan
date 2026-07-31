@@ -18,8 +18,6 @@ from app.db.supabase import supabase_client
 from app.services.credit_scoring import calculate_weaver_score
 from app.services.edhaga_simulation import generate_edhaga_passbook
 
-import random
-
 logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/auth", tags=["Authentication"])
@@ -27,19 +25,6 @@ router = APIRouter(prefix="/auth", tags=["Authentication"])
 WEAVERS_COLLECTION = "weavers"
 SCORING_COLLECTION = "weaver_scoring_profiles"
 TRANSACTIONS_COLLECTION = "transaction_ledger"
-
-# In-memory OTP store mapping phone numbers to generated OTP codes
-OTP_STORE: dict[str, str] = {}
-
-
-class SendOTPRequest(BaseModel):
-    phone_number: str = Field(..., description="Mobile number with or without country code")
-
-
-class VerifyOTPRequest(BaseModel):
-    phone_number: str = Field(..., description="Mobile number")
-    otp: str = Field(..., min_length=6, max_length=6, description="6-digit OTP code")
-
 
 
 class RegisterRequest(BaseModel):
@@ -193,59 +178,6 @@ async def login(body: LoginRequest):
         ) from exc
 
 
-@router.post("/send-otp", summary="Generate and send OTP for phone verification")
-async def send_otp(body: SendOTPRequest):
-    """
-    Generate a unique 6-digit OTP for the given phone number.
-    Returns the generated OTP so the frontend can display an SMS notification simulation.
-    """
-    clean_phone = body.phone_number.strip().replace(" ", "")
-    # Generate a random 6-digit OTP
-    otp_code = f"{random.randint(100000, 999999)}"
-    OTP_STORE[clean_phone] = otp_code
-    
-    logger.info("Generated OTP %s for phone %s", otp_code, clean_phone)
-    return {
-        "status": "success",
-        "phone_number": clean_phone,
-        "otp": otp_code,
-        "message": f"OTP successfully generated and sent to {clean_phone}."
-    }
-
-
-@router.post("/verify-otp", summary="Verify mobile number with OTP code")
-async def verify_otp(body: VerifyOTPRequest):
-    """
-    Strictly verify that the provided OTP matches the exact code generated for the given phone number.
-    Reject any incorrect or random OTP codes.
-    """
-    clean_phone = body.phone_number.strip().replace(" ", "")
-    stored_otp = OTP_STORE.get(clean_phone)
-
-    if not stored_otp:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="No OTP was requested for this phone number. Please request a new OTP first."
-        )
-
-    if body.otp.strip() != stored_otp:
-        logger.warning("Failed OTP verification for %s: entered %s, expected %s", clean_phone, body.otp, stored_otp)
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Invalid OTP! The code you entered does not match the OTP sent to your number."
-        )
-
-    # Clean up OTP after successful verification so it cannot be reused
-    OTP_STORE.pop(clean_phone, None)
-
-    return {
-        "status": "success",
-        "verified": True,
-        "phone_number": clean_phone,
-        "message": "Mobile number successfully verified."
-    }
-
-
 @router.get("/me", summary="Get current logged-in user and weaver profile")
 async def get_me(user_id: Optional[str] = None):
     """Fetch complete user profile, weaver profile, and credit score summary."""
@@ -281,4 +213,3 @@ async def get_me(user_id: Optional[str] = None):
         raise
     except Exception as exc:
         raise HTTPException(status_code=500, detail=str(exc)) from exc
-

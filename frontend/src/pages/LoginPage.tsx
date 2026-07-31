@@ -22,32 +22,19 @@ export default function LoginPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
 
+  const [isAlreadyLoggedIn] = useState(() => !!user);
+
   React.useEffect(() => {
-    if (user) {
+    if (isAlreadyLoggedIn) {
       navigate('/dashboard', { replace: true });
     }
-  }, [user, navigate]);
+  }, [isAlreadyLoggedIn, navigate]);
 
-  const [sentOtpCode, setSentOtpCode] = useState('');
-
-  const handleSendOtp = async (e: React.FormEvent) => {
+  const handleSendOtp = (e: React.FormEvent) => {
     e.preventDefault();
     if (phone.length === 10) {
-      setIsLoading(true);
+      setIsOtpSent(true);
       setError('');
-      try {
-        const fullPhoneNumber = `${countryCode}${phone}`;
-        const res = await authApi.sendOtp(fullPhoneNumber);
-        setSentOtpCode(res.otp || '');
-        setIsOtpSent(true);
-      } catch (err: any) {
-        // Fallback demo OTP if backend is unreachable
-        const demoOtp = Math.floor(100000 + Math.random() * 900000).toString();
-        setSentOtpCode(demoOtp);
-        setIsOtpSent(true);
-      } finally {
-        setIsLoading(false);
-      }
     }
   };
 
@@ -56,27 +43,13 @@ export default function LoginPage() {
     if (otp.length === 6) {
       setIsLoading(true);
       setError('');
-      const fullPhoneNumber = `${countryCode}${phone}`;
-
       try {
-        // 1. Strictly verify OTP with backend
-        try {
-          await authApi.verifyOtp(fullPhoneNumber, otp);
-        } catch (verifyErr: any) {
-          // If fallback local check
-          if (sentOtpCode && otp !== sentOtpCode) {
-            throw new Error('Invalid OTP code. Please enter the exact 6-digit OTP sent to your number.');
-          } else if (!sentOtpCode) {
-            const detail = verifyErr.response?.data?.detail || 'Invalid OTP. Verification failed.';
-            throw new Error(detail);
-          }
-        }
-
-        // 2. Perform authentication upon verified OTP
+        const fullPhoneNumber = `${countryCode}${phone}`;
         const synthEmail = `${phone}@karghadhan.com`;
         const synthPassword = `weaver${phone}`;
         
         try {
+          // If using the demo number, bypass the backend to avoid 401 console errors
           if (phone === '9876543210') {
             throw new Error('DEMO_MODE');
           }
@@ -107,7 +80,7 @@ export default function LoginPage() {
         navigate('/verify');
       } catch (err: any) {
         console.error(err);
-        setError(err.message || err.response?.data?.detail || 'Invalid OTP code. Access denied.');
+        setError('Invalid OTP or verification error.');
       } finally {
         setIsLoading(false);
       }
@@ -178,17 +151,7 @@ export default function LoginPage() {
               </form>
             ) : (
               <form onSubmit={handleVerifyOtp} className="space-y-4">
-                <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} className="space-y-3">
-                  {sentOtpCode && (
-                    <div className="bg-emerald-50 border border-emerald-200 rounded-2xl p-3.5 flex items-start gap-3 shadow-sm">
-                      <Smartphone className="w-5 h-5 text-emerald-600 shrink-0 mt-0.5" />
-                      <div className="text-xs text-emerald-900">
-                        <span className="font-bold block text-emerald-800">📱 Demo SMS Notification Received</span>
-                        Your KarghaDhan verification code for {countryCode} {phone} is <span className="font-black text-sm tracking-wider text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded-md inline-block">{sentOtpCode}</span>
-                      </div>
-                    </div>
-                  )}
-
+                <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }}>
                   <label className="block text-sm font-medium text-slate-700 mb-1">
                     {t('auth.enterOtp', 'Enter OTP sent to {{code}} {{phone}}', { code: countryCode, phone })}
                   </label>
@@ -197,20 +160,16 @@ export default function LoginPage() {
                     placeholder={t('auth.otpPlaceholder', '6-digit OTP')}
                     value={otp}
                     onChange={(e) => setOtp(e.target.value.replace(/\D/g, '').slice(0, 6))}
-                    className="text-center text-xl tracking-widest font-black py-3 bg-slate-50 focus:bg-white border-2 border-indigo-200 focus:border-indigo-600 rounded-2xl shadow-inner"
+                    className="text-center text-lg tracking-widest font-bold"
                     required
                   />
                   <div className="flex justify-between mt-2 text-sm">
-                    <button type="button" onClick={() => { setIsOtpSent(false); setOtp(''); setError(''); }} className="text-primary-600 font-bold hover:underline">{t('auth.changeNumber', 'Change Number')}</button>
-                    <button type="button" onClick={handleSendOtp} className="text-slate-500 hover:text-slate-700 font-medium">{t('auth.resendOtp', 'Resend OTP')}</button>
+                    <button type="button" onClick={() => setIsOtpSent(false)} className="text-primary-600 hover:underline">{t('auth.changeNumber', 'Change Number')}</button>
+                    <button type="button" className="text-slate-500 hover:text-slate-700">{t('auth.resendOtp', 'Resend OTP')}</button>
                   </div>
                 </motion.div>
                 
-                {error && (
-                  <div className="bg-red-50 border border-red-200 text-red-700 text-xs font-bold p-3 rounded-xl text-center shadow-sm">
-                    {error}
-                  </div>
-                )}
+                {error && <div className="text-red-500 text-sm font-medium text-center">{error}</div>}
 
                 <Button fullWidth type="submit" size="lg" disabled={otp.length !== 6 || isLoading}>
                   {isLoading ? 'Verifying...' : t('auth.verifyLogin', 'Verify & Login')}
