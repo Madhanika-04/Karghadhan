@@ -36,7 +36,24 @@ export default function ProfilePage() {
   const { user, setLanguage, language } = useAppContext();
   const [toast, setToast] = useState(false);
 
-  if (!user) return null;
+  const defaultUser = {
+    id: 'weaver-demo-001',
+    name: user?.name || 'Ramesh Kumar',
+    occupation: user?.occupation || 'Handloom Silk Weaver',
+    weaverIdNumber: user?.weaverIdNumber || user?.pehchan_id || 'PEH-UP-2024-8842',
+    joinedDate: user?.joinedDate || new Date().toISOString(),
+    profileCompletion: user?.profileCompletion || 100,
+    age: user?.age || 34,
+    gender: user?.gender || 'Male',
+    district: user?.district || 'Kanchipuram',
+    state: user?.state || 'Tamil Nadu',
+    yearsOfExperience: user?.yearsOfExperience || 12,
+    monthlyIncome: user?.monthlyIncome || 28500,
+    bankAccount: user?.bankAccount || 'State Bank of India (**** 4892)',
+    aadhaarNumber: user?.aadhaarNumber || 'XXXX XXXX 8842',
+  };
+
+  const currentUser = user ? { ...defaultUser, ...user } : defaultUser;
 
   const handleDownload = () => {
     setToast(true);
@@ -77,7 +94,7 @@ export default function ProfilePage() {
           {/* Avatar */}
           <div className="relative flex-shrink-0">
             <div className="w-24 h-24 bg-gradient-to-br from-primary-400 to-primary-600 rounded-3xl flex items-center justify-center text-white text-4xl font-bold shadow-2xl border border-primary-300/30">
-              {user.name.charAt(0)}
+              {(currentUser.name || 'W').charAt(0)}
             </div>
             <motion.div
               animate={{ scale: [1, 1.1, 1] }}
@@ -91,19 +108,19 @@ export default function ProfilePage() {
           {/* Info */}
           <div className="flex-1">
             <div className="flex items-center gap-3 mb-1">
-              <h1 className="text-2xl font-bold font-display tracking-tight">{user.name}</h1>
+              <h1 className="text-2xl font-bold font-display tracking-tight">{currentUser.name}</h1>
               <span className="bg-success-500/20 text-success-400 text-xs font-bold px-2.5 py-1 rounded-full border border-success-500/30 flex items-center gap-1 uppercase tracking-wider">
                 <Star size={10} fill="currentColor" />
                 {t('profile.verifiedWeaver', 'Verified Weaver')}
               </span>
             </div>
-            <p className="text-white/70 text-sm mb-4 font-medium">{t(`mockData.${user.id}_occupation`, user.occupation)}</p>
+            <p className="text-white/70 text-sm mb-4 font-medium">{t(`mockData.${currentUser.id}_occupation`, currentUser.occupation)}</p>
             <div className="flex flex-wrap gap-2">
               <span className="bg-white/10 backdrop-blur-sm text-white/90 text-xs px-3 py-1.5 rounded-xl font-semibold flex items-center gap-1.5 border border-white/10">
-                🪪 {user.weaverIdNumber}
+                🪪 {currentUser.weaverIdNumber}
               </span>
               <span className="bg-white/10 backdrop-blur-sm text-white/90 text-xs px-3 py-1.5 rounded-xl font-semibold flex items-center gap-1.5 border border-white/10">
-                📅 {t('profile.joined', 'Joined')} {new Date(user.joinedDate).toLocaleDateString('en-IN', { month: 'short', year: 'numeric' })}
+                📅 {t('profile.joined', 'Joined')} {new Date(currentUser.joinedDate || Date.now()).toLocaleDateString('en-IN', { month: 'short', year: 'numeric' })}
               </span>
             </div>
           </div>
@@ -124,12 +141,12 @@ export default function ProfilePage() {
         <div className="relative mt-8 pt-6 border-t border-white/10">
           <div className="flex justify-between items-center mb-3">
             <span className="text-sm font-semibold text-white/80 uppercase tracking-wider">{t('profile.profileCompletion', 'Profile Completion')}</span>
-            <span className="text-xl font-bold text-success-400">{user.profileCompletion}%</span>
+            <span className="text-xl font-bold text-success-400">{currentUser.profileCompletion}%</span>
           </div>
           <div className="h-2.5 bg-white/10 rounded-full overflow-hidden border border-white/5">
             <motion.div
               initial={{ width: 0 }}
-              animate={{ width: `${user.profileCompletion}%` }}
+              animate={{ width: `${currentUser.profileCompletion}%` }}
               transition={{ duration: 1.2, delay: 0.3, ease: "easeOut" }}
               className="h-full bg-gradient-to-r from-success-400 to-emerald-300 rounded-full"
             />
@@ -154,14 +171,14 @@ export default function ProfilePage() {
               </h2>
               <div className="space-y-4">
                 {[
-                  { icon: Calendar, label: t('profile.age', 'Age'), value: t('profile.years', '{{count}} years', { count: user.age }) },
-                  { icon: Shield, label: t('profile.gender', 'Gender'), value: t(`profile.gender_${user.gender}`, user.gender) },
-                  { icon: MapPin, label: t('profile.district', 'District'), value: t(`mockData.${user.id}_district`, user.district) },
-                  { icon: MapPin, label: t('profile.state', 'State'), value: t(`mockData.${user.id}_state`, user.state) },
-                  { icon: Briefcase, label: t('profile.occupation', 'Occupation'), value: t(`mockData.${user.id}_occupation`, user.occupation) },
-                  { icon: Briefcase, label: t('profile.experience', 'Experience'), value: t('profile.years', '{{count}} years', { count: user.yearsOfExperience }) },
-                  { icon: IndianRupee, label: t('profile.monthlyIncome', 'Monthly Income'), value: `₹${user.monthlyIncome.toLocaleString('en-IN')}` },
-                  { icon: CreditCard, label: t('profile.bankAccount', 'Bank Account'), value: user.bankAccount || t('profile.notAdded', 'Not added') },
+                  { icon: Calendar, label: t('profile.age', 'Age'), value: t('profile.years', '{{count}} years', { count: currentUser.age }) },
+                  { icon: Shield, label: t('profile.gender', 'Gender'), value: t(`profile.gender_${currentUser.gender}`, currentUser.gender) },
+                  { icon: MapPin, label: t('profile.district', 'District'), value: t(`mockData.${currentUser.id}_district`, currentUser.district) },
+                  { icon: MapPin, label: t('profile.state', 'State'), value: t(`mockData.${currentUser.id}_state`, currentUser.state) },
+                  { icon: Briefcase, label: t('profile.occupation', 'Occupation'), value: t(`mockData.${currentUser.id}_occupation`, currentUser.occupation) },
+                  { icon: Briefcase, label: t('profile.experience', 'Experience'), value: t('profile.years', '{{count}} years', { count: currentUser.yearsOfExperience }) },
+                  { icon: IndianRupee, label: t('profile.monthlyIncome', 'Monthly Income'), value: `₹${(currentUser.monthlyIncome || 0).toLocaleString('en-IN')}` },
+                  { icon: CreditCard, label: t('profile.bankAccount', 'Bank Account'), value: currentUser.bankAccount || t('profile.notAdded', 'Not added') },
                 ].map((item, index) => {
                   const Icon = item.icon;
                   return (
@@ -192,9 +209,9 @@ export default function ProfilePage() {
                 </h2>
                 <div className="space-y-4">
                   {[
-                    { label: t('profile.aadhaarCard', 'Aadhaar Card'), value: user.aadhaarNumber, status: 'Verified' },
-                    { label: t('profile.weaverId', 'Weaver ID'), value: user.weaverIdNumber, status: 'Verified' },
-                    { label: t('profile.bankAccount', 'Bank Account'), value: user.bankAccount || t('profile.notLinked', 'Not Linked'), status: user.bankAccount ? 'Linked' : 'Pending' },
+                    { label: t('profile.aadhaarCard', 'Aadhaar Card'), value: currentUser.aadhaarNumber, status: 'Verified' },
+                    { label: t('profile.weaverId', 'Weaver ID'), value: currentUser.weaverIdNumber, status: 'Verified' },
+                    { label: t('profile.bankAccount', 'Bank Account'), value: currentUser.bankAccount || t('profile.notLinked', 'Not Linked'), status: currentUser.bankAccount ? 'Linked' : 'Pending' },
                   ].map((doc, index) => (
                     <div key={doc.label} className={`flex items-center justify-between ${index !== 2 ? 'pb-4 border-b border-slate-100' : ''}`}>
                       <div>
