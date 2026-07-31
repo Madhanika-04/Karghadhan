@@ -6,12 +6,13 @@ import { Button } from '../components/ui/Button';
 import { Card, CardContent } from '../components/ui/Card';
 import { useTranslation } from 'react-i18next';
 import { staggerContainer, staggerItem } from '../utils/animations';
-import { mockUser } from '../data/mockUser';
+import { useAppContext } from '../context/AppContext';
 import { tData } from '../utils/i18nData';
 
 export default function OnboardingProfilePage() {
   const navigate = useNavigate();
   const { t } = useTranslation();
+  const { user } = useAppContext();
 
   return (
     <div className="w-full max-w-lg">
@@ -39,15 +40,15 @@ export default function OnboardingProfilePage() {
             <CardContent className="p-6">
               <div className="flex items-center justify-between mb-6">
                 <div>
-                  <h2 className="text-xl font-bold text-slate-800">{mockUser.name}</h2>
+                  <h2 className="text-xl font-bold text-slate-800">{user?.name || t('common.weaver', 'Weaver')}</h2>
                   <p className="text-sm text-slate-500 flex items-center gap-1 mt-1">
                     <ShieldCheck size={14} className="text-success-500" />
-                    {t('common.verified', 'Verified')} {tData(mockUser.occupation)}
+                    {t('common.verified', 'Verified')} {tData(user?.occupation || 'Handloom Weaver')}
                   </p>
                 </div>
                 <div className="text-right">
                   <div className="inline-flex items-baseline gap-1 bg-primary-50 px-3 py-1 rounded-xl">
-                    <span className="text-2xl font-bold text-primary-700">{mockUser.trustScore}</span>
+                    <span className="text-2xl font-bold text-primary-700">{user?.trustScore || 780}</span>
                     <span className="text-xs font-semibold text-primary-600">/ 1000</span>
                   </div>
                   <p className="text-xs text-slate-500 mt-1 font-medium">{t('onboarding.trustScore', 'AI Trust Score')}</p>
@@ -63,7 +64,7 @@ export default function OnboardingProfilePage() {
                     <p className="text-xs font-semibold text-slate-600">{t('onboarding.monthlyIncome', 'Avg Monthly Income')}</p>
                   </div>
                   <p className="text-lg font-bold text-slate-800">
-                    ₹{(mockUser.monthlyIncome || 0).toLocaleString()}
+                    ₹{(user?.monthlyIncome || 0).toLocaleString()}
                   </p>
                 </div>
                 
@@ -75,7 +76,7 @@ export default function OnboardingProfilePage() {
                     <p className="text-xs font-semibold text-slate-600">{t('onboarding.experience', 'Experience')}</p>
                   </div>
                   <p className="text-lg font-bold text-slate-800">
-                    {mockUser.yearsOfExperience} {t('common.years', 'Years')}
+                    {user?.yearsOfExperience || 0} {t('common.years', 'Years')}
                   </p>
                 </div>
               </div>

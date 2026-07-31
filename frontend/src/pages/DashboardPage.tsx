@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import businessLoanHero from '@/assets/illustrations/business_loan_hero.png';
 import lifeInsuranceHero from '@/assets/illustrations/life_insurance_hero.png';
 import { useNavigate } from 'react-router-dom';
@@ -12,18 +12,23 @@ import {
   TrendingUp,
   Bell,
   ChevronRight,
+  Sparkles,
+  TrendingDown,
+  AlertTriangle,
+  Receipt,
+  ArrowRight,
+  Check,
 } from 'lucide-react';
 import { useAppContext } from '../context/AppContext';
 import { getLoans } from '../data/loans';
 import { insurancePolicies } from '../data/insurance';
-import { govtSchemes } from '../data/schemes';
 import { learningModules } from '../data/literacy';
+import { financeApi, loanApi, agentsApi } from '../services/api';
 import { staggerContainer, staggerItem, fadeIn, hoverScale } from '../utils/animations';
-import { ProgressBar } from '../components/ui/Badge';
+import { ProgressBar, Badge } from '../components/ui/Badge';
 import { Button } from '../components/ui/Button';
 import { Card, CardContent } from '../components/ui/Card';
 import { PromoCarousel } from '../components/ui/PromoCarousel';
-import type { PromoBanner } from '../components/ui/PromoCarousel';
 import { HeroProductCard } from '../components/ui/HeroProductCard';
 import { useTranslation } from 'react-i18next';
 import logoKargha from '@/assets/logos/logoKargha.png';
@@ -32,9 +37,33 @@ import { tData } from '../utils/i18nData';
 
 export default function DashboardPage() {
   const navigate = useNavigate();
-  const { user } = useAppContext();
+  const { user, yarnPassbook, isNewWeaver } = useAppContext();
   const { t } = useTranslation();
   const [toast, setToast] = useState(false);
+  const [financeSummary, setFinanceSummary] = useState<any>(null);
+  const [loansList, setLoansList] = useState<any[]>([]);
+  const [creditData, setCreditData] = useState<any>(null);
+  const [creditLoading, setCreditLoading] = useState(false);
+
+  useEffect(() => {
+    if (user?.id) {
+      financeApi.getSummary(user.id).then(setFinanceSummary).catch(console.error);
+      loanApi.getLoans(user.id).then(setLoansList).catch(console.error);
+
+      // Fetch live credit assessment from the creditworthiness agent
+      setCreditLoading(true);
+      agentsApi.creditworthiness({
+        cibil_score: user.cibil_score,
+        experience_years: user.yearsOfExperience,
+        monthly_income: user.monthlyIncome,
+        pehchan_id: user.pehchan_id,
+        yarn_passbook_id: user.yarn_passbook_id || yarnPassbook?.passbookNumber,
+      })
+        .then(r => setCreditData(r.data))
+        .catch(console.error)
+        .finally(() => setCreditLoading(false));
+    }
+  }, [user?.id]);
 
   const showToast = () => {
     setToast(true);
@@ -51,7 +80,7 @@ export default function DashboardPage() {
       to: '/loans',
       icon: HandCoins,
       label: t('dashboard.eligibleLoans', 'Eligible Loans'),
-      value: 4,
+      value: loansList.length > 0 ? loansList.length : 4,
       desc: t('dashboard.loansAvailable', 'Loans available'),
       bg: 'bg-primary-50',
       textColor: 'text-primary-700',
@@ -71,7 +100,7 @@ export default function DashboardPage() {
       to: '/schemes',
       icon: Building2,
       label: t('dashboard.govSchemes', 'Gov. Schemes'),
-      value: 5,
+      value: financeSummary ? (financeSummary.active_insurance?.length > 0 ? 5 : 3) : 5,
       desc: t('dashboard.activeSchemes', 'Active schemes'),
       bg: 'bg-secondary-50',
       textColor: 'text-secondary-700',
@@ -124,6 +153,156 @@ export default function DashboardPage() {
       <motion.div variants={fadeIn} className="w-full">
         <PromoCarousel banners={globalPromos} />
       </motion.div>
+
+      {/* NEW WEAVER JOURNEY CONTAINER */}
+      {isNewWeaver ? (
+        <div className="space-y-6">
+          {/* Welcome & Getting Started Checklist */}
+          <motion.div
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-100 shadow-sm space-y-6"
+          >
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-100 pb-4">
+              <div>
+                <span className="text-xs uppercase tracking-wider font-bold text-indigo-600 bg-indigo-50 px-2.5 py-1 rounded-md">{t('dashboard.firstTimePath', 'First-Time Weaver Guided Path')}</span>
+                <h2 className="text-xl sm:text-2xl font-black text-slate-900 mt-1.5">{t('dashboard.gettingStarted', 'Getting Started Checklist')}</h2>
+                <p className="text-xs sm:text-sm text-slate-500 font-medium">{t('dashboard.gettingStartedDesc', 'Complete these steps to build your financial history & unlock credit eligibility')}</p>
+              </div>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => navigate('/pehchan-guidance')}
+                leftIcon={<ArrowRight size={16} />}
+                className="border-indigo-200 text-indigo-700 hover:bg-indigo-50 shrink-0"
+              >
+                {t('dashboard.pehchanGuide', 'Pehchan ID Guide')}
+              </Button>
+            </div>
+
+            {/* Checklist Items */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+              {[
+                { title: t('dashboard.registerAccount', 'Register Account'), done: true, route: '/profile' },
+                { title: t('dashboard.applyPehchan', 'Apply for Pehchan ID'), done: false, route: '/pehchan-guidance' },
+                { title: t('dashboard.getYarnPassbook', 'Get Yarn Passbook'), done: false, route: '/yarn-passbook-guidance' },
+                { title: t('dashboard.uploadBankPassbook', 'Upload Bank Passbook'), done: true, route: '/documents' },
+                { title: t('dashboard.completeAiProfile', 'Complete AI Financial Profile'), done: false, route: '/onboarding-profile' },
+                { title: t('dashboard.exploreGovtSchemes', 'Explore Govt Schemes'), done: true, route: '/schemes' },
+                { title: t('dashboard.completeFinLiteracy', 'Complete Financial Literacy'), done: false, route: '/literacy' },
+              ].map((item, idx) => (
+                <div
+                  key={idx}
+                  onClick={() => navigate(item.route)}
+                  className={`p-4 rounded-2xl border flex items-center justify-between transition-all cursor-pointer ${
+                    item.done
+                      ? 'bg-success-50/60 border-success-200 text-slate-900'
+                      : 'bg-slate-50 border-slate-200 text-slate-600 hover:border-indigo-300 hover:bg-indigo-50/50'
+                  }`}
+                >
+                  <div className="flex items-center gap-3">
+                    <div className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold ${
+                      item.done ? 'bg-success-500 text-white' : 'border-2 border-slate-300 text-slate-400'
+                    }`}>
+                      {item.done ? <Check size={14} /> : idx + 1}
+                    </div>
+                    <span className="text-xs font-bold">{item.title}</span>
+                  </div>
+                  <ChevronRight size={14} className="text-slate-400" />
+                </div>
+              ))}
+            </div>
+          </motion.div>
+
+          {/* GOVERNMENT SCHEME RECOMMENDATIONS (No Credit History Required) */}
+          <motion.div
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="bg-gradient-to-r from-indigo-900 via-slate-900 to-primary-950 border border-indigo-500/30 rounded-3xl p-6 sm:p-8 text-white shadow-xl space-y-6"
+          >
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-2xl bg-amber-400/20 border border-amber-400/30 flex items-center justify-center text-amber-300">
+                  <Sparkles size={20} className="animate-pulse" />
+                </div>
+                <div>
+                  <h3 className="font-black text-lg text-white">{t('dashboard.govSchemesNew', 'Government Schemes for New Weavers')}</h3>
+                  <p className="text-xs text-indigo-200">{t('dashboard.govSchemesNewDesc', 'No prior credit history required — instant government subvention & training')}</p>
+                </div>
+              </div>
+              <Button size="sm" variant="secondary" onClick={() => navigate('/schemes')} className="text-xs">
+                {t('dashboard.viewAllSchemes', 'View All Schemes')}
+              </Button>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              {[
+                { title: t('dashboard.scheme1', 'Weaver Mudra Scheme'), desc: t('dashboard.scheme1Desc', 'Concessional credit up to ₹2 Lakhs with 6% interest subvention & margin money.'), badge: t('dashboard.badgeNoCibil', 'No CIBIL Required') },
+                { title: t('dashboard.scheme2', 'Handloom Cluster Support (NHDP)'), desc: t('dashboard.scheme2Desc', 'Financial assistance for loom upgrade, yarn procurement & jacquard equipment.'), badge: t('dashboard.badgeGrant', '100% Grant') },
+                { title: t('dashboard.scheme3', 'PMEGP Artisan Support'), desc: t('dashboard.scheme3Desc', 'Up to 35% capital subsidy for establishing new handloom weaving units.'), badge: t('dashboard.badgeSubsidy', 'Govt Subsidy') },
+                { title: t('dashboard.scheme4', 'Skill Development & Training'), desc: t('dashboard.scheme4Desc', 'Free technical training in natural dyeing, jacquard design & digital marketing.'), badge: t('dashboard.badgeStipend', 'Stipend Included') },
+                { title: t('dashboard.scheme5', 'PMJJBY & PMSBY Cover'), desc: t('dashboard.scheme5Desc', 'Free ₹2 Lakh life and accidental insurance for registered weavers.'), badge: t('dashboard.badgeFree', 'Free Scheme') },
+                { title: t('dashboard.scheme6', 'Financial Literacy Program'), desc: t('dashboard.scheme6Desc', 'Learn digital payments, thrift savings, and interest calculation.'), badge: t('dashboard.badgeInteractive', 'Interactive') },
+              ].map((scheme, idx) => (
+                <div key={idx} className="bg-white/10 backdrop-blur-md rounded-2xl p-4 border border-white/10 space-y-2 flex flex-col justify-between">
+                  <div>
+                    <div className="flex justify-between items-start mb-1">
+                      <h4 className="font-bold text-sm text-white">{scheme.title}</h4>
+                      <span className="text-[10px] bg-amber-400/20 text-amber-300 font-bold px-2 py-0.5 rounded-full border border-amber-400/30 whitespace-nowrap ml-2">
+                        {scheme.badge}
+                      </span>
+                    </div>
+                    <p className="text-xs text-indigo-100 font-medium leading-relaxed">{scheme.desc}</p>
+                  </div>
+                  <p className="text-[10px] text-emerald-400 font-bold flex items-center gap-1 pt-2 border-t border-white/10 mt-2">
+                    <CheckCircle size={12} /> {t('dashboard.recommendedFirstTime', 'Recommended for First-Time Weavers')}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </motion.div>
+        </div>
+      ) : (
+        /* EXISTING WEAVER YARN PASSBOOK BANNER */
+        <motion.div
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="bg-gradient-to-r from-indigo-900 via-slate-900 to-primary-950 border border-indigo-500/30 rounded-3xl p-6 text-white shadow-lg relative overflow-hidden"
+        >
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-4">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-2xl bg-indigo-500/20 border border-indigo-400/30 flex items-center justify-center text-amber-300">
+                <Sparkles size={20} className="animate-pulse" />
+              </div>
+              <div>
+                <div className="flex items-center gap-2">
+                  <h3 className="font-black text-base text-white">{t('documents.yarnPassbookAiProfile', 'Yarn Passbook Financial Profile')}</h3>
+                  <span className="text-[10px] bg-success-500/20 border border-success-400/40 text-success-300 px-2 py-0.5 rounded-full font-bold">{t('dashboard.verifiedLedger', 'Verified Ledger')}</span>
+                </div>
+                <p className="text-xs text-indigo-200">{t('dashboard.extractedTurnover', 'Extracted turnover: ₹18,000/mo purchase • ₹28,500/mo sales')}</p>
+              </div>
+            </div>
+            <Button
+              size="sm"
+              variant="secondary"
+              onClick={() => navigate('/documents')}
+              leftIcon={<Receipt size={14} />}
+              className="text-xs shrink-0 shadow-sm"
+            >
+              {t('documents.viewLedger', 'View Passbook Ledger')}
+            </Button>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 pt-1">
+            {yarnPassbook?.aiInsights?.map((insight, idx) => (
+              <div key={idx} className="bg-white/10 backdrop-blur-md rounded-2xl p-3 border border-white/10 text-xs font-semibold leading-relaxed flex items-start gap-2">
+                <CheckCircle size={14} className="text-emerald-400 shrink-0 mt-0.5" />
+                <span>{tData(insight)}</span>
+              </div>
+            ))}
+          </div>
+        </motion.div>
+      )}
 
       {/* Stats Row */}
       <motion.div
@@ -271,28 +450,92 @@ export default function DashboardPage() {
             </Card>
           </motion.div>
 
-          {/* Upcoming Benefits */}
+          {/* AI Credit Score Card */}
           <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.35 }}>
-            <Card>
+            <Card className="overflow-hidden">
+              <div className="bg-gradient-to-r from-indigo-600 to-primary-600 px-6 py-4 flex items-center gap-2">
+                <Sparkles size={16} className="text-white" />
+                <h2 className="text-sm font-bold text-white uppercase tracking-wider">{t('dashboard.aiCreditScore', 'AI Credit Score')}</h2>
+              </div>
               <CardContent className="p-6">
-                <div className="flex items-center justify-between mb-4">
-                  <div className="flex items-center gap-2">
-                    <Bell size={18} className="text-secondary-500" />
-                    <h2 className="text-lg font-bold text-slate-800">{t('dashboard.alerts', 'Alerts')}</h2>
+                {creditLoading ? (
+                  <div className="flex items-center justify-center h-24">
+                    <motion.div animate={{ rotate: 360 }} transition={{ duration: 1.5, repeat: Infinity, ease: 'linear' }}>
+                      <Sparkles size={28} className="text-indigo-400" />
+                    </motion.div>
                   </div>
-                </div>
-                <div className="space-y-3">
-                  {[
-                    { text: t('dashboard.alert1', 'PMJJBY renewal in 15 days'), color: 'bg-secondary-50 text-secondary-700 border-secondary-100', icon: '⚠️' },
-                    { text: t('dashboard.alert2', 'Yarn Subsidy Scheme closes Jun 30'), color: 'bg-danger-50 text-danger-700 border-danger-100', icon: '📅' },
-                    { text: t('dashboard.alert3', 'New Skill Training batch starting'), color: 'bg-success-50 text-success-700 border-success-100', icon: '🎓' },
-                  ].map((item, i) => (
-                    <div key={i} className={`flex items-start gap-3 border rounded-xl p-3 text-sm font-medium leading-tight ${item.color}`}>
-                      <span className="mt-0.5">{item.icon}</span>
-                      <span>{item.text}</span>
+                ) : creditData ? (
+                  <div className="space-y-4">
+                    {/* Score + Risk Tier */}
+                    <div className="flex items-end justify-between">
+                      <div>
+                        <p className="text-5xl font-black text-slate-900">{creditData.credit_score}</p>
+                        <p className="text-xs text-slate-500 font-semibold mt-1">{t('dashboard.outOf900', 'out of 900')}</p>
+                      </div>
+                      <div className="text-right">
+                        <span className={`inline-block px-3 py-1 rounded-full text-xs font-bold ${
+                          creditData.risk_level === 'LOW' ? 'bg-success-100 text-success-700' :
+                          creditData.risk_level === 'MEDIUM' ? 'bg-amber-100 text-amber-700' :
+                          'bg-red-100 text-red-700'
+                        }`}>
+                          {t(`creditDashboard.risk${creditData.risk_level}`, creditData.risk_level) as string} {t('dashboard.risk', 'Risk')}
+                        </span>
+                        <p className="text-xs text-slate-500 font-semibold mt-1">{tData(creditData.financial_health)}</p>
+                      </div>
                     </div>
-                  ))}
-                </div>
+
+                    {/* Score bar */}
+                    <ProgressBar value={(creditData.credit_score / 900) * 100} height="h-2" />
+
+                    {/* Max eligible loan */}
+                    <div className="bg-indigo-50 rounded-xl px-4 py-3 flex items-center justify-between border border-indigo-100">
+                      <span className="text-xs font-bold text-indigo-700">{t('dashboard.maxEligibleLoan', 'Max Eligible Loan')}</span>
+                      <span className="text-base font-black text-indigo-900">₹{(creditData.max_eligible_loan / 100000).toFixed(1)}L</span>
+                    </div>
+
+                    {/* Strengths */}
+                    {creditData.strengths?.length > 0 && (
+                      <div>
+                        <p className="text-xs font-bold text-success-700 mb-2 flex items-center gap-1"><TrendingUp size={12}/> {t('dashboard.strengths', 'Strengths')}</p>
+                        <ul className="space-y-1">
+                          {creditData.strengths.slice(0, 2).map((s: string, i: number) => (
+                            <li key={i} className="text-xs text-slate-600 flex items-start gap-1.5">
+                              <CheckCircle size={11} className="text-success-500 mt-0.5 shrink-0"/>{tData(s)}
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+
+                    {/* Risks */}
+                    {creditData.risks?.length > 0 && (
+                      <div>
+                        <p className="text-xs font-bold text-amber-700 mb-2 flex items-center gap-1"><AlertTriangle size={12}/> {t('dashboard.risks', 'Risks')}</p>
+                        <ul className="space-y-1">
+                          {creditData.risks.slice(0, 2).map((r: string, i: number) => (
+                            <li key={i} className="text-xs text-slate-600 flex items-start gap-1.5">
+                              <TrendingDown size={11} className="text-amber-500 mt-0.5 shrink-0"/>{tData(r)}
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+                  </div>
+                ) : (
+                  /* Fallback static alerts */
+                  <div className="space-y-3">
+                    {[
+                      { text: t('dashboard.alert1', 'PMJJBY renewal in 15 days'), color: 'bg-secondary-50 text-secondary-700 border-secondary-100', icon: '⚠️' },
+                      { text: t('dashboard.alert2', 'Yarn Subsidy Scheme closes Jun 30'), color: 'bg-danger-50 text-danger-700 border-danger-100', icon: '📅' },
+                      { text: t('dashboard.alert3', 'New Skill Training batch starting'), color: 'bg-success-50 text-success-700 border-success-100', icon: '🎓' },
+                    ].map((item, i) => (
+                      <div key={i} className={`flex items-start gap-3 border rounded-xl p-3 text-sm font-medium leading-tight ${item.color}`}>
+                        <span className="mt-0.5">{item.icon}</span>
+                        <span>{item.text}</span>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </CardContent>
             </Card>
           </motion.div>

@@ -2,6 +2,7 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   LayoutDashboard,
+  Gauge,
   HandCoins,
   Shield,
   Building2,
@@ -20,6 +21,7 @@ import logoKargha from '@/assets/logos/logoKargha.png';
 
 const navItems = [
   { to: '/dashboard', icon: LayoutDashboard, label: 'Dashboard', key: 'common.dashboard' },
+  { to: '/credit-score', icon: Gauge, label: 'Credit Score', key: 'common.creditScore' },
   { to: '/finances', icon: Activity, label: 'Financial Activity', key: 'common.financialActivity' },
   { to: '/savings', icon: PiggyBank, label: 'Savings', key: 'common.savings' },
   { to: '/loans', icon: HandCoins, label: 'Loans', key: 'common.loans' },
@@ -36,7 +38,7 @@ interface SidebarProps {
   onClose?: () => void;
 }
 
-export function Sidebar({ isOpen = true, onClose }: SidebarProps) {
+function SidebarContent({ onClose }: { onClose?: () => void }) {
   const location = useLocation();
   const navigate = useNavigate();
   const { t } = useTranslation();
@@ -45,7 +47,7 @@ export function Sidebar({ isOpen = true, onClose }: SidebarProps) {
     navigate('/');
   };
 
-  const SidebarContent = () => (
+  return (
     <div className="flex flex-col h-full">
       {/* Logo */}
       <div className="p-5 border-b border-slate-100">
@@ -108,12 +110,14 @@ export function Sidebar({ isOpen = true, onClose }: SidebarProps) {
       </div>
     </div>
   );
+}
 
+export function Sidebar({ isOpen = true, onClose }: SidebarProps) {
   return (
     <>
       {/* Desktop Sidebar */}
       <div className="hidden lg:flex flex-col w-64 bg-white border-r border-slate-100 h-full fixed top-0 left-0 shadow-sm z-30">
-        <SidebarContent />
+        <SidebarContent onClose={onClose} />
       </div>
 
       {/* Mobile Drawer */}
@@ -134,7 +138,7 @@ export function Sidebar({ isOpen = true, onClose }: SidebarProps) {
               transition={{ type: 'spring', stiffness: 300, damping: 30 }}
               className="fixed top-0 left-0 h-full w-72 bg-white z-50 shadow-2xl lg:hidden"
             >
-              <SidebarContent />
+              <SidebarContent onClose={onClose} />
             </motion.div>
           </>
         )}

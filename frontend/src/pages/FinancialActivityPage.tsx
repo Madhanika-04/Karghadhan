@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import {
@@ -9,10 +10,19 @@ import {
   Sparkles,
   Calendar,
   AlertCircle,
-  Wallet
+  Wallet,
+  Receipt,
+  FileText,
+  CheckCircle2,
+  ChevronRight
 } from 'lucide-react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
 import { staggerContainer, staggerItem, fadeIn, slideInLeft } from '../utils/animations';
+import { useAppContext } from '../context/AppContext';
+import { tData } from '../utils/i18nData';
+import { YarnTransactionHistoryModal } from '../components/documents/YarnTransactionHistoryModal';
+import { transactionsApi } from '../services/api';
+import { useEffect } from 'react';
 
 const monthlyData = [
   { month: 'Jan', income: 15000, expense: 8000 },
@@ -23,13 +33,6 @@ const monthlyData = [
   { month: 'Jun', income: 24500, expense: 14500 },
 ];
 
-const recentActivity = [
-  { id: 1, title: 'Silk Subsidy Credit', date: '2023-06-15', amount: 15000, type: 'credit', category: 'Subsidy' },
-  { id: 2, title: 'Loom EMI Payment', date: '2023-06-10', amount: 4500, type: 'debit', category: 'Loan' },
-  { id: 3, title: 'Yarn Purchase', date: '2023-06-05', amount: 8000, type: 'debit', category: 'Expense' },
-  { id: 4, title: 'Handloom Sales', date: '2023-06-02', amount: 9500, type: 'credit', category: 'Income' },
-];
-
 const upcomingReminders = [
   { id: 1, title: 'PMJJBY Premium', daysLeft: 5, amount: 436, type: 'insurance' },
   { id: 2, title: 'MUDRA Loan EMI', daysLeft: 12, amount: 2100, type: 'loan' },
@@ -37,15 +40,61 @@ const upcomingReminders = [
 
 export default function FinancialActivityPage() {
   const { t } = useTranslation();
+  const { yarnPassbook, user } = useAppContext();
+  const [isHistoryModalOpen, setIsHistoryModalOpen] = useState(false);
+
+  const yarnTransactions = yarnPassbook?.transactions || [];
+
+  const [realTransactions, setRealTransactions] = useState<any[]>([]);
+
+  useEffect(() => {
+    if (yarnPassbook?.isUploaded && user?.id) {
+      transactionsApi.getTransactions(user.id).then((res) => {
+        if (res && res.length > 0) {
+          const mapped = res.map((tx: any) => ({
+            id: `api-${tx.id}`,
+            title: tx.description || (tx.transaction_type === 'INCOME' ? 'Saree Sale' : 'Yarn Purchase'),
+            date: tx.transacted_at,
+            amount: tx.amount,
+            type: tx.transaction_type === 'INCOME' ? 'credit' : 'debit',
+            category: tx.category || (tx.transaction_type === 'INCOME' ? 'Sales' : 'Purchase')
+          }));
+          setRealTransactions(mapped);
+        }
+      }).catch(console.error);
+    }
+  }, [user?.id, yarnPassbook?.isUploaded]);
+
+  // Combine default activity with extracted Yarn Passbook transactions
+  const combinedActivity = [
+    ...realTransactions,
+    ...yarnTransactions.map(tx => ({
+      id: `ypb-${tx.id}`,
+      title: `${tx.supplierName} (${tx.yarnPurchased})`,
+      date: tx.fullDate,
+      amount: tx.amount,
+      type: tx.type === 'sales' ? 'credit' : 'debit',
+      category: tx.category || (tx.type === 'sales' ? 'Saree Sales' : 'Yarn Purchase'),
+    })),
+    { id: 'act-1', title: 'Silk Subsidy Credit', date: '2024-06-15', amount: 15000, type: 'credit', category: 'Subsidy' },
+    { id: 'act-2', title: 'Loom EMI Payment', date: '2024-06-10', amount: 4500, type: 'debit', category: 'Loan' },
+  ].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
 
   return (
     <div className="space-y-6 sm:space-y-8 max-w-7xl mx-auto pb-20">
       {/* Header */}
-      <motion.div variants={staggerContainer} initial="hidden" animate="visible" className="flex flex-col gap-2">
+      <motion.div variants={staggerContainer} initial="hidden" animate="visible" className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <motion.h1 variants={fadeIn} className="text-2xl sm:text-3xl font-black text-slate-800 tracking-tight flex items-center gap-3">
           <Activity className="text-indigo-600" size={32} />
           {t('finance.title', 'Financial Activity')}
         </motion.h1>
+
+        <button
+          onClick={() => setIsHistoryModalOpen(true)}
+          className="inline-flex items-center gap-2 bg-gradient-to-r from-indigo-600 to-primary-600 text-white font-bold text-xs uppercase tracking-wider px-4 py-2.5 rounded-2xl shadow-md hover:shadow-indigo-200 transition-all self-start sm:self-auto"
+        >
+          <Receipt size={16} /> {t('documents.viewYarnPassbookHistory', 'Yarn Passbook Ledger')}
+        </button>
       </motion.div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8">
@@ -62,7 +111,7 @@ export default function FinancialActivityPage() {
                 </div>
               </div>
               <p className="text-sm text-slate-500 font-medium mb-1">{t('finance.totalIncome', 'Total Income')}</p>
-              <h3 className="text-2xl font-bold text-slate-800">₹1,14,000</h3>
+              <h3 className="text-2xl font-bold text-slate-800">₹{(114000 + (yarnPassbook?.totalMonthlySales || 28500)).toLocaleString('en-IN')}</h3>
             </motion.div>
             
             <motion.div variants={staggerItem} className="bg-white p-5 rounded-3xl border border-slate-100 shadow-sm">
@@ -72,7 +121,7 @@ export default function FinancialActivityPage() {
                 </div>
               </div>
               <p className="text-sm text-slate-500 font-medium mb-1">{t('finance.totalExpenses', 'Total Expenses')}</p>
-              <h3 className="text-2xl font-bold text-slate-800">₹66,500</h3>
+              <h3 className="text-2xl font-bold text-slate-800">₹{(66500 + (yarnPassbook?.totalMonthlyPurchase || 18000)).toLocaleString('en-IN')}</h3>
             </motion.div>
 
             <motion.div variants={staggerItem} className="bg-indigo-600 p-5 rounded-3xl border border-indigo-500 shadow-md text-white">
@@ -82,25 +131,28 @@ export default function FinancialActivityPage() {
                 </div>
               </div>
               <p className="text-sm text-indigo-100 font-medium mb-1">{t('finance.netSavings', 'Net Savings')}</p>
-              <h3 className="text-2xl font-bold text-white">₹47,500</h3>
+              <h3 className="text-2xl font-bold text-white">₹58,000</h3>
             </motion.div>
           </motion.div>
 
-          {/* AI Tips Card */}
+          {/* AI Passbook Insights Banner */}
           <motion.div
             variants={slideInLeft}
             initial="hidden"
             animate="visible"
-            className="bg-gradient-to-r from-primary-50 to-indigo-50 border border-primary-100 p-5 rounded-3xl flex gap-4 items-start shadow-sm"
+            className="bg-gradient-to-r from-indigo-900 via-primary-900 to-slate-900 border border-indigo-500/30 p-6 rounded-3xl text-white shadow-lg relative overflow-hidden"
           >
-            <div className="w-12 h-12 rounded-full bg-primary-100 flex items-center justify-center flex-shrink-0">
-              <Sparkles className="text-primary-600" size={24} />
+            <div className="flex items-center gap-2 mb-3">
+              <Sparkles className="text-amber-300 animate-pulse" size={20} />
+              <h4 className="font-black text-sm uppercase tracking-wider text-amber-200">{t('finance.yarnPassbookInsights', 'Yarn Passbook AI Insights')}</h4>
             </div>
-            <div>
-              <h4 className="font-bold text-slate-800 text-sm mb-1">{t('finance.aiInsightTitle', 'Kargha AI Insight')}</h4>
-              <p className="text-sm text-slate-600 font-medium leading-relaxed">
-                {t('finance.aiInsightText', 'You have received ₹15,000 from the Silk Subsidy scheme this month. Your next EMI is due in 5 days.')}
-              </p>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              {yarnPassbook?.aiInsights?.map((insight, idx) => (
+                <div key={idx} className="flex items-start gap-2 bg-white/10 backdrop-blur-md rounded-xl p-3 border border-white/10 text-xs font-semibold leading-relaxed">
+                  <CheckCircle2 size={14} className="text-emerald-400 shrink-0 mt-0.5" />
+                  <span>{tData(insight)}</span>
+                </div>
+              ))}
             </div>
           </motion.div>
 
@@ -170,31 +222,36 @@ export default function FinancialActivityPage() {
             </div>
           </motion.div>
 
-          {/* Recent Activity */}
+          {/* Recent Activity including Yarn Passbook */}
           <div className="bg-white rounded-3xl p-6 shadow-sm border border-slate-100">
             <div className="flex justify-between items-center mb-6">
               <h3 className="text-sm font-bold text-slate-800">{t('finance.recentActivity', 'Recent Activity')}</h3>
-              <button className="text-[11px] font-bold text-indigo-600 uppercase tracking-wide bg-indigo-50 px-3 py-1 rounded-full">{t('finance.viewAll', 'View All')}</button>
+              <button 
+                onClick={() => setIsHistoryModalOpen(true)}
+                className="text-[11px] font-bold text-indigo-600 uppercase tracking-wide bg-indigo-50 px-3 py-1 rounded-full hover:bg-indigo-100 transition-colors"
+              >
+                {t('documents.passbookLedger', 'Passbook Ledger')}
+              </button>
             </div>
-            <div className="space-y-5">
-              {recentActivity.map((tx) => (
-                <div key={tx.id} className="flex items-center justify-between group">
+            <div className="space-y-4">
+              {combinedActivity.slice(0, 6).map((tx) => (
+                <div key={tx.id} className="flex items-center justify-between group cursor-pointer" onClick={() => setIsHistoryModalOpen(true)}>
                   <div className="flex items-center gap-3">
                     <div className={`w-10 h-10 rounded-2xl flex items-center justify-center transition-colors ${tx.type === 'credit' ? 'bg-success-50 text-success-600 group-hover:bg-success-100' : 'bg-danger-50 text-danger-600 group-hover:bg-danger-100'}`}>
                       {tx.type === 'credit' ? <ArrowDownLeft size={18} /> : <ArrowUpRight size={18} />}
                     </div>
                     <div>
-                      <p className="text-sm font-bold text-slate-800">{tx.title}</p>
+                      <p className="text-sm font-bold text-slate-800 line-clamp-1">{tData(tx.title)}</p>
                       <div className="flex items-center gap-2 mt-0.5">
-                        <span className="text-[10px] font-bold bg-slate-100 text-slate-500 px-1.5 py-0.5 rounded uppercase">{tx.category}</span>
+                        <span className="text-[10px] font-bold bg-slate-100 text-slate-500 px-1.5 py-0.5 rounded uppercase">{tData(tx.category)}</span>
                         <p className="text-[10px] text-slate-400 font-medium">
-                          {new Intl.DateTimeFormat('en-IN', { month: 'short', day: 'numeric' }).format(new Date(tx.date))}
+                          {tx.date}
                         </p>
                       </div>
                     </div>
                   </div>
                   <span className={`text-sm font-black ${tx.type === 'credit' ? 'text-success-600' : 'text-slate-800'}`}>
-                    {tx.type === 'credit' ? '+' : '-'}₹{tx.amount.toLocaleString()}
+                    {tx.type === 'credit' ? '+' : '-'}₹{tx.amount.toLocaleString('en-IN')}
                   </span>
                 </div>
               ))}
@@ -203,6 +260,13 @@ export default function FinancialActivityPage() {
 
         </div>
       </div>
+
+      {/* Transaction History Modal */}
+      <YarnTransactionHistoryModal
+        isOpen={isHistoryModalOpen}
+        onClose={() => setIsHistoryModalOpen(false)}
+      />
     </div>
   );
 }
+

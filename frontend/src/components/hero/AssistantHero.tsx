@@ -16,11 +16,11 @@ export function AssistantHero() {
       {[...Array(12)].map((_, i) => (
         <motion.div
           key={i}
-          initial={{ y: Math.random() * 100, x: Math.random() * 100, opacity: 0 }}
-          animate={{ y: Math.random() * -100, x: Math.random() * -100, opacity: [0, 0.6, 0] }}
-          transition={{ duration: 3 + Math.random() * 4, repeat: Infinity, ease: "linear" }}
+          initial={{ y: ((i * 13) % 100), x: ((i * 17) % 100), opacity: 0 }}
+          animate={{ y: -((i * 13) % 100), x: -((i * 17) % 100), opacity: [0, 0.6, 0] }}
+          transition={{ duration: 3 + ((i * 4) % 4), repeat: Infinity, ease: "linear" }}
           className="absolute w-1 h-1 bg-cyan-400 rounded-full blur-[1px]"
-          style={{ top: `${Math.random() * 100}%`, left: `${Math.random() * 100}%` }}
+          style={{ top: `${(i * 23) % 100}%`, left: `${(i * 29) % 100}%` }}
         />
       ))}
       

@@ -36,17 +36,26 @@ export default function WelcomePage() {
 
   // Typewriter effect
   useEffect(() => {
+    let mounted = true;
     let i = 0;
-    setDisplayText('');
+    setTimeout(() => {
+      if (mounted) setDisplayText('');
+    }, 0);
     const timer = setInterval(() => {
+      if (!mounted) return;
       setDisplayText(fullGreeting.slice(0, i + 1));
       i++;
       if (i >= fullGreeting.length) {
         clearInterval(timer);
-        setTimeout(() => setShowFeatures(true), 400);
+        setTimeout(() => {
+          if (mounted) setShowFeatures(true);
+        }, 400);
       }
     }, 60);
-    return () => clearInterval(timer);
+    return () => {
+      mounted = false;
+      clearInterval(timer);
+    };
   }, [fullGreeting]);
 
   return (

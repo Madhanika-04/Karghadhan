@@ -11,7 +11,10 @@ export interface UserProfile {
   yearsOfExperience: number;
   monthlyIncome: number;
   bankAccount?: string;
-  weaverIdNumber: string;
+  weaverIdNumber: string; // Keep for backward compatibility
+  pehchan_id?: string;
+  yarn_passbook_id?: string;
+  cibil_score?: number;
   aadhaarNumber: string;
   profileCompletion: number;
   isVerified: boolean;
@@ -24,6 +27,9 @@ export interface UserProfile {
   hasUPI: boolean;
   savingsHabit: 'Daily' | 'Weekly' | 'Monthly' | 'None';
   trustScore: number;
+  hasPehchanId?: boolean;
+  hasYarnPassbook?: boolean;
+  isNewWeaver?: boolean;
 }
 
 export type Language = {
@@ -48,6 +54,8 @@ export interface Loan {
   tags: string[];
   isEligible: boolean;
   applyUrl?: string;
+  portalUrl?: string;
+  portalName?: string;
   imageSrc?: string;
 }
 
@@ -132,6 +140,7 @@ export interface ChatMessage {
   role: 'user' | 'assistant';
   content: string;
   timestamp: Date;
+  loanIntent?: any;
 }
 
 export interface SuggestedQuestion {
@@ -161,6 +170,34 @@ export interface UserDocument {
   icon: string;
 }
 
+// ===== Yarn Passbook & Transaction Types =====
+export interface YarnTransaction {
+  id: string;
+  date: string; // e.g. "12 Jul"
+  fullDate: string; // e.g. "2024-07-12"
+  supplierName: string;
+  yarnPurchased: string;
+  quantity: string;
+  amount: number;
+  type: 'purchase' | 'sales';
+  paymentStatus: 'Paid' | 'Completed' | 'Pending' | 'Received';
+  category: string;
+}
+
+export interface YarnPassbookData {
+  isUploaded: boolean;
+  passbookNumber: string;
+  uploadDate: string;
+  totalMonthlyPurchase: number;
+  totalMonthlySales: number;
+  avgMonthlyPurchase: number;
+  salesIncreasePct: number;
+  monthlySavingsPotential: number;
+  isWorkingCapitalEligible: boolean;
+  transactions: YarnTransaction[];
+  aiInsights: string[];
+}
+
 // ===== App Context Types =====
 export interface AppState {
   language: Language;
@@ -168,12 +205,22 @@ export interface AppState {
   isVerified: boolean;
   notifications: Notification[];
   onboardingStep: number;
+  yarnPassbook: YarnPassbookData;
+  documentsList: UserDocument[];
+  isNewWeaver: boolean;
 }
 
 export interface AppContextType extends AppState {
   setLanguage: (language: Language) => void;
-  setUser: (user: UserProfile) => void;
+  setUser: (user: UserProfile | null) => void;
   setVerified: (verified: boolean) => void;
   markNotificationRead: (id: string) => void;
   setOnboardingStep: (step: number) => void;
+  refreshUser: () => Promise<void>;
+  updateYarnPassbook: (data: Partial<YarnPassbookData>) => void;
+  addDocument: (doc: UserDocument) => void;
+  updateDocument: (id: string, updates: Partial<UserDocument>) => void;
+  deleteDocument: (id: string) => void;
+  setIsNewWeaver: (isNew: boolean) => void;
 }
+

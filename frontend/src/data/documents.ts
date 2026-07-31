@@ -1,6 +1,6 @@
-import type { UserDocument } from '../types';
+import type { UserDocument, YarnPassbookData } from '../types';
 
-export const documents: UserDocument[] = [
+export const initialDocuments: UserDocument[] = [
   {
     id: 'doc-1',
     name: 'Aadhaar Card',
@@ -21,15 +21,6 @@ export const documents: UserDocument[] = [
   },
   {
     id: 'doc-3',
-    name: 'PAN Card',
-    type: 'Identity Proof',
-    uploadDate: '2024-12-01',
-    status: 'Pending',
-    fileUrl: '/mock/pan.pdf',
-    icon: '💳',
-  },
-  {
-    id: 'doc-4',
     name: 'Bank Passbook',
     type: 'Financial Proof',
     uploadDate: '2024-12-05',
@@ -37,4 +28,105 @@ export const documents: UserDocument[] = [
     fileUrl: '/mock/passbook.pdf',
     icon: '🏦',
   },
+  {
+    id: 'doc-4',
+    name: 'Yarn Passbook',
+    type: 'Yarn & Sales Passbook',
+    uploadDate: '2024-12-10',
+    status: 'Verified',
+    fileUrl: '/mock/yarn_passbook.pdf',
+    icon: '📔',
+  },
+  {
+    id: 'doc-5',
+    name: 'PAN Card',
+    type: 'Identity Proof',
+    uploadDate: '2024-12-01',
+    status: 'Pending',
+    fileUrl: '/mock/pan.pdf',
+    icon: '💳',
+  },
 ];
+
+export const defaultYarnPassbookData: YarnPassbookData = {
+  isUploaded: true,
+  passbookNumber: 'YPB-UP-2024-8842',
+  uploadDate: '2024-12-10',
+  totalMonthlyPurchase: 18000,
+  totalMonthlySales: 28500,
+  avgMonthlyPurchase: 18000,
+  salesIncreasePct: 12,
+  monthlySavingsPotential: 2000,
+  isWorkingCapitalEligible: true,
+  transactions: [
+    {
+      id: 'tx-1',
+      date: '12 Jul',
+      fullDate: '2024-07-12',
+      supplierName: 'Lakshmi Yarn Traders',
+      yarnPurchased: 'Cotton Yarn',
+      quantity: '25 kg',
+      amount: 4500,
+      type: 'purchase',
+      paymentStatus: 'Paid',
+      category: 'Raw Material',
+    },
+    {
+      id: 'tx-2',
+      date: '18 Jul',
+      fullDate: '2024-07-18',
+      supplierName: 'Kashi Silk Depot',
+      yarnPurchased: 'Silk Yarn Purchase',
+      quantity: '10 kg',
+      amount: 2800,
+      type: 'purchase',
+      paymentStatus: 'Paid',
+      category: 'Raw Material',
+    },
+    {
+      id: 'tx-3',
+      date: '23 Jul',
+      fullDate: '2024-07-23',
+      supplierName: 'Banarasi Weavers Co-op',
+      yarnPurchased: 'Sales Deposit',
+      quantity: '8 Sarees',
+      amount: 6700,
+      type: 'sales',
+      paymentStatus: 'Received',
+      category: 'Saree Sales',
+    },
+    {
+      id: 'tx-4',
+      date: '28 Jul',
+      fullDate: '2024-07-28',
+      supplierName: 'Ganga Dyeing Works',
+      yarnPurchased: 'Silk Dyeing & Yarn Polish',
+      quantity: '15 kg',
+      amount: 3200,
+      type: 'purchase',
+      paymentStatus: 'Paid',
+      category: 'Yarn Processing',
+    },
+    {
+      id: 'tx-5',
+      date: '02 Aug',
+      fullDate: '2024-08-02',
+      supplierName: 'Weaver Sahkari Samiti',
+      yarnPurchased: 'Finished Saree Sales Payout',
+      quantity: '12 Sarees',
+      amount: 11500,
+      type: 'sales',
+      paymentStatus: 'Received',
+      category: 'Saree Sales',
+    },
+  ],
+  aiInsights: [
+    'Your average monthly yarn purchase is ₹18,000.',
+    'Your sales have increased by 12%.',
+    'You may be eligible for a working capital loan.',
+    'You can save approximately ₹2,000 every month.',
+  ],
+};
+
+export const documents = initialDocuments;
+

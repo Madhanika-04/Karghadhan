@@ -13,7 +13,7 @@ from app.config import get_settings
 
 @lru_cache(maxsize=4)
 def get_gemini_llm(
-    model: str = "gemini-1.5-flash",
+    model: str = "gemini-2.5-flash",
     temperature: float = 0.2,
 ) -> BaseChatModel:
     """Return a cached Gemini chat model instance."""

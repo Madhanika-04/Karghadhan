@@ -5,6 +5,7 @@ import { AppProvider } from './context/AppContext';
 // Layouts
 import { DashboardLayout } from './layouts/DashboardLayout';
 import { OnboardingLayout } from './layouts/OnboardingLayout';
+import { ProtectedRoute } from './components/layout/ProtectedRoute';
 
 // Pages — Public & Auth
 import SplashPage from './pages/SplashPage';
@@ -30,6 +31,9 @@ import AssistantPage from './pages/AssistantPage';
 import ProfilePage from './pages/ProfilePage';
 import DocumentsPage from './pages/DocumentsPage';
 import NotificationsPage from './pages/NotificationsPage';
+import CreditScorePage from './pages/CreditScorePage';
+import PehchanGuidancePage from './pages/PehchanGuidancePage';
+import YarnPassbookGuidancePage from './pages/YarnPassbookGuidancePage';
 
 export default function App() {
   return (
@@ -58,8 +62,12 @@ export default function App() {
             </Route>
 
             {/* Dashboard */}
-            <Route element={<DashboardLayout />}>
+            <Route element={<ProtectedRoute />}>
+              <Route element={<DashboardLayout />}>
               <Route path="/dashboard" element={<DashboardPage />} />
+              <Route path="/credit-score" element={<CreditScorePage />} />
+              <Route path="/pehchan-guidance" element={<PehchanGuidancePage />} />
+              <Route path="/yarn-passbook-guidance" element={<YarnPassbookGuidancePage />} />
               <Route path="/savings" element={<SavingsPage />} />
               <Route path="/finances" element={<FinancialActivityPage />} />
               <Route path="/loans" element={<LoansPage />} />
@@ -70,6 +78,7 @@ export default function App() {
               <Route path="/documents" element={<DocumentsPage />} />
               <Route path="/notifications" element={<NotificationsPage />} />
               <Route path="/profile" element={<ProfilePage />} />
+            </Route>
             </Route>
 
             {/* Catch-all */}

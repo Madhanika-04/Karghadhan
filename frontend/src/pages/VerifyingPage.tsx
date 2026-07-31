@@ -5,6 +5,7 @@ import { CheckCircle, ArrowRight } from 'lucide-react';
 import { Button } from '../components/ui/Button';
 import { useTranslation } from 'react-i18next';
 import { useAppContext } from '../context/AppContext';
+import { weaverApi } from '../services/api';
 
 const verificationSteps = [
   { id: 1, key: 'onboarding.step1', fallback: 'Scanning Aadhaar Document', duration: 1800 },
@@ -20,7 +21,7 @@ import logoKargha from '@/assets/logos/logoKargha.png';
 export default function VerifyingPage() {
   const navigate = useNavigate();
   const { t } = useTranslation();
-  const { setVerified } = useAppContext();
+  const { setVerified, user, refreshUser } = useAppContext();
   const [currentStep, setCurrentStep] = useState(0);
   const [completedSteps, setCompletedSteps] = useState<number[]>([]);
   const [isDone, setIsDone] = useState(false);
@@ -44,7 +45,15 @@ export default function VerifyingPage() {
       window.setTimeout(() => {
         setCompletedSteps((prev) => [...prev, idx]);
         if (idx === verificationSteps.length - 1) {
-          window.setTimeout(() => {
+          window.setTimeout(async () => {
+            if (user?.id) {
+              try {
+                await weaverApi.applyCredentials(user.id, 'UP');
+                await refreshUser();
+              } catch (e) {
+                console.error('Failed to generate credentials:', e);
+              }
+            }
             setVerified(true);
             setIsDone(true);
           }, 600);

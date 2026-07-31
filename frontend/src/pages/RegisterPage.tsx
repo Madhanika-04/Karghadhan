@@ -8,14 +8,69 @@ import { Select } from '../components/ui/Select';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '../components/ui/Card';
 import { useTranslation } from 'react-i18next';
 import logoKargha from '@/assets/logos/logoKargha.png';
+import { authApi } from '../services/api';
+import { useAppContext } from '../context/AppContext';
 
 export default function RegisterPage() {
   const navigate = useNavigate();
   const { t } = useTranslation();
+  const { refreshUser } = useAppContext();
+  
+  // Form states matching UI
+  const [fullName, setFullName] = useState('');
+  const [countryCode, setCountryCode] = useState('+91');
+  const [phone, setPhone] = useState('');
+  const [age, setAge] = useState('');
+  const [gender, setGender] = useState('');
+  const [state, setState] = useState('');
+  const [district, setDistrict] = useState('');
+  const [occupation, setOccupation] = useState('');
+  
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState('');
 
-  const handleRegister = (e: React.FormEvent) => {
+  const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
-    navigate('/verify'); // Go to Document Verification next
+    setIsLoading(true);
+    setError('');
+
+    try {
+      // Synthesize required backend fields from phone number
+      const fullPhoneNumber = `${countryCode}${phone}`;
+      const synthEmail = `${phone}@karghadhan.com`;
+      const synthPassword = `weaver${phone}`;
+      const location = `${district}, ${state}`;
+
+      await authApi.register({
+        email: synthEmail,
+        password: synthPassword,
+        full_name: fullName,
+        phone_number: fullPhoneNumber,
+        cluster_location: location,
+        primary_language: 'en',
+        experience_years: 5, // default
+      });
+
+      // Auto login after registration
+      const loginResponse = await authApi.login({
+        email: synthEmail,
+        password: synthPassword
+      });
+
+      const userId = loginResponse.user_id || loginResponse.id;
+      localStorage.setItem('auth_token', loginResponse.access_token);
+      localStorage.setItem('user_profile', JSON.stringify({ id: userId, phone: fullPhoneNumber }));
+      
+      await refreshUser();
+
+      // Navigate to verification on success
+      navigate('/verify');
+    } catch (err: any) {
+      console.error(err);
+      setError(err.response?.data?.detail || 'Registration failed. Please try again.');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -39,22 +94,43 @@ export default function RegisterPage() {
               <div className="grid grid-cols-2 gap-4">
                 <div className="col-span-2">
                   <label className="block text-sm font-medium text-slate-700 mb-1">{t('auth.fullName', 'Full Name')}</label>
-                  <Input type="text" placeholder={t('auth.namePlaceholder', 'As per Aadhaar')} required />
+                  <Input type="text" placeholder={t('auth.namePlaceholder', 'As per Aadhaar')} value={fullName} onChange={e => setFullName(e.target.value)} required />
                 </div>
                 
                 <div className="col-span-2">
                   <label className="block text-sm font-medium text-slate-700 mb-1">{t('auth.mobileLabel', 'Mobile Number')}</label>
-                  <Input type="tel" placeholder={t('auth.mobilePlaceholder', '10-digit number')} required />
+                  <div className="flex rounded-xl shadow-sm">
+                    <select
+                      value={countryCode}
+                      onChange={(e) => setCountryCode(e.target.value)}
+                      className="bg-slate-100 border border-r-0 border-slate-300 text-slate-800 text-sm font-bold rounded-l-xl px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-indigo-500 shrink-0 cursor-pointer"
+                    >
+                      <option value="+91">🇮🇳 +91</option>
+                      <option value="+1">🇺🇸 +1</option>
+                      <option value="+44">🇬🇧 +44</option>
+                      <option value="+971">🇦🇪 +971</option>
+                      <option value="+880">🇧🇩 +880</option>
+                      <option value="+94">🇱🇰 +94</option>
+                    </select>
+                    <Input
+                      type="tel"
+                      placeholder={t('auth.mobilePlaceholder', '10-digit number')}
+                      className="rounded-l-none pl-3"
+                      value={phone}
+                      onChange={e => setPhone(e.target.value.replace(/\D/g, '').slice(0, 10))}
+                      required
+                    />
+                  </div>
                 </div>
 
                 <div>
                   <label className="block text-sm font-medium text-slate-700 mb-1">{t('auth.age', 'Age')}</label>
-                  <Input type="number" placeholder={t('auth.agePlaceholder', 'Years')} required />
+                  <Input type="number" placeholder={t('auth.agePlaceholder', 'Years')} value={age} onChange={e => setAge(e.target.value)} required />
                 </div>
                 
                 <div>
                   <label className="block text-sm font-medium text-slate-700 mb-1">{t('auth.gender', 'Gender')}</label>
-                  <Select required>
+                  <Select value={gender} onChange={e => setGender(e.target.value)} required>
                     <option value="">{t('auth.select', 'Select')}</option>
                     <option value="male">{t('auth.male', 'Male')}</option>
                     <option value="female">{t('auth.female', 'Female')}</option>
@@ -64,7 +140,7 @@ export default function RegisterPage() {
 
                 <div>
                   <label className="block text-sm font-medium text-slate-700 mb-1">{t('auth.state', 'State')}</label>
-                  <Select required>
+                  <Select value={state} onChange={e => setState(e.target.value)} required>
                     <option value="">{t('auth.select', 'Select')}</option>
                     <option value="tn">{t('auth.tamilNadu', 'Tamil Nadu')}</option>
                     <option value="ap">{t('auth.andhraPradesh', 'Andhra Pradesh')}</option>
@@ -76,12 +152,12 @@ export default function RegisterPage() {
                 
                 <div>
                   <label className="block text-sm font-medium text-slate-700 mb-1">{t('auth.district', 'District')}</label>
-                  <Input type="text" placeholder={t('auth.districtPlaceholder', 'E.g. Kanchipuram')} required />
+                  <Input type="text" placeholder={t('auth.districtPlaceholder', 'E.g. Kanchipuram')} value={district} onChange={e => setDistrict(e.target.value)} required />
                 </div>
 
                 <div className="col-span-2">
                   <label className="block text-sm font-medium text-slate-700 mb-1">{t('auth.occupation', 'Occupation')}</label>
-                  <Select required>
+                  <Select value={occupation} onChange={e => setOccupation(e.target.value)} required>
                     <option value="silk">{t('auth.silkWeaver', 'Silk Handloom Weaver')}</option>
                     <option value="cotton">{t('auth.cottonWeaver', 'Cotton Handloom Weaver')}</option>
                     <option value="wool">{t('auth.woolWeaver', 'Wool Handloom Weaver')}</option>
@@ -90,8 +166,10 @@ export default function RegisterPage() {
                 </div>
               </div>
 
-              <Button fullWidth type="submit" size="lg" className="mt-6">
-                {t('auth.registerAccount', 'Register Account')}
+              {error && <div className="text-red-500 text-sm font-medium text-center">{error}</div>}
+
+              <Button fullWidth type="submit" size="lg" className="mt-6" disabled={isLoading}>
+                {isLoading ? 'Registering...' : t('auth.registerAccount', 'Register Account')}
               </Button>
             </form>
           </CardContent>

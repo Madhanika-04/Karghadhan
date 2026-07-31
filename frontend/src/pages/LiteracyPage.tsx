@@ -1,7 +1,7 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
-import { PlayCircle, CheckCircle2, Trophy, Clock, BookOpen, Play, CheckCircle } from 'lucide-react';
+import { PlayCircle, CheckCircle2, Trophy, Clock, BookOpen, Play, CheckCircle, Sparkles, ChevronDown } from 'lucide-react';
 import { learningModules } from '../data/literacy';
 import { LiteracyHero } from '../components/hero/LiteracyHero';
 import { ProgressBar, Badge } from '../components/ui/Badge';
@@ -11,6 +11,7 @@ import { Card, CardContent } from '../components/ui/Card';
 import { staggerContainer, staggerItem } from '../utils/animations';
 import type { LearningModule } from '../types';
 import { tData } from '../utils/i18nData';
+import { agentsApi } from '../services/api';
 
 const difficultyColor: Record<string, 'success' | 'amber' | 'danger'> = {
   Beginner: 'success',
@@ -22,6 +23,21 @@ export default function LiteracyPage() {
   const { t } = useTranslation();
   const [selectedModule, setSelectedModule] = useState<LearningModule | null>(null);
   const [activeFilter, setActiveFilter] = useState('All');
+  const [literacyData, setLiteracyData] = useState<any>(null);
+  const [literacyLoading, setLiteracyLoading] = useState(false);
+
+  // Fetch literacy agent whenever a module is selected
+  useEffect(() => {
+    if (!selectedModule) {
+      setLiteracyData(null);
+      return;
+    }
+    setLiteracyLoading(true);
+    agentsApi.literacy({}, selectedModule.title)
+      .then(r => setLiteracyData(r.data))
+      .catch(console.error)
+      .finally(() => setLiteracyLoading(false));
+  }, [selectedModule?.id]);
 
   const categories = ['All', ...Array.from(new Set(learningModules.map((m) => m.category)))];
   const filtered = learningModules.filter((m) => activeFilter === 'All' || m.category === activeFilter);
@@ -235,6 +251,55 @@ export default function LiteracyPage() {
                 />
               </div>
             )}
+
+            {/* AI Literacy Agent Section */}
+            <div className="border border-indigo-100 rounded-2xl overflow-hidden">
+              <div className="bg-gradient-to-r from-indigo-600 to-primary-600 px-5 py-3 flex items-center gap-2">
+                <Sparkles size={14} className="text-white" />
+                <h3 className="text-xs font-bold text-white uppercase tracking-wider">{t('literacy.aiExplainer', 'AI Explainer')}</h3>
+                {literacyLoading && <span className="ml-auto text-xs text-white/70 animate-pulse">Thinking...</span>}
+              </div>
+              {literacyLoading ? (
+                <div className="p-5 flex items-center justify-center">
+                  <motion.div animate={{ rotate: 360 }} transition={{ duration: 1.5, repeat: Infinity, ease: 'linear' }}>
+                    <Sparkles size={24} className="text-indigo-400" />
+                  </motion.div>
+                </div>
+              ) : literacyData ? (
+                <div className="p-5 space-y-4">
+                  {literacyData.explanation && (
+                    <p className="text-sm text-slate-700 leading-relaxed">{literacyData.explanation}</p>
+                  )}
+                  {literacyData.key_takeaways?.length > 0 && (
+                    <div>
+                      <p className="text-xs font-bold text-indigo-700 uppercase tracking-wide mb-2">{t('literacy.keyTakeaways', 'Key Takeaways')}</p>
+                      <ul className="space-y-2">
+                        {literacyData.key_takeaways.map((tip: string, i: number) => (
+                          <li key={i} className="flex items-start gap-2 text-xs text-slate-600">
+                            <CheckCircle size={12} className="text-success-500 mt-0.5 shrink-0" />{tip}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+                  {literacyData.faqs?.length > 0 && (
+                    <div>
+                      <p className="text-xs font-bold text-indigo-700 uppercase tracking-wide mb-2">{t('literacy.faqs', 'FAQs')}</p>
+                      <div className="space-y-2">
+                        {literacyData.faqs.map((faq: any, i: number) => (
+                          <div key={i} className="bg-slate-50 rounded-xl p-3 border border-slate-100">
+                            <p className="text-xs font-bold text-slate-800 mb-1">Q: {faq.q}</p>
+                            <p className="text-xs text-slate-600">A: {faq.a}</p>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <div className="p-5 text-center text-xs text-slate-400">{t('literacy.aiNoMatch', 'Ask the assistant for more on this topic.')}</div>
+              )}
+            </div>
 
             <Button
               fullWidth

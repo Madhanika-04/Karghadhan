@@ -1,6 +1,6 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Bell, CheckCircle, Info, AlertTriangle, ShieldCheck, Zap, MoreHorizontal, Trash2 } from 'lucide-react';
+import { Bell, CheckCircle, Info, AlertTriangle, ShieldCheck, Zap, MoreHorizontal, Trash2, Sparkles } from 'lucide-react';
 import { notifications } from '../data/mockUser';
 import { Card, CardContent } from '../components/ui/Card';
 import { Button } from '../components/ui/Button';
@@ -8,6 +8,8 @@ import { Badge } from '../components/ui/Badge';
 import { staggerContainer, staggerItem } from '../utils/animations';
 import { Toast } from '../components/ui/Modal';
 import { useTranslation } from 'react-i18next';
+import { agentsApi } from '../services/api';
+import { useAppContext } from '../context/AppContext';
 
 const iconMap = {
   info: <Info size={20} className="text-primary-600" />,
@@ -23,8 +25,24 @@ const bgMap = {
 
 export default function NotificationsPage() {
   const { t } = useTranslation();
+  const { user } = useAppContext();
   const [notifs, setNotifs] = useState(notifications);
   const [toastMessage, setToastMessage] = useState('');
+  const [agentAlerts, setAgentAlerts] = useState<any[]>([]);
+
+  useEffect(() => {
+    if (user) {
+      // Trigger notification agent with plausible upcoming deadlines
+      agentsApi.notification({
+        upcoming_emi_date: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+        upcoming_emi_amount: 2450,
+        insurance_slice_due: true,
+        passbook_renewal_date: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+      })
+        .then(r => setAgentAlerts(r.data?.notifications || []))
+        .catch(console.error);
+    }
+  }, [user?.id]);
 
   const unreadCount = notifs.filter(n => !n.isRead).length;
 
@@ -78,6 +96,43 @@ export default function NotificationsPage() {
           </Button>
         )}
       </motion.div>
+
+      {/* Agent Live Alerts */}
+      {agentAlerts.length > 0 && (
+        <motion.div initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }} className="bg-white rounded-3xl border border-slate-100 shadow-sm overflow-hidden">
+          <div className="bg-gradient-to-r from-amber-500 to-orange-600 px-6 py-4 flex items-center gap-2">
+            <Sparkles size={16} className="text-white" />
+            <h2 className="text-sm font-bold text-white uppercase tracking-wider">{t('notifications.liveAlerts', 'Live AI Alerts')}</h2>
+            <span className="ml-auto text-xs bg-white/20 text-white px-2 py-0.5 rounded-full font-bold">{agentAlerts.length}</span>
+          </div>
+          <div className="divide-y divide-slate-50">
+            {agentAlerts.map((alert: any, i: number) => (
+              <div key={i} className={`flex items-start gap-4 px-6 py-4 ${
+                alert.urgency === 'HIGH' ? 'bg-red-50/50' :
+                alert.urgency === 'MEDIUM' ? 'bg-amber-50/50' : 'bg-slate-50/50'
+              }`}>
+                <div className={`w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0 ${
+                  alert.urgency === 'HIGH' ? 'bg-red-100' :
+                  alert.urgency === 'MEDIUM' ? 'bg-amber-100' : 'bg-slate-100'
+                }`}>
+                  <AlertTriangle size={16} className={alert.urgency === 'HIGH' ? 'text-red-600' : alert.urgency === 'MEDIUM' ? 'text-amber-600' : 'text-slate-500'} />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2 mb-0.5">
+                    <h3 className="text-sm font-bold text-slate-900">{alert.title}</h3>
+                    <span className={`text-[10px] font-black px-1.5 py-0.5 rounded-full ${
+                      alert.urgency === 'HIGH' ? 'bg-red-100 text-red-700' :
+                      alert.urgency === 'MEDIUM' ? 'bg-amber-100 text-amber-700' : 'bg-slate-100 text-slate-600'
+                    }`}>{alert.urgency}</span>
+                  </div>
+                  <p className="text-xs text-slate-600 leading-relaxed">{alert.message}</p>
+                  <p className="text-xs text-primary-600 font-semibold mt-1">{alert.action}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </motion.div>
+      )}
 
       {/* Notifications List */}
       <motion.div

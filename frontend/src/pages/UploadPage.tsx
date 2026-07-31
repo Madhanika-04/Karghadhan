@@ -110,14 +110,15 @@ import { useTranslation } from 'react-i18next';
 export default function UploadPage() {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const [files, setFiles] = useState<{ aadhaar: File | null; weaverId: File | null; passbook: File | null }>({
+  const [files, setFiles] = useState<{ aadhaar: File | null; weaverId: File | null; passbook: File | null; yarnPassbook: File | null }>({
     aadhaar: null,
     weaverId: null,
     passbook: null,
+    yarnPassbook: null,
   });
-  const [progress, setProgress] = useState({ aadhaar: 0, weaverId: 0, passbook: 0 });
+  const [progress, setProgress] = useState({ aadhaar: 0, weaverId: 0, passbook: 0, yarnPassbook: 0 });
 
-  const simulateUpload = (key: 'aadhaar' | 'weaverId' | 'passbook', file: File) => {
+  const simulateUpload = (key: 'aadhaar' | 'weaverId' | 'passbook' | 'yarnPassbook', file: File) => {
     setFiles((prev) => ({ ...prev, [key]: file }));
     setProgress((prev) => ({ ...prev, [key]: 0 }));
     let p = 0;
@@ -131,18 +132,18 @@ export default function UploadPage() {
     }, 150);
   };
 
-  const removeFile = (key: 'aadhaar' | 'weaverId' | 'passbook') => {
+  const removeFile = (key: 'aadhaar' | 'weaverId' | 'passbook' | 'yarnPassbook') => {
     setFiles((prev) => ({ ...prev, [key]: null }));
     setProgress((prev) => ({ ...prev, [key]: 0 }));
   };
 
-  const canContinue = files.aadhaar !== null && files.weaverId !== null;
+  const canContinue = files.aadhaar !== null || files.weaverId !== null;
 
   const handleContinue = () => {
     navigate('/verifying');
   };
 
-  const uploadedCount = [files.aadhaar, files.weaverId, files.passbook].filter(Boolean).length;
+  const uploadedCount = [files.aadhaar, files.weaverId, files.passbook, files.yarnPassbook].filter(Boolean).length;
 
   return (
     <div className="w-full max-w-lg">
@@ -155,12 +156,12 @@ export default function UploadPage() {
           <Upload size={28} className="text-white" />
         </div>
         <h1 className="text-2xl font-bold text-slate-800 font-display tracking-tight">{t('upload.title', 'Upload Documents')}</h1>
-        <p className="text-slate-500 text-sm mt-2">{t('upload.subtitle', 'We need a few documents to verify your identity')}</p>
+        <p className="text-slate-500 text-sm mt-2">{t('upload.subtitle', 'We need your documents to verify your identity & build your credit profile')}</p>
 
         {/* Progress */}
         <div className="mt-4 bg-white rounded-2xl px-4 py-3 shadow-sm border border-slate-100 inline-flex items-center gap-3">
           <div className="flex gap-1">
-            {[0, 1, 2].map((i) => (
+            {[0, 1, 2, 3].map((i) => (
               <div
                 key={i}
                 className={`w-8 h-1.5 rounded-full transition-all duration-500 ${
@@ -169,7 +170,7 @@ export default function UploadPage() {
               />
             ))}
           </div>
-          <span className="text-xs text-slate-500 font-medium">{t('upload.uploadedCount', '{{count}}/3 uploaded', { count: uploadedCount })}</span>
+          <span className="text-xs text-slate-500 font-medium">{t('upload.uploadedCount', '{{count}}/4 uploaded', { count: uploadedCount })}</span>
         </div>
       </motion.div>
 
@@ -210,13 +211,27 @@ export default function UploadPage() {
         <motion.div variants={staggerItem}>
           <UploadZone
             id="passbook-upload"
-            label={t('upload.passbookLabel', 'Bank Passbook (Optional)')}
+            label={t('upload.passbookLabel', 'Bank Passbook')}
             description={t('upload.passbookDesc', 'First page of bank passbook or account statement')}
             emoji="📒"
             onUpload={(file) => simulateUpload('passbook', file)}
             uploadedFile={files.passbook}
             progress={progress.passbook}
             onRemove={() => removeFile('passbook')}
+            t={t}
+          />
+        </motion.div>
+
+        <motion.div variants={staggerItem}>
+          <UploadZone
+            id="yarn-passbook-upload"
+            label="Yarn Passbook (e-Dhaga Ledger)"
+            description="Upload Yarn Passbook to build AI credit score & micro-credit profile"
+            emoji="🧶"
+            onUpload={(file) => simulateUpload('yarnPassbook', file)}
+            uploadedFile={files.yarnPassbook}
+            progress={progress.yarnPassbook}
+            onRemove={() => removeFile('yarnPassbook')}
             t={t}
           />
         </motion.div>

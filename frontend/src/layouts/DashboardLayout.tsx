@@ -38,7 +38,7 @@ export function DashboardLayout() {
       {/* Main Content */}
       <div className="flex-1 lg:ml-64 flex flex-col min-h-screen">
         {/* Top Bar */}
-        <header className="sticky top-0 z-20 bg-white/90 backdrop-blur-xl border-b border-slate-100 px-4 sm:px-6 h-16 flex items-center gap-4">
+        <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-xl border-b border-slate-100 px-4 sm:px-6 h-16 flex items-center gap-4">
           {/* Mobile Menu Toggle */}
           <button
             onClick={() => setSidebarOpen(!sidebarOpen)}
@@ -132,7 +132,7 @@ export function DashboardLayout() {
               className="flex items-center gap-2.5 hover:bg-slate-100 rounded-xl px-2 py-1.5 transition-colors border border-transparent hover:border-slate-200"
             >
               <div className="w-9 h-9 bg-gradient-to-br from-primary-500 to-secondary-500 rounded-xl flex items-center justify-center text-white text-sm font-bold shadow-sm">
-                {user?.name.charAt(0)}
+                {user?.name?.charAt(0) ?? '?'}
               </div>
               <div className="hidden sm:block text-left">
                 <p className="text-sm font-bold text-slate-800 leading-tight">{user?.name}</p>

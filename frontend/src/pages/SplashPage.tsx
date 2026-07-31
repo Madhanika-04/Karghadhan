@@ -38,9 +38,9 @@ export default function SplashPage() {
         <div className="flex items-center justify-center mb-6">
           <img src={logoKargha} alt="Karghadhan Logo" className="w-32 h-32 object-contain drop-shadow-2xl" />
         </div>
-        <h1 className="text-4xl font-bold mb-2 tracking-tight">KARGADHAN</h1>
-        <p className="text-primary-200 font-medium tracking-wide">
-          {t('landing.heroSubtitle', 'Your AI Financial Partner for Every Weaver').split(' ').slice(0, 7).join(' ')}
+        <h1 className="text-4xl font-bold mb-2 tracking-tight">{t('landing.appName', 'KARGADHAN')}</h1>
+        <p className="text-primary-200 font-medium tracking-wide text-center">
+          {t('landing.heroSubtitle', 'Your AI Financial Partner for Every Weaver')}
         </p>
       </motion.div>
 

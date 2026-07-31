@@ -1,16 +1,18 @@
 import { motion } from 'framer-motion';
-import { ShieldAlert, Info, HeartPulse, Shield, Banknote, Briefcase, Factory, Package, Ship } from 'lucide-react';
+import { ShieldAlert, Info, HeartPulse, Shield, Banknote, Briefcase, Factory, Package, Ship, ExternalLink } from 'lucide-react';
 import type { InsuranceTypeDesc } from '../../types';
 import { Card, CardContent } from '../ui/Card';
+import { Button } from '../ui/Button';
 import { useTranslation } from 'react-i18next';
 import { staggerContainer, staggerItem } from '../../utils/animations';
 import { tData } from '../../utils/i18nData';
 
 interface Props {
   types: InsuranceTypeDesc[];
+  onSelectType?: (type: InsuranceTypeDesc) => void;
 }
 
-export function InsuranceTypesTab({ types }: Props) {
+export function InsuranceTypesTab({ types, onSelectType }: Props) {
   const { t } = useTranslation();
 
   const getIconForType = (id: string) => {
@@ -50,8 +52,11 @@ export function InsuranceTypesTab({ types }: Props) {
     >
       {types.map((type) => (
         <motion.div key={type.id} variants={staggerItem} className="h-full">
-          <Card className="h-full border-2 border-slate-100 hover:border-slate-200 transition-all shadow-sm hover:shadow-md group overflow-hidden">
-            <CardContent className="p-0">
+          <Card
+            onClick={() => onSelectType?.(type)}
+            className="h-full border-2 border-slate-100 hover:border-slate-300 transition-all shadow-sm hover:shadow-md group overflow-hidden cursor-pointer flex flex-col justify-between"
+          >
+            <CardContent className="p-0 flex flex-col justify-between h-full">
               <div className="p-6">
                 <div className="flex items-start gap-4 mb-5">
                   <div className={`w-12 h-12 rounded-2xl flex items-center justify-center flex-shrink-0 border ${getColorForType(type.id)} transition-transform group-hover:scale-110`}>
@@ -91,8 +96,8 @@ export function InsuranceTypesTab({ types }: Props) {
                 </div>
               </div>
 
-              {/* AI Recommendation Badge at the bottom */}
-              <div className="bg-gradient-to-r from-indigo-50 to-indigo-100/50 border-t border-indigo-100 p-4">
+              {/* Action Button & AI Recommendation */}
+              <div className="bg-gradient-to-r from-indigo-50 to-indigo-100/50 border-t border-indigo-100 p-4 space-y-3">
                 <div className="flex items-start gap-3">
                   <div className="mt-0.5 flex-shrink-0">
                     <div className="w-6 h-6 bg-indigo-600 rounded-full flex items-center justify-center">
@@ -103,6 +108,20 @@ export function InsuranceTypesTab({ types }: Props) {
                     "{tData(type.aiRecommendation)}"
                   </p>
                 </div>
+
+                <Button
+                  variant="outline"
+                  fullWidth
+                  size="sm"
+                  className="bg-white border-slate-200 text-slate-700 hover:bg-indigo-600 hover:text-white hover:border-indigo-600 transition-colors shadow-sm"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onSelectType?.(type);
+                  }}
+                  rightIcon={<ExternalLink size={14} />}
+                >
+                  {t('insurance.learnMore', 'Learn More Details')}
+                </Button>
               </div>
             </CardContent>
           </Card>
