@@ -76,8 +76,8 @@ export default function LoginPage() {
           await refreshUser();
         }
 
-        // Navigate directly to Onboarding Verification flow
-        navigate('/verify');
+        // Navigate directly to Dashboard after successful verification & login
+        navigate('/dashboard');
       } catch (err: any) {
         console.error(err);
         setError('Invalid OTP or verification error.');

@@ -16,7 +16,7 @@ export default function LanguagePage() {
   };
 
   const handleContinue = () => {
-    navigate('/login');
+    navigate('/upload');
   };
 
   const containerVariants = {

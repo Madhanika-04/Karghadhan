@@ -267,10 +267,10 @@ export default function VerifyingPage() {
               <Button
                 fullWidth
                 size="lg"
-                onClick={() => navigate('/onboarding-profile')}
+                onClick={() => navigate('/login')}
                 rightIcon={<ArrowRight size={18} />}
               >
-                {t('onboarding.setupProfile', 'Setup AI Financial Profile')}
+                {t('onboarding.proceedLogin', 'Proceed to Login')}
               </Button>
             </motion.div>
           </motion.div>

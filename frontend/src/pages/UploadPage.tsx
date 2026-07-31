@@ -137,7 +137,7 @@ export default function UploadPage() {
     setProgress((prev) => ({ ...prev, [key]: 0 }));
   };
 
-  const canContinue = files.aadhaar !== null || files.weaverId !== null;
+  const canContinue = files.aadhaar !== null;
 
   const handleContinue = () => {
     navigate('/verifying');
@@ -155,8 +155,8 @@ export default function UploadPage() {
         <div className="w-16 h-16 bg-gradient-to-br from-primary-500 to-primary-700 rounded-3xl mx-auto mb-4 flex items-center justify-center shadow-xl shadow-primary-200/50">
           <Upload size={28} className="text-white" />
         </div>
-        <h1 className="text-2xl font-bold text-slate-800 font-display tracking-tight">{t('upload.title', 'Upload Documents')}</h1>
-        <p className="text-slate-500 text-sm mt-2">{t('upload.subtitle', 'We need your documents to verify your identity & build your credit profile')}</p>
+        <h1 className="text-2xl font-bold text-slate-800 font-display tracking-tight">{t('upload.title', 'Upload Verification Documents')}</h1>
+        <p className="text-slate-500 text-sm mt-2">{t('upload.subtitle', 'Aadhaar Card is mandatory. Upload passbook & Weaver ID if available.')}</p>
 
         {/* Progress */}
         <div className="mt-4 bg-white rounded-2xl px-4 py-3 shadow-sm border border-slate-100 inline-flex items-center gap-3">
@@ -183,8 +183,8 @@ export default function UploadPage() {
         <motion.div variants={staggerItem}>
           <UploadZone
             id="aadhaar-upload"
-            label={t('upload.aadhaarLabel', 'Aadhaar Card *')}
-            description={t('upload.aadhaarDesc', 'Upload front side of your Aadhaar card')}
+            label={t('upload.aadhaarLabel', 'Aadhaar Card (Mandatory *)')}
+            description={t('upload.aadhaarDesc', 'Upload front side of your Aadhaar card to enable verification')}
             emoji="🪪"
             onUpload={(file) => simulateUpload('aadhaar', file)}
             uploadedFile={files.aadhaar}
@@ -197,8 +197,8 @@ export default function UploadPage() {
         <motion.div variants={staggerItem}>
           <UploadZone
             id="weaver-upload"
-            label={t('upload.weaverIdLabel', 'Weaver ID Card *')}
-            description={t('upload.weaverIdDesc', 'Upload your government-issued Weaver ID')}
+            label={t('upload.weaverIdLabel', 'Weaver ID Card (Optional)')}
+            description={t('upload.weaverIdDesc', 'Upload your government-issued Weaver ID if available')}
             emoji="🧵"
             onUpload={(file) => simulateUpload('weaverId', file)}
             uploadedFile={files.weaverId}
@@ -211,8 +211,8 @@ export default function UploadPage() {
         <motion.div variants={staggerItem}>
           <UploadZone
             id="passbook-upload"
-            label={t('upload.passbookLabel', 'Bank Passbook')}
-            description={t('upload.passbookDesc', 'First page of bank passbook or account statement')}
+            label={t('upload.passbookLabel', 'Bank Passbook (Optional)')}
+            description={t('upload.passbookDesc', 'First page of bank passbook or statement')}
             emoji="📒"
             onUpload={(file) => simulateUpload('passbook', file)}
             uploadedFile={files.passbook}
@@ -225,7 +225,7 @@ export default function UploadPage() {
         <motion.div variants={staggerItem}>
           <UploadZone
             id="yarn-passbook-upload"
-            label="Yarn Passbook (e-Dhaga Ledger)"
+            label="Yarn Passbook / e-Dhaga (Optional)"
             description="Upload Yarn Passbook to build AI credit score & micro-credit profile"
             emoji="🧶"
             onUpload={(file) => simulateUpload('yarnPassbook', file)}
@@ -251,7 +251,7 @@ export default function UploadPage() {
         disabled={!canContinue}
         rightIcon={<ArrowRight size={18} />}
       >
-        {canContinue ? t('upload.startAiVerification', 'Start AI Verification') : t('upload.uploadRequired', 'Upload Required Documents')}
+        {canContinue ? t('upload.startAiVerification', 'Start AI Verification') : t('upload.uploadRequired', 'Please Upload Mandatory Aadhaar Card')}
       </Button>
 
       <button
