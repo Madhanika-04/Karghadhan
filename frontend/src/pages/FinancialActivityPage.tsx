@@ -187,9 +187,55 @@ export default function FinancialActivityPage() {
           </motion.div>
         </div>
 
-        {/* Right Column - Reminders & Activity */}
+        {/* Right Column - Reminders & Repayment Tracking */}
         <div className="space-y-6 lg:space-y-8">
           
+          {/* Step 9 & 10: Repayment Tracking & Credit Growth Widget */}
+          <motion.div
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="bg-gradient-to-br from-indigo-900 via-primary-950 to-slate-950 rounded-3xl p-6 text-white border border-indigo-500/30 shadow-xl relative overflow-hidden"
+          >
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center gap-2">
+                <div className="w-8 h-8 rounded-xl bg-emerald-500/20 border border-emerald-400/30 flex items-center justify-center text-emerald-400">
+                  <TrendingUp size={16} />
+                </div>
+                <div>
+                  <h4 className="font-black text-sm text-white leading-tight">Repayment & Growth Tracker</h4>
+                  <p className="text-[10px] text-indigo-200">Step 9 & 10 Workflow Tracking</p>
+                </div>
+              </div>
+              <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-300 bg-emerald-500/10 border border-emerald-500/20 px-2.5 py-1 rounded-full">
+                On Track
+              </span>
+            </div>
+
+            {/* Repayment Progress Bar */}
+            <div className="bg-white/10 backdrop-blur-md rounded-2xl p-4 border border-white/10 mb-4 space-y-2">
+              <div className="flex justify-between items-center text-xs font-bold">
+                <span className="text-slate-300">Weaver MUDRA Micro-Loan</span>
+                <span className="text-emerald-400">4 / 12 EMIs Paid</span>
+              </div>
+              <div className="w-full bg-slate-800 rounded-full h-2 overflow-hidden">
+                <div className="bg-gradient-to-r from-emerald-400 to-indigo-400 h-full rounded-full w-[33%]" />
+              </div>
+              <div className="flex justify-between items-center text-[10px] text-slate-400 pt-1">
+                <span>Next Auto-Deduction: ₹2,100</span>
+                <span>Due in 12 Days</span>
+              </div>
+            </div>
+
+            {/* Financial Growth Impact */}
+            <div className="flex items-center justify-between bg-emerald-500/10 border border-emerald-500/20 rounded-xl p-3">
+              <div className="flex items-center gap-2 text-xs text-emerald-200">
+                <Sparkles size={14} className="text-amber-300 animate-pulse" />
+                <span>Next On-time Payment Impact:</span>
+              </div>
+              <span className="text-xs font-black text-emerald-300">+25 Credit Points</span>
+            </div>
+          </motion.div>
+
           {/* Upcoming Reminders */}
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }}
